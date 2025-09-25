@@ -7,12 +7,13 @@
             <h2>📊 Dashboard Rekap Laporan</h2>
 
             <!-- Filter tanggal -->
-            <div class="mb-3 d-flex gap-2 col-6">
-                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
-                <input type="date" v-model="filterTanggalAkhir" class="form-control" />
-                <button class="btn btn-primary" @click="applyFilter">Filter</button>
-                <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+            <div class="mb-3 d-flex flex-wrap gap-2 col-12 col-md-6">
+                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control flex-grow-1" />
+                <input type="date" v-model="filterTanggalAkhir" class="form-control flex-grow-1" />
+                <button class="btn btn-primary">Filter</button>
+                <button class="btn btn-secondary">Reset</button>
             </div>
+
             <!-- Ringkasan umum -->
             <div class="row text-center mb-3">
                 <div class="col">
@@ -47,50 +48,54 @@
                 </div>
             </div>
             <h4>Rekap Per Daerah Irigasi</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Daerah Irigasi</th>
-                        <th>Padi (ha)</th>
-                        <th>Palawija (ha)</th>
-                        <th>Lainnya (ha)</th>
-                        <th>Total (ha)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(data, namaDI) in rekapPerDaerahIrigasi" :key="namaDI">
-                        <td>@{{ namaDI }}</td>
-                        <td>@{{ data.padi.toFixed(2) }}</td>
-                        <td>@{{ data.palawija.toFixed(2) }}</td>
-                        <td>@{{ data.lainnya.toFixed(2) }}</td>
-                        <td>@{{ data.total.toFixed(2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
 
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Daerah Irigasi</th>
+                            <th>Padi (ha)</th>
+                            <th>Palawija (ha)</th>
+                            <th>Lainnya (ha)</th>
+                            <th>Total (ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(data, namaDI) in rekapPerDaerahIrigasi" :key="namaDI">
+                            <td>@{{ namaDI }}</td>
+                            <td>@{{ data.padi.toFixed(2) }}</td>
+                            <td>@{{ data.palawija.toFixed(2) }}</td>
+                            <td>@{{ data.lainnya.toFixed(2) }}</td>
+                            <td>@{{ data.total.toFixed(2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <!-- Rekap per petugas -->
             <h4 class="mt-5">📌 Rekap per Petugas</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Petugas</th>
-                        <th>Luas Padi</th>
-                        <th>Luas Palawija</th>
-                        <th>Luas Lainnya</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(rekap, nama) in rekapPerPetugas" :key="nama">
-                        <td>@{{ nama }}</td>
-                        <td>@{{ rekap.padi.toFixed(2) }}</td>
-                        <td>@{{ rekap.palawija.toFixed(2) }}</td>
-                        <td>@{{ rekap.lainnya.toFixed(2) }}</td>
-                        <td>@{{ rekap.total.toFixed(2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
 
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Petugas</th>
+                            <th>Luas Padi</th>
+                            <th>Luas Palawija</th>
+                            <th>Luas Lainnya</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(rekap, nama) in rekapPerPetugas" :key="nama">
+                            <td>@{{ nama }}</td>
+                            <td>@{{ rekap.padi.toFixed(2) }}</td>
+                            <td>@{{ rekap.palawija.toFixed(2) }}</td>
+                            <td>@{{ rekap.lainnya.toFixed(2) }}</td>
+                            <td>@{{ rekap.total.toFixed(2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <!-- Chart -->
             <h4 class="mt-5">📈 Grafik Per DI</h4>
             <canvas id="chartDI" height="100"></canvas>
