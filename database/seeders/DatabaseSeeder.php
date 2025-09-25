@@ -32,15 +32,15 @@ class DatabaseSeeder extends Seeder
                 'Kolaka',
                 'Kolaka Timur',
                 'Kolaka Utara',
-                'Konawe',
+                'Konawe', //9
                 'Konawe Kepulauan',
                 'Konawe Selatan',
-                'Konawe Utara',
+                'Konawe Utara', //12
                 'Muna',
                 'Muna Barat',
                 'Wakatobi',
                 'Kota Bau-Bau',
-                'Kota Kendari',
+                'Kota Kendari', //17
             ];
 
             foreach ($data as $nama) {
@@ -54,13 +54,13 @@ class DatabaseSeeder extends Seeder
             Role::updateOrCreate(['name' => 'upi'], ['label' => 'Unit Pengelola Irigasi']);
             // Buat user
             $user = User::create([
-                'name' => 'ADMIN 1',
-                'email' => 'admin@mail.com',
-                'password' => bcrypt('1234'), // default password
+                'name' => 'Ellen Ambar Winarsih',
+                'email' => 'ellen@mail.com',
+                'password' => bcrypt('ell3n*123#'), // default password
                 'role_id' => 2
             ]);
             // Ambil beberapa kabupaten contoh
-            $kabupatenIds = [9]; // ambil 2 kabupaten pertama
+            $kabupatenIds = [9, 12, 17]; // ambil 2 kabupaten pertama
 
             // Attach ke user
             $user->kabupatens()->attach($kabupatenIds);
@@ -75,10 +75,10 @@ class DatabaseSeeder extends Seeder
             ]);
             // ============================
             // buat DI Walay
-            $di = DaerahIrigasi::firstOrCreate(['nama' => 'Walay']);
+            // $di = DaerahIrigasi::firstOrCreate(['nama' => 'Walay']);
 
             // hubungkan DI dengan kabupaten konawe
-            $di->kabupatens()->syncWithoutDetaching([9]);
+            // $di->kabupatens()->syncWithoutDetaching([9]);
             // ============================
             // DAERAH IRIGASI
             // ============================
@@ -93,90 +93,90 @@ class DatabaseSeeder extends Seeder
             // ============================
             // SALURAN
             // ============================
-            $saluranId = DB::table('salurans')->insertGetId([
-                'daerah_irigasi_id' => 1,
-                'nama' => 'Saluran Lahumbuti',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $saluranId = DB::table('salurans')->insertGetId([
+            //     'daerah_irigasi_id' => 1,
+            //     'nama' => 'Saluran Lahumbuti',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
             // ============================
             // PETUGAS
             // ============================
-            $petugasId = DB::table('petugas')->insertGetId([
-                'sesi_id' => $sesiId,
-                'nama' => 'Mustafa',
-                'kode' => "ABCDE", // contoh kode
-                // 'kode' => Hash::make('123'), // contoh kode
-                'hp' => "85241800852",
-                'is_aktif' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $petugasId = DB::table('petugas')->insertGetId([
+            //     'sesi_id' => $sesiId,
+            //     'nama' => 'Mustafa',
+            //     'kode' => "ABCDE", // contoh kode
+            //     // 'kode' => Hash::make('123'), // contoh kode
+            //     'hp' => "85241800852",
+            //     'is_aktif' => true,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
-            $petugasSaluran = DB::table('petugas_salurans')->insertGetId([
-                'petugas_id' => $petugasId,
-                'saluran_id' => $saluranId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $petugasSaluran = DB::table('petugas_salurans')->insertGetId([
+            //     'petugas_id' => $petugasId,
+            //     'saluran_id' => $saluranId,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
             // ============================
             // BANGUNAN
             // ============================
-            $bangunanId = DB::table('bangunans')->insertGetId([
-                'saluran_id' => $saluranId,
-                'nama' => 'BLH.1',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $bangunanId = DB::table('bangunans')->insertGetId([
+            //     'saluran_id' => $saluranId,
+            //     'nama' => 'BLH.1',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
             // ============================
             // PETAK
             // ============================
-            DB::table('petaks')->insertGetId([
-                'bangunan_id' => $bangunanId,
-                'nama' => 'LH 1 Kr',
-                'luas' => 62.12,
-                'gambar_skema' => "",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // DB::table('petaks')->insertGetId([
+            //     'bangunan_id' => $bangunanId,
+            //     'nama' => 'LH 1 Kr',
+            //     'luas' => 62.12,
+            //     'gambar_skema' => "",
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
             // ============================
             // SALURAN
             // ============================
-            $saluranId = DB::table('salurans')->insertGetId([
-                'daerah_irigasi_id' => 1,
-                'nama' => 'Saluran Sekunder Ambepe',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            $petugasSaluran = DB::table('petugas_salurans')->insertGetId([
-                'petugas_id' => $petugasId,
-                'saluran_id' => $saluranId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $saluranId = DB::table('salurans')->insertGetId([
+            //     'daerah_irigasi_id' => 1,
+            //     'nama' => 'Saluran Sekunder Ambepe',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
+            // $petugasSaluran = DB::table('petugas_salurans')->insertGetId([
+            //     'petugas_id' => $petugasId,
+            //     'saluran_id' => $saluranId,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
             // ============================
             // BANGUNAN
             // ============================
-            $bangunanId = DB::table('bangunans')->insertGetId([
-                'saluran_id' => $saluranId,
-                'nama' => 'BAM.1',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $bangunanId = DB::table('bangunans')->insertGetId([
+            //     'saluran_id' => $saluranId,
+            //     'nama' => 'BAM.1',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
             // ============================
             // PETAK
             // ============================
-            DB::table('petaks')->insertGetId([
-                'bangunan_id' => $bangunanId,
-                'nama' => 'AM 1 Kr',
-                'luas' => 63.94,
-                'gambar_skema' => "",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // DB::table('petaks')->insertGetId([
+            //     'bangunan_id' => $bangunanId,
+            //     'nama' => 'AM 1 Kr',
+            //     'luas' => 63.94,
+            //     'gambar_skema' => "",
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
             // ============================
             // MASTER PEMANTAUAN PERMASALAHAN
             // ============================
@@ -196,31 +196,31 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
             // Tambah UPI (jika ada untuk DI ini)
-            $upiId = DB::table('upis')->insertGetId([
-                'sesi_id' => 1,
-                'nama' => 'UPI Kendari',
-                'no_hp' => '085241800852',
-                'kode' => '888', // kode login pengamat
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            // Tambah UPI (jika ada untuk DI ini)
-            $upiId = DB::table('daerah_irigasi_upis')->insertGetId([
-                'upi_id' => 1,
-                'daerah_irigasi_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            // Tambah Pengamat
-            $pengamatId = DB::table('pengamats')->insertGetId([
-                'sesi_id' => 1,
-                'daerah_irigasi_id' => 1,
-                'nama' => 'Pengamat Ali',
-                'nomor_hp' => '08524180052',
-                'kode' => '1234', // kode login pengamat
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // $upiId = DB::table('upis')->insertGetId([
+            //     'sesi_id' => 1,
+            //     'nama' => 'UPI Kendari',
+            //     'no_hp' => '085241800852',
+            //     'kode' => '888', // kode login pengamat
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
+            // // Tambah UPI (jika ada untuk DI ini)
+            // $upiId = DB::table('daerah_irigasi_upis')->insertGetId([
+            //     'upi_id' => 1,
+            //     'daerah_irigasi_id' => 1,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
+            // // Tambah Pengamat
+            // $pengamatId = DB::table('pengamats')->insertGetId([
+            //     'sesi_id' => 1,
+            //     'daerah_irigasi_id' => 1,
+            //     'nama' => 'Pengamat Ali',
+            //     'nomor_hp' => '08524180052',
+            //     'kode' => '1234', // kode login pengamat
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
             // // ============================
             // // FORM PENGISIAN (contoh transaksi)
             // // ============================

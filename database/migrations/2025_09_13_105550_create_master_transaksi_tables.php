@@ -20,6 +20,13 @@ return new class extends Migration
             $table->string('nama');
             $table->timestamps();
         });
+        // USER KABUPATEN
+        Schema::create('user_kabupatens', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('kabupaten_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
+        });
         // DAERAH IRIGASI
         Schema::create('daerah_irigasis', function (Blueprint $table) {
             $table->id();
@@ -27,14 +34,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-
-        // DAERAH IRIGASI
-        Schema::create('user_kabupatens', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('kabupaten_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
-        });
         // KABUPATEN
         Schema::create('daerah_irigasi_kabupatens', function (Blueprint $table) {
             $table->id();
@@ -170,7 +169,6 @@ return new class extends Migration
             // kombinasi unik sesi + DI
             $table->unique(['sesi_id', 'daerah_irigasi_id']);
         });
-
 
         // UNTUK VALIDASI
         Schema::create('form_validasis', function (Blueprint $table) {

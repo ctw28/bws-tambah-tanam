@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,3 +29,5 @@ Route::get('/admin/upi', fn() => view('admin.upi'))->name('admin.upi');
 Route::get('/pengamat', fn() => view('pengamat'))->name('pengamat');
 Route::get('/upi', fn() => view('upi'))->name('upi');
 Route::get('/form-preview', fn() => view('form-preview'))->name('form-preview');
+Route::get('import-form', [ImportController::class, 'showForm'])->name('master.import.form');
+Route::post('import-irigasi', [ImportController::class, 'import'])->name('import.submit');
