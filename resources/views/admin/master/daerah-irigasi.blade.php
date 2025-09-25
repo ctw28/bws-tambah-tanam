@@ -10,29 +10,32 @@
         </div>
         <div class="card-body">
             <!-- Tabel daftar DI -->
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Nama DI</th>
-                        <th>Kabupaten Terkait</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="di in daerahIrigasis" :key="di.id">
-                        <td>@{{ di.nama }}</td>
-                        <td>
-                            <span v-for="kab in di.kabupatens" class="badge bg-info me-1">
-                                @{{ kab.nama }}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-warning me-2" @click="editDI(di)">Edit</button>
-                            <button class="btn btn-sm btn-danger" @click="deleteDI(di.id)">Hapus</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama DI</th>
+                            <th>Kabupaten Terkait</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="di in daerahIrigasis" :key="di.id">
+                            <td>@{{ di.nama }}</td>
+                            <td>
+                                <span v-for="kab in di.kabupatens" class="badge bg-info me-1">
+                                    @{{ kab.nama }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-2" @click="editDI(di)">Edit</button>
+                                <button class="btn btn-sm btn-danger" @click="deleteDI(di.id)">Hapus</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

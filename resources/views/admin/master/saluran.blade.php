@@ -25,31 +25,34 @@
 
             <!-- Tabel Saluran -->
             <h5>Saluran di @{{ getDINama }}</h5>
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr>
-                        <th>Kelola</th>
-                        <th>Nama Saluran</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="saluran in salurans" :key="saluran.id">
-                        <td><button class="btn btn-sm btn-info" @click="fetchBangunan(saluran)">
-                                Kelola Bangunan
-                            </button></td>
-                        <td>@{{ saluran.nama }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning me-2" @click="showEditSaluranModal(saluran)">
-                                Edit
-                            </button>
-                            <button class="btn btn-sm btn-danger" @click="deleteSaluran(saluran.id)">
-                                Hapus
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th>Kelola</th>
+                            <th>Nama Saluran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="saluran in salurans" :key="saluran.id">
+                            <td><button class="btn btn-sm btn-info" @click="fetchBangunan(saluran)">
+                                    Kelola Bangunan
+                                </button></td>
+                            <td>@{{ saluran.nama }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-2" @click="showEditSaluranModal(saluran)">
+                                    Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" @click="deleteSaluran(saluran.id)">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <!-- Modal Tambah Saluran -->
         <div class="modal fade" id="modalAddSaluran" tabindex="-1">
