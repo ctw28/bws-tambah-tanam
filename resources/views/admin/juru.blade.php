@@ -13,42 +13,44 @@
                 <h4>Kelola Petugas</h4>
                 <button class="btn btn-primary" @click="openForm()">+ Tambah Petugas</button>
             </div>
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Saluran</th>
-                        <th>Aktif</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(p, index) in petugas" :key="p.id">
-                        <td>@{{ index + 1 }}</td>
-                        <td>@{{ p.nama }}</td>
-                        <td>
-                            <ul class="mb-0">
-                                <li v-for="s in p.salurans">@{{ s.nama }} (DI
-                                    @{{ s.daerah_irigasi.nama }})</li>
-                            </ul>
-                        </td>
-                        <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" v-model="p.is_aktif"
-                                    @change="toggleAktif(p)">
-                            </div>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-success me-2" @click="sendKode(p)">Kirim Kode</button>
-                            <button class="btn btn-sm btn-warning me-2" @click="editPetugas(p)">Edit</button>
-                            <button class="btn btn-sm btn-danger" @click="deletePetugas(p.id)">Hapus</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <div class="table-responsive">
 
+                <table class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Saluran</th>
+                            <th>Aktif</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(p, index) in petugas" :key="p.id">
+                            <td>@{{ index + 1 }}</td>
+                            <td>@{{ p.nama }}</td>
+                            <td>
+                                <ul class="mb-0">
+                                    <li v-for="s in p.salurans">@{{ s.nama }} (DI
+                                        @{{ s.daerah_irigasi.nama }})</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" v-model="p.is_aktif"
+                                        @change="toggleAktif(p)">
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-success me-2" @click="sendKode(p)">Kirim Kode</button>
+                                <button class="btn btn-sm btn-warning me-2" @click="editPetugas(p)">Edit</button>
+                                <button class="btn btn-sm btn-danger" @click="deletePetugas(p.id)">Hapus</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <!-- Modal Form -->
         <div class="modal fade" id="petugasModal" tabindex="-1">
             <div class="modal-dialog modal-lg">

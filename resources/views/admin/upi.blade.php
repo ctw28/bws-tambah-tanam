@@ -8,36 +8,38 @@
             <h3>Data UPI</h3>
 
             <button class="btn btn-primary mb-3" @click="openModal()">Tambah UPI</button>
+            <div class="table-responsive">
 
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Daerah Irigasi</th>
-                        <th>Nama</th>
-                        <th>No HP</th>
-                        <th>Sesi</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(upi,index) in upis" :key="upi.id">
-                        <td>@{{index+1}}</td>
-                        <td>
-                            <span v-for="di in upi.daerah_irigasis" class="badge bg-info me-1">@{{ di.nama }}</span>
-                        </td>
-                        <td>@{{ upi.nama }}</td>
-                        <td>@{{ upi.no_hp }}</td>
-                        <td>@{{ upi.sesi?.nama }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-success me-2" @click="sendKode(upi)">Kirim Kode</button>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Daerah Irigasi</th>
+                            <th>Nama</th>
+                            <th>No HP</th>
+                            <th>Sesi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(upi,index) in upis" :key="upi.id">
+                            <td>@{{index+1}}</td>
+                            <td>
+                                <span v-for="di in upi.daerah_irigasis" class="badge bg-info me-1">@{{ di.nama }}</span>
+                            </td>
+                            <td>@{{ upi.nama }}</td>
+                            <td>@{{ upi.no_hp }}</td>
+                            <td>@{{ upi.sesi?.nama }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success me-2" @click="sendKode(upi)">Kirim Kode</button>
 
-                            <button class="btn btn-sm btn-warning me-2" @click="editUpi(upi)">Edit</button>
-                            <button class="btn btn-sm btn-danger" @click="deleteUpi(upi.id)">Hapus</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                                <button class="btn btn-sm btn-warning me-2" @click="editUpi(upi)">Edit</button>
+                                <button class="btn btn-sm btn-danger" @click="deleteUpi(upi.id)">Hapus</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
