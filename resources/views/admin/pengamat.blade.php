@@ -9,35 +9,36 @@
 
             <!-- Tombol tambah -->
             <button class="btn btn-primary mb-3" @click="openModal()">+ Tambah Pengamat</button>
+            <div class="table-responsive">
 
-            <!-- Tabel data -->
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>DI</th>
-                        <th>Nama</th>
-                        <th>Nomor HP</th>
-                        <th>Sesi</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item,index) in pengamats" :key="item.id">
-                        <td>@{{index + 1}}</td>
-                        <td>@{{ item.daerah_irigasi?.nama }}</td>
-                        <td>@{{ item.nama }}</td>
-                        <td>@{{ item.nomor_hp }}</td>
-                        <td>@{{ item.sesi?.nama }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-success me-2" @click="sendKode(item)">Kirim Kode</button>
-                            <button class="btn btn-sm btn-warning me-2" @click="openModal(item)">Edit</button>
-                            <button class="btn btn-sm btn-danger" @click="remove(item.id)">Hapus</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
+                <!-- Tabel data -->
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>DI</th>
+                            <th>Nama</th>
+                            <th>Nomor HP</th>
+                            <th>Sesi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item,index) in pengamats" :key="item.id">
+                            <td>@{{index + 1}}</td>
+                            <td>@{{ item.daerah_irigasi?.nama }}</td>
+                            <td>@{{ item.nama }}</td>
+                            <td>@{{ item.nomor_hp }}</td>
+                            <td>@{{ item.sesi?.nama }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success me-2" @click="sendKode(item)">Kirim Kode</button>
+                                <button class="btn btn-sm btn-warning me-2" @click="openModal(item)">Edit</button>
+                                <button class="btn btn-sm btn-danger" @click="remove(item.id)">Hapus</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <!-- Modal Tambah/Edit -->
             <div class="modal fade" id="pengamatModal" tabindex="-1">
                 <div class="modal-dialog">
