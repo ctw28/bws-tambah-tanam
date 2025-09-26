@@ -5,15 +5,30 @@
     <div class="card h-100">
         <div class="card-body">
             <h2>📊 Dashboard Rekap Laporan</h2>
-
             <!-- Filter tanggal -->
-            <div class="mb-3 d-flex flex-wrap gap-2 col-12 col-md-6">
-                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control flex-grow-1" />
-                <input type="date" v-model="filterTanggalAkhir" class="form-control flex-grow-1" />
-                <button class="btn btn-primary">Filter</button>
-                <button class="btn btn-secondary">Reset</button>
-            </div>
+            <div class="mb-3">
+                <div class="row g-2">
+                    <!-- Input tanggal awal -->
+                    <div class="col-6 col-md-3">
+                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
+                    </div>
+                    <!-- Input tanggal akhir -->
+                    <div class="col-6 col-md-3">
+                        <input type="date" v-model="filterTanggalAkhir" class="form-control" />
+                    </div>
+                    <!-- Tombol (hanya di layar md ke atas) -->
+                    <div class="col-md-6 d-none d-md-flex gap-2">
+                        <button class="btn btn-primary " @click="applyFilter">Filter</button>
+                        <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+                    </div>
+                </div>
 
+                <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
+                <div class="d-flex gap-2 mt-2 d-md-none">
+                    <button class="btn btn-primary " @click="applyFilter">Filter</button>
+                    <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
+                </div>
+            </div>
             <!-- Ringkasan umum -->
             <div class="row text-center mb-3">
                 <div class="col">

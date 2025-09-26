@@ -254,53 +254,58 @@
                             <div class="form-line"><span>Koordinat Bangunan Bagi/Sadap</span>: @{{form.koordinat}}
                             </div>
                         </div>
+                        <div class="table-responsive">
 
-                        <!-- Tabel -->
-                        <table class="table table-bordered text-center align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th rowspan="2">Debit Air (lt/detik)</th>
-                                    <th rowspan="2">Luas Petak Skema (Ha)</th>
-                                    <th colspan="3">Pemantauan Luas Tambah Tanam (LTT)</th>
-                                </tr>
-                                <tr>
-                                    <th>Padi (Ha)</th>
-                                    <th>Palawija (Ha)</th>
-                                    <th>Lainnya (Ha)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>@{{ form.debit_air}}</td>
-                                    <td>@{{ petak_luas}}</td>
-                                    <td>@{{ form.luas_padi}}</td>
-                                    <td>@{{ form.luas_palawija}}</td>
-                                    <td>@{{ form.luas_lainnya}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <!-- Tabel -->
+                            <table class="table table-bordered text-center align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th rowspan="2">Debit Air (lt/detik)</th>
+                                        <th rowspan="2">Luas Petak Skema (Ha)</th>
+                                        <th colspan="3">Pemantauan Luas Tambah Tanam (LTT)</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Padi (Ha)</th>
+                                        <th>Palawija (Ha)</th>
+                                        <th>Lainnya (Ha)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@{{ form.debit_air}}</td>
+                                        <td>@{{ petak_luas}}</td>
+                                        <td>@{{ form.luas_padi}}</td>
+                                        <td>@{{ form.luas_palawija}}</td>
+                                        <td>@{{ form.luas_lainnya}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-responsive">
 
-                        <!-- Tabel -->
-                        <table class="table table-bordered text-center align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Pemantauan Permasalahan</th>
-                                    <th>Ada/Tidak</th>
-                                    <th>Ketarngan</th>
-                                </tr>
-                            </thead>
-                            <tbody v-for="(p,index) in form.permasalahan" :key="p.id">
-                                <tr>
-                                    <td>@{{ index}}</td>
-                                    <td>@{{ permasalahans.find(pm => pm.id == p.master_permasalahan_id)?.nama }}</td>
-                                    <td class="text-center">
-                                        <span v-if="p.status">✅</span>
-                                    </td>
-                                    <td>@{{ p.keterangan}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <!-- Tabel -->
+                            <table class="table table-bordered text-center align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Pemantauan Permasalahan</th>
+                                        <th>Ada/Tidak</th>
+                                        <th>Ketarngan</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-for="(p,index) in form.permasalahan" :key="p.id">
+                                    <tr>
+                                        <td>@{{ index}}</td>
+                                        <td>@{{ permasalahans.find(pm => pm.id == p.master_permasalahan_id)?.nama }}
+                                        </td>
+                                        <td class="text-center">
+                                            <span v-if="p.status">✅</span>
+                                        </td>
+                                        <td>@{{ p.keterangan}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div v-if="previewFoto" class="mt-3">
                             <h4>Foto Pemantauan</h4>
                             <img :src="previewFoto" alt="Preview Foto" class="img-fluid rounded" width="300">

@@ -5,11 +5,29 @@
     <div class="card h-100">
         <div class="card-body">
             <h5 class="card-title">Data Pengisian Form Petugas</h5>
-            <div class="mb-3 d-flex gap-2 col-6">
-                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
-                <input type="date" v-model="filterTanggalAkhir" class="form-control" />
-                <button class="btn btn-primary" @click="applyFilter">Filter</button>
-                <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+            <!-- Filter tanggal -->
+            <div class="mb-3">
+                <div class="row g-2">
+                    <!-- Input tanggal awal -->
+                    <div class="col-6 col-md-3">
+                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
+                    </div>
+                    <!-- Input tanggal akhir -->
+                    <div class="col-6 col-md-3">
+                        <input type="date" v-model="filterTanggalAkhir" class="form-control" />
+                    </div>
+                    <!-- Tombol (hanya di layar md ke atas) -->
+                    <div class="col-md-6 d-none d-md-flex gap-2">
+                        <button class="btn btn-primary " @click="applyFilter">Filter</button>
+                        <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
+                <div class="d-flex gap-2 mt-2 d-md-none">
+                    <button class="btn btn-primary " @click="applyFilter">Filter</button>
+                    <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
+                </div>
             </div>
             <div class="table-responsive">
 
@@ -97,53 +115,59 @@
                     </div>
 
                     <!-- Tabel -->
-                    <table class="table table-bordered text-center align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th rowspan="2">Debit Air (lt/detik)</th>
-                                <th rowspan="2">Luas Petak Skema (Ha)</th>
-                                <th colspan="3">Pemantauan Luas Tambah Tanam (LTT)</th>
-                            </tr>
-                            <tr>
-                                <th>Padi (Ha)</th>
-                                <th>Palawija (Ha)</th>
-                                <th>Lainnya (Ha)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td height="50px">@{{item.debit_air}}</td>
-                                <td>@{{item.petak ? item.petak.luas : '-'}}</td>
-                                <td>@{{item.luas_padi}}</td>
-                                <td>@{{item.luas_palawija}}</td>
-                                <td>@{{item.luas_lainnya}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <!-- Tabel -->
-                    <table class="table table-bordered text-center align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No</th>
-                                <th>Pemantauan Permasalahan</th>
-                                <th>Ada/Tidak</th>
-                                <th>Ketarngan</th>
-                            </tr>
-                        </thead>
-                        <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
-                            <tr>
-                                <td>@{{ index}}</td>
-                                <td>@{{ p.master_permasalahan.nama }}
-                                </td>
-                                <td class="text-center">
-                                    <span v-if="p.status">✅</span>
-                                </td>
-                                <td>@{{ p.keterangan}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered text-center align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th rowspan="2">Debit Air (lt/detik)</th>
+                                    <th rowspan="2">Luas Petak Skema (Ha)</th>
+                                    <th colspan="3">Pemantauan Luas Tambah Tanam (LTT)</th>
+                                </tr>
+                                <tr>
+                                    <th>Padi (Ha)</th>
+                                    <th>Palawija (Ha)</th>
+                                    <th>Lainnya (Ha)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td height="50px">@{{item.debit_air}}</td>
+                                    <td>@{{item.petak ? item.petak.luas : '-'}}</td>
+                                    <td>@{{item.luas_padi}}</td>
+                                    <td>@{{item.luas_palawija}}</td>
+                                    <td>@{{item.luas_lainnya}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive">
+
+                        <!-- Tabel -->
+                        <table class="table table-bordered text-center align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Pemantauan Permasalahan</th>
+                                    <th>Ada/Tidak</th>
+                                    <th>Ketarngan</th>
+                                </tr>
+                            </thead>
+                            <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
+                                <tr>
+                                    <td>@{{ index}}</td>
+                                    <td>@{{ p.master_permasalahan.nama }}
+                                    </td>
+                                    <td class="text-center">
+                                        <span v-if="p.status">✅</span>
+                                    </td>
+                                    <td>@{{ p.keterangan}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <h4>Foto Pemantauan</h4>
-                    <img v-if="modalInstance" :src="`/storage/${item.foto_pemantauan}`" width="300">
+                    <img v-if="modalInstance" :src="`/storage/${item.foto_pemantauan}`" width="100%">
 
                 </div>
 
