@@ -83,45 +83,66 @@
                 <div class="card-body">
                     <h5 class="mb-3">Daftar Form Pengisian - @{{ pengamat.daerah_irigasi.nama }}</h5>
                     <!-- Filter tanggal -->
-                    <div class="mb-3 d-flex gap-2 col-6">
-                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
-                        <input type="date" v-model="filterTanggalAkhir" class="form-control" />
-                        <button class="btn btn-primary" @click="applyFilter">Filter</button>
-                        <button class="btn btn-secondary" @click="resetFilter">Reset</button>
-                    </div>
-                    <table class="table table-bordered table-sm">
-                        <thead>
-                            <tr class="text-center">
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Petugas</th>
-                                <th>Saluran</th>
-                                <th>Status Validasi</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(f,index) in filteredItems" :key="f.id">
-                                <td>@{{index+1}}</td>
-                                <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
-                                <td>@{{ f.petugas.nama }}</td>
-                                <td>@{{ f.saluran.nama }}</td>
-                                <td class="text-center">
-                                    <span v-if="f.validasi && f.validasi.pengamat_valid">✅
-                                        Valid</span>
-                                    <span v-else>❌ Belum</span>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning" @click="showForm(f)">
-                                        Lihat Form / Validasi
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="mb-3">
+                        <div class="row g-2">
+                            <!-- Input tanggal awal -->
+                            <div class="col-6 col-md-3">
+                                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal"
+                                    class="form-control" />
+                            </div>
+                            <!-- Input tanggal akhir -->
+                            <div class="col-6 col-md-3">
+                                <input type="date" v-model="filterTanggalAkhir" class="form-control" />
+                            </div>
+                            <!-- Tombol (hanya di layar md ke atas) -->
+                            <div class="col-md-6 d-none d-md-flex gap-2">
+                                <button class="btn btn-primary " @click="applyFilter">Filter</button>
+                                <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+                            </div>
+                        </div>
 
-                    <p v-if="forms.length === 0" class="text-muted text-center mt-2">Belum ada form pengisian untuk
-                        divalidasi.</p>
+                        <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
+                        <div class="d-flex gap-2 mt-2 d-md-none">
+                            <button class="btn btn-primary " @click="applyFilter">Filter</button>
+                            <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Petugas</th>
+                                    <th>Saluran</th>
+                                    <th>Status Validasi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(f,index) in filteredItems" :key="f.id">
+                                    <td>@{{index+1}}</td>
+                                    <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
+                                    <td>@{{ f.petugas.nama }}</td>
+                                    <td>@{{ f.saluran.nama }}</td>
+                                    <td class="text-center">
+                                        <span v-if="f.validasi && f.validasi.pengamat_valid">✅
+                                            Valid</span>
+                                        <span v-else>❌ Belum</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-warning" @click="showForm(f)">
+                                            Lihat Form / Validasi
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p v-if="forms.length === 0" class="text-muted text-center mt-2">Belum ada form pengisian untuk
+                            divalidasi.</p>
+                    </div>
                 </div>
             </div>
             <!-- Modal -->
