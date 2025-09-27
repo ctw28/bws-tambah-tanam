@@ -299,7 +299,7 @@
                                         <td>@{{ permasalahans.find(pm => pm.id == p.master_permasalahan_id)?.nama }}
                                         </td>
                                         <td class="text-center">
-                                            <span v-if="p.status==1">Ada</span>
+                                            <span v-if="p.status=='ada'">Ada</span>
                                         </td>
                                         <td>@{{ p.keterangan}}</td>
                                     </tr>
@@ -594,11 +594,13 @@
                     }
 
                     try {
-                        await axios.post('/api/form-pengisian', formData, {
+                        let res = await axios.post('/api/form-pengisian', formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
                         });
+                        console.log(res);
+                        return
                         alert('Data berhasil disimpan')
                         this.resetForm()
                         let modalEl = document.getElementById('formLTTModal');
