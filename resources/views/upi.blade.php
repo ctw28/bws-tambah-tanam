@@ -228,7 +228,7 @@
                                             <td>@{{ p.master_permasalahan.nama }}
                                             </td>
                                             <td class="text-center">
-                                                <span v-if="p.status">✅</span>
+                                                <span v-if="p.status==1">Ada</span>
                                             </td>
                                             <td>@{{ p.keterangan}}</td>
                                         </tr>
