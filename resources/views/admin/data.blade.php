@@ -150,7 +150,7 @@
                                     <th>No</th>
                                     <th>Pemantauan Permasalahan</th>
                                     <th>Ada/Tidak</th>
-                                    <th>Ketarngan</th>
+                                    <th>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
