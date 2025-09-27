@@ -600,7 +600,7 @@
                             }
                         });
                         console.log(res);
-                        return
+                        // return
                         alert('Data berhasil disimpan')
                         this.resetForm()
                         let modalEl = document.getElementById('formLTTModal');
