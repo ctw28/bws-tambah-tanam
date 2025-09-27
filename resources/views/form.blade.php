@@ -295,11 +295,12 @@
                                 </thead>
                                 <tbody v-for="(p,index) in form.permasalahan" :key="p.id">
                                     <tr>
-                                        <td>@{{ index}}</td>
+                                        <td>@{{ index+1}}</td>
                                         <td>@{{ permasalahans.find(pm => pm.id == p.master_permasalahan_id)?.nama }}
                                         </td>
                                         <td class="text-center">
                                             <span v-if="p.status=='ada'">Ada</span>
+                                            <span v-else>Tidak</span>
                                         </td>
                                         <td>@{{ p.keterangan}}</td>
                                     </tr>

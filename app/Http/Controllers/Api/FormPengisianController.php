@@ -30,6 +30,9 @@ class FormPengisianController extends Controller
             ->when($request->di_id, function ($q) use ($request) {
                 $q->where('daerah_irigasi_id', $request->di_id);
             })
+            // ->when($request->tanggal_pantau, function ($q) use ($request) {
+            //     $q->where('tanggal_pantau', $request->tanggal_pantau);
+            // })
             ->when($request->pengamat_valid, function ($q) use ($request) {
                 $q->whereHas('validasi', function ($qq) use ($request) {
                     $qq->where('pengamat_valid', (bool) $request->pengamat_valid);

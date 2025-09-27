@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\MasterPermasalahanController;
 use App\Http\Controllers\Api\FormPengisianController;
 use App\Http\Controllers\Api\FormPermasalahanController;
 use App\Http\Controllers\Api\FormValidasiController;
+use App\Http\Controllers\Api\KoordinatorController;
 use App\Http\Controllers\Api\PengamatController;
 use App\Http\Controllers\Api\SesiController;
 use App\Http\Controllers\Api\UpiController;
@@ -26,6 +27,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::get('user-dis', [FormPengisianController::class, 'getUserDis']);
+        Route::get('koordinator-di', [KoordinatorController::class, 'getDaerahIrigasiUser']);
+
+
         Route::prefix('master')->group(function () {
             Route::apiResource('sesis', SesiController::class);
             Route::apiResource('kabupaten', KabupatenController::class);

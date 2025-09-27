@@ -8,18 +8,22 @@
             <!-- Filter tanggal -->
             <div class="mb-3">
                 <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <select class="form-select" v-model="filterDI">
+                            <option value="">--Pilih DI--</option>
+                            <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
+                        </select>
+                    </div>
                     <!-- Input tanggal awal -->
                     <div class="col-6 col-md-3">
-                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
-                    </div>
-                    <!-- Input tanggal akhir -->
-                    <div class="col-6 col-md-3">
-                        <input type="date" v-model="filterTanggalAkhir" class="form-control" />
+                        <input type="date" v-model="filterTanggalPantau" class="form-control" />
+                        <!-- <input type="date" v-model="filterTanggalPantau" @change="syncTanggal" class="form-control" /> -->
+
                     </div>
                     <!-- Tombol (hanya di layar md ke atas) -->
-                    <div class="col-md-6 d-none d-md-flex gap-2">
-                        <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                        <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+                    <div class="col-md-3 col-12 d-none d-md-flex gap-2">
+                        <button class="btn btn-primary btn-sm" @click="applyFilter">Filter</button>
+                        <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
                     </div>
                 </div>
 
@@ -155,11 +159,12 @@
                             </thead>
                             <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
                                 <tr>
-                                    <td>@{{ index}}</td>
+                                    <td>@{{ index+1}}</td>
                                     <td>@{{ p.master_permasalahan.nama }}
                                     </td>
                                     <td class="text-center">
                                         <span v-if="p.status==1">Ada</span>
+                                        <span v-else="p.status==0">Tidak</span>
                                     </td>
                                     <td>@{{ p.keterangan}}</td>
                                 </tr>
@@ -193,14 +198,74 @@
                 items: [], // data asli
                 item: {}, //detail
                 filteredItems: [], // data hasil filter
-                filterTanggalAwal: '',
-                filterTanggalAkhir: ''
+                filterTanggalPantau: '',
+                filterDI: '',
+                daerahIrigasis: []
             }
         },
         mounted() {
             this.loadData();
+            this.loadDI();
         },
         methods: {
+            async loadData1(page = 1) {
+                let token = localStorage.getItem("token");
+
+                let dis = await axios.get('/api/user-dis');
+                console.log(dis.data);
+
+                let items = [];
+                let seen = new Set();
+
+                for (let di of dis.data) {
+                    let url = di.has_upi ?
+                        `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&upi_valid=1&page=${page}&per_page=25` :
+                        `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&page=${page}&per_page=25`;
+                    if (this.filterDI) url += `&di_id=${this.filterDI}`;
+                    if (this.filterTanggalPantau) url += `&tanggal_pantau=${this.filterTanggalPantau}`;
+
+                    console.log(url);
+
+                    let res = await axios.get(url);
+
+                    for (let d of res.data) {
+                        if (!seen.has(d.id)) {
+                            seen.add(d.id);
+                            items.push(d);
+                        }
+                    }
+                }
+
+                console.log(items);
+
+                this.items = res.data.data; // isi data
+                this.filteredItems = res.data.data; // sama dulu
+                this.pagination = {
+                    current: res.data.current_page,
+                    last: res.data.last_page,
+                    total: res.data.total,
+                };
+
+
+
+
+                let url = `/api/form-pengisian?page=${page}&per_page=25`;
+
+                // tambahkan filter langsung di request
+                if (this.filterDI) url += `&di_id=${this.filterDI}`;
+                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                let res = await axios.get(url);
+
+                this.items = res.data.data; // isi data
+                this.filteredItems = res.data.data; // sama dulu
+                this.pagination = {
+                    current: res.data.current_page,
+                    last: res.data.last_page,
+                    total: res.data.total,
+                };
+            },
             async loadData() {
                 let token = localStorage.getItem("token");
 
@@ -231,6 +296,12 @@
                 this.items = items;
                 this.filteredItems = items;
             },
+            async loadDI() {
+                let res = await axios.get('/api/koordinator-di');
+                console.log(res.data);
+                this.daerahIrigasis = res.data;
+
+            },
             showForm(form) {
                 this.item = form;
                 console.log(this.item);
@@ -240,24 +311,31 @@
                 this.modalInstance.show();
             },
             applyFilter() {
-                const awal = this.filterTanggalAwal ? new Date(this.filterTanggalAwal) : null;
-                const akhir = this.filterTanggalAkhir ? new Date(this.filterTanggalAkhir) : null;
+                const awal = this.filterTanggalPantau ? new Date(this.filterTanggalPantau) : null;
+                const di = this.filterDI; // pastikan ini ada di data()
 
                 this.filteredItems = this.items.filter(item => {
                     const tgl = new Date(item.tanggal_pantau);
+
+                    // Filter tanggal
                     if (awal && tgl < awal) return false;
-                    if (akhir && tgl > akhir) return false;
+                    // if (akhir && tgl > akhir) return false;
+
+                    // Filter daerah irigasi (jika diisi)
+                    if (di && item.daerah_irigasi_id !== di) return false;
+
                     return true;
                 });
             },
             syncTanggal() {
                 // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
-                this.filterTanggalAkhir = this.filterTanggalAwal;
+                this.filterTanggalAkhir = this.filterTanggalPantau;
             },
             resetFilter() {
-                this.filterTanggalAwal = '';
+                this.filterTanggalPantau = '';
                 this.filterTanggalAkhir = '';
                 this.filteredItems = this.items;
+                this.filterDI = ''
             },
             formatTanggal(tgl) {
                 if (!tgl) return '-';

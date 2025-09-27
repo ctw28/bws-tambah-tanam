@@ -223,11 +223,12 @@
                                     </thead>
                                     <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
                                         <tr>
-                                            <td>@{{ index}}</td>
+                                            <td>@{{ index+1}}</td>
                                             <td>@{{ p.master_permasalahan.nama }}
                                             </td>
                                             <td class="text-center">
                                                 <span v-if="p.status==1">Ada</span>
+                                                <span v-else="p.status==0">Tidak</span>
                                             </td>
                                             <td>@{{ p.keterangan}}</td>
                                         </tr>
