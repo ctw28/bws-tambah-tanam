@@ -127,7 +127,7 @@
                                     <td>@{{ f.petugas.nama }}</td>
                                     <td>@{{ f.saluran.nama }}</td>
                                     <td class="text-center">
-                                        <span v-if="f.validasi && f.validasi.pengamat_valid">✅
+                                        <span v-if="f.validasi && f.validasi.pengamat_valid==1">✅
                                             Valid</span>
                                         <span v-else>❌ Belum</span>
                                     </td>
