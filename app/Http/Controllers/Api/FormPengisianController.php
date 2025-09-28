@@ -43,6 +43,13 @@ class FormPengisianController extends Controller
                     $qq->where('upi_valid', (bool) $request->upi_valid);
                 });
             })
+            ->when($request->has_permasalahan, function ($q) {
+                $q->whereHas('permasalahan', function ($qq) {
+                    $qq->where('status', 1);
+                });
+            })
+
+
             ->latest()
             ->get();
 

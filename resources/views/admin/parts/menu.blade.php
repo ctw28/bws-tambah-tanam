@@ -5,12 +5,27 @@
      </a>
  </li>
 
- <li class="menu-item">
-     <a href="{{route('form.masuk')}}" class="menu-link">
+ <li class="menu-item {{ request()->routeIs('form.*') ? 'open' : '' }}">
+     <a href="javascript:void(0);" class="menu-link menu-toggle">
          <i class="menu-icon tf-icons bx bx-detail"></i>
-         <div data-i18n="Form Masuk">Form Masuk</div>
+         <div data-i18n="Master Data">Form Masuk</div>
      </a>
+
+     <ul class="menu-sub">
+         <li class="menu-item {{ request()->routeIs('master.di') ? 'active' : '' }}">
+             <a href="{{ route('form.data') }}" class="menu-link">
+                 <div data-i18n="Da">Form Data</div>
+             </a>
+         </li>
+         <li class="menu-item {{ request()->routeIs('form.permasalahan') ? 'active' : '' }}">
+             <a href="{{ route('form.permasalahan') }}" class="menu-link">
+                 <div data-i18n="Permasalahan">Permasalahan</div>
+             </a>
+         </li>
+
+     </ul>
  </li>
+
  <li class="menu-item {{ request()->routeIs('master.*') ? 'open' : '' }}">
      <a href="javascript:void(0);" class="menu-link menu-toggle">
          <i class="menu-icon tf-icons bx bx-layout"></i>

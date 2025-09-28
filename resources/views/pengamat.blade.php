@@ -125,7 +125,7 @@
                                     <td>@{{index+1}}</td>
                                     <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
                                     <td>@{{ f.petugas.nama }}</td>
-                                    <td>@{{ f.saluran.nama }}</td>
+                                    <td>@{{ f.saluran.nama }} / @{{ f.bangunan.nama }} / @{{ f.petak.nama }}</td>
                                     <td class="text-center">
                                         <span v-if="f.validasi && f.validasi.pengamat_valid==1">✅
                                             Valid</span>
@@ -241,6 +241,8 @@
                         </div>
 
                         <div class="modal-footer">
+                            <button class="btn btn-danger me-auto" @click="hapus(item.id)"><i class="menu-icon tf-icons bx bx-trash"></i> Hapus</button>
+
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                             <button v-if="!item.form_validasi || !item.form_validasi.pengamat_valid"
                                 class="btn btn-warning" @click="validasi(item.id)">
@@ -386,6 +388,27 @@
                         // bisa optional: validasi token ke server
                     }
                 },
+                async hapus(id) {
+                    if (!confirm("Yakin ingin menghapus data ini?")) {
+                        return;
+                    }
+
+                    try {
+                        let res = await axios.delete(`/api/form-pengisian/${id}`);
+                        console.log(res);
+
+                        // Tutup modal setelah berhasil hapus
+                        let modal = bootstrap.Modal.getInstance(document.getElementById('formLTTModal'));
+                        modal.hide();
+
+                        // Refresh data tabel
+                        this.loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert("Gagal menghapus data!");
+                    }
+                }
             },
             mounted() {
                 this.loadPengamat();
