@@ -194,9 +194,9 @@ class FormPengisianController extends Controller
     }
 
 
-    public function destroy(FormPengisian $data)
+    public function destroy(FormPengisian $formPengisian)
     {
-        $data->delete();
+        $formPengisian->delete();
 
         return response()->json(null, 204);
     }

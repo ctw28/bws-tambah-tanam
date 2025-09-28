@@ -177,8 +177,10 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button class="btn btn-danger me-auto" @click="hapus(item.id)"><i class="menu-icon tf-icons bx bx-trash"></i> Hapus</button>
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -347,7 +349,27 @@
                     year: 'numeric'
                 });
             },
+            async hapus(id) {
+                if (!confirm("Yakin ingin menghapus data ini?")) {
+                    return;
+                }
 
+                try {
+                    let res = await axios.delete(`/api/form-pengisian/${id}`);
+                    console.log(res);
+
+                    // Tutup modal setelah berhasil hapus
+                    let modal = bootstrap.Modal.getInstance(document.getElementById('formLTTModal'));
+                    modal.hide();
+
+                    // Refresh data tabel
+                    this.loadData();
+
+                } catch (e) {
+                    console.error(e);
+                    alert("Gagal menghapus data!");
+                }
+            }
         }
     }).mount('#app');
 </script>
