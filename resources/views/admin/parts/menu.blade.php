@@ -12,9 +12,9 @@
      </a>
 
      <ul class="menu-sub">
-         <li class="menu-item {{ request()->routeIs('master.di') ? 'active' : '' }}">
+         <li class="menu-item {{ request()->routeIs('form.data') ? 'active' : '' }}">
              <a href="{{ route('form.data') }}" class="menu-link">
-                 <div data-i18n="Da">Form Data</div>
+                 <div data-i18n="Form Data">Form Data</div>
              </a>
          </li>
          <li class="menu-item {{ request()->routeIs('form.permasalahan') ? 'active' : '' }}">
