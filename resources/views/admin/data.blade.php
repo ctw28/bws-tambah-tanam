@@ -177,7 +177,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-danger me-auto" @click="hapus(item.id)"><i class="menu-icon tf-icons bx bx-trash"></i> Hapus</button>
+                    <!-- <button class="btn btn-danger me-auto" @click="hapus(item.id)"><i class="menu-icon tf-icons bx bx-trash"></i> Hapus</button> -->
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
 
