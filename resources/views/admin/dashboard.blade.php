@@ -94,6 +94,7 @@
                     <thead>
                         <tr>
                             <th>Petugas</th>
+                            <th>Debit Air</th>
                             <th>Luas Padi</th>
                             <th>Luas Palawija</th>
                             <th>Luas Lainnya</th>
@@ -103,6 +104,7 @@
                     <tbody>
                         <tr v-for="(rekap, nama) in rekapPerPetugas" :key="nama">
                             <td>@{{ nama }}</td>
+                            <td>@{{ rekap.debit_air.toFixed(2) }}</td>
                             <td>@{{ rekap.padi.toFixed(2) }}</td>
                             <td>@{{ rekap.palawija.toFixed(2) }}</td>
                             <td>@{{ rekap.lainnya.toFixed(2) }}</td>
@@ -153,11 +155,13 @@
                     padi += parseFloat(i.luas_padi);
                     palawija += parseFloat(i.luas_palawija);
                     lainnya += parseFloat(i.luas_lainnya);
+                    debit_air += parseFloat(i.debit_air);
                 });
                 return {
                     padi,
                     palawija,
                     lainnya,
+                    debit_air,
                     total: padi + palawija + lainnya
                 };
             },
@@ -171,9 +175,11 @@
                             padi: 0,
                             palawija: 0,
                             lainnya: 0,
+                            debit_air: 0,
                             total: 0
                         };
                     }
+                    rekap[nama].debit_air += parseFloat(i.debit_air);
                     rekap[nama].padi += parseFloat(i.luas_padi);
                     rekap[nama].palawija += parseFloat(i.luas_palawija);
                     rekap[nama].lainnya += parseFloat(i.luas_lainnya);
