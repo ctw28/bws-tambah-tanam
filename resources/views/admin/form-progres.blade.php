@@ -331,7 +331,7 @@
             applyFilter() {
                 const awal = this.filterTanggalPantau ? new Date(this.filterTanggalPantau) : null;
                 const di = this.filterDI; // pastikan ini ada di data()
-                alert(`${awal} - ${di}`)
+                // alert(`${awal} - ${di}`)
                 this.filteredItems = this.items.filter(item => {
                     const tgl = new Date(item.tanggal_pantau);
 
