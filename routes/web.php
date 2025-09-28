@@ -20,6 +20,7 @@ Route::get('/admin/data', function () {
 Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 Route::get('/admin/form-data', fn() => view('admin.data'))->name('form.data');
 Route::get('/admin/form-permasalahan', fn() => view('admin.permasalahan'))->name('form.permasalahan');
+Route::get('/admin/form-progres', fn() => view('admin.form-progres'))->name('form.progres');
 Route::get('/admin/master/daerah-irigasi', fn() => view('admin.master.daerah-irigasi'))->name('master.di');
 Route::get('/admin/master/saluran', fn() => view('admin.master.saluran'))->name('master.saluran');
 Route::get('/admin/juru', fn() => view('admin.juru'))->name('admin.juru');

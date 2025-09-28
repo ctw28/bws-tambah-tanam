@@ -7,34 +7,36 @@
             <h5 class="mb-0">Daftar Permasalahan</h5>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Tanggal Pantau</th>
-                        <th>Nama Petugas</th>
-                        <th>Permasalahan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in items" :key="item.id">
-                        <td>@{{ item.tanggal_pantau }}</td>
-                        <td>@{{ item.petugas?.nama ?? '-' }}</td>
-                        <td>@{{ item.daerah_irigasi?.nama ?? '-' }}
-                            / @{{ item.bangunan?.nama ?? '-' }}
-                            / @{{ item.petak?.nama ?? '-' }}
-                        </td>
-                        <td>
-                            <ul class="mb-0">
-                                <li v-for="p in item.permasalahan" :key="p.id">
-                                    @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }}
-                                </li>
-                            </ul>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tanggal Pantau</th>
+                            <th>Nama Petugas</th>
+                            <th>Permasalahan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in items" :key="item.id">
+                            <td>@{{ item.tanggal_pantau }}</td>
+                            <td>@{{ item.petugas?.nama ?? '-' }}</td>
+                            <td>@{{ item.daerah_irigasi?.nama ?? '-' }}
+                                / @{{ item.bangunan?.nama ?? '-' }}
+                                / @{{ item.petak?.nama ?? '-' }}
+                            </td>
+                            <td>
+                                <ul class="mb-0">
+                                    <li v-for="p in item.permasalahan" :key="p.id">
+                                        @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }}
+                                    </li>
+                                </ul>
 
 
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
