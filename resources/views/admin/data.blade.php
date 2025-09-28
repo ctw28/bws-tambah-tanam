@@ -202,7 +202,9 @@
                 filteredItems: [], // data hasil filter
                 filterTanggalPantau: '',
                 filterDI: '',
-                daerahIrigasis: []
+                daerahIrigasis: [],
+                modalInstance: null,
+
             }
         },
         mounted() {
