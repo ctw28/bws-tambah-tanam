@@ -22,7 +22,12 @@ class FormPengisianController extends Controller
             'bangunan',
             'petak',
             'validasi',
-            'permasalahan.masterPermasalahan'
+            'permasalahan' => function ($q) {
+                $q->where('status', 1)
+                    ->whereNotNull('keterangan')
+                    ->where('keterangan', '!=', '');
+            },
+            'permasalahan.masterPermasalahan',
         ])
             ->when($request->id, function ($q) use ($request) {
                 $q->where('id', $request->id);
@@ -30,9 +35,6 @@ class FormPengisianController extends Controller
             ->when($request->di_id, function ($q) use ($request) {
                 $q->where('daerah_irigasi_id', $request->di_id);
             })
-            // ->when($request->tanggal_pantau, function ($q) use ($request) {
-            //     $q->where('tanggal_pantau', $request->tanggal_pantau);
-            // })
             ->when($request->pengamat_valid, function ($q) use ($request) {
                 $q->whereHas('validasi', function ($qq) use ($request) {
                     $qq->where('pengamat_valid', (bool) $request->pengamat_valid);
@@ -45,16 +47,17 @@ class FormPengisianController extends Controller
             })
             ->when($request->has_permasalahan, function ($q) {
                 $q->whereHas('permasalahan', function ($qq) {
-                    $qq->where('status', 1);
+                    $qq->where('status', 1)
+                        ->whereNotNull('keterangan')
+                        ->where('keterangan', '!=', '');
                 });
             })
-
-
             ->latest()
             ->get();
 
         return response()->json($data);
     }
+
 
 
     public function store(Request $request)

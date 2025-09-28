@@ -25,10 +25,11 @@
                         </td>
                         <td>
                             <ul class="mb-0">
-                                <li v-for="p in item.permasalahan.filter(pp => pp.status == 1)" :key="p.id">
+                                <li v-for="p in item.permasalahan" :key="p.id">
                                     @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }}
                                 </li>
                             </ul>
+
 
                         </td>
                     </tr>
