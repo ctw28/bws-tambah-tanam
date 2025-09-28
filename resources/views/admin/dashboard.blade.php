@@ -150,7 +150,8 @@
             totalLuas() {
                 let padi = 0,
                     palawija = 0,
-                    lainnya = 0;
+                    lainnya = 0,
+                    debit_air = 0;
                 this.filteredItems.forEach(i => {
                     padi += parseFloat(i.luas_padi);
                     palawija += parseFloat(i.luas_palawija);
