@@ -106,29 +106,40 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Kecamatan</label>
-                                <input type="text" class="form-control" v-model="form.kecamatan">
+                                <input type="text" class="form-control" v-model="form.kecamatan"
+                                    :class="{ 'is-invalid': submitted && (!form.kecamatan || form.kecamatan.trim() === '') }">
+                                <div class="invalid-feedback">Kecamtan wajib diisi.</div>
+
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Desa</label>
-                                <input type="text" class="form-control" v-model="form.desa">
+                                <input type="text" class="form-control" v-model="form.desa"
+                                    :class="{ 'is-invalid': submitted && (!form.desa || form.desa.trim() === '') }">
+                                <div class="invalid-feedback">Desa wajib diisi.</div>
+
                             </div>
                         </div>
 
                         <!-- Saluran -->
                         <div class="mb-3">
                             <label class="form-label">Bangunan</label>
-                            <select class="form-select" v-model="form.bangunan_id" @change="checkBangunan">
+                            <select class="form-select" v-model="form.bangunan_id" @change="checkBangunan"
+                                :class="{ 'is-invalid': submitted && (!form.bangunan_id) }">
                                 <option value="">-- Pilih --</option>
                                 <option v-for="s in bangunans" :value="s.id">@{{ s.nama }}</option>
                             </select>
+                            <div class="invalid-feedback">Bangunan wajib diisi.</div>
+
                         </div>
                         <!-- Petak -->
                         <div class="mb-3">
                             <label class="form-label">Petak</label>
-                            <select class="form-select" v-model="form.petak_id" @change="checkPetak">
+                            <select class="form-select" v-model="form.petak_id" @change="checkPetak"
+                                :class="{ 'is-invalid': submitted && (!form.petak_id) }">
                                 <option value="">-- Pilih --</option>
                                 <option v-for="p in petaks" :value="p.id">@{{ p.nama }}</option>
                             </select>
+                            <div class="invalid-feedback">Petak wajib diisi.</div>
 
                             <!-- Preview Gambar -->
                             <div v-if="form.petak_gambar" class="mt-3">
@@ -143,7 +154,10 @@
                         <div class="mb-3">
                             <label class="form-label">Koordinat</label>
                             <input type="text" class="form-control" v-model="form.koordinat"
-                                placeholder="-3.98123, 122.5123">
+                                placeholder="-3.98123, 122.5123"
+                                :class="{ 'is-invalid': submitted && (!form.koordinat || form.koordinat.trim() === '') }">
+                            <div class="invalid-feedback">Koordinat wajib diisi.</div>
+
                         </div>
 
                         <!-- Debit & Masa Tanam -->
@@ -154,12 +168,15 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Masa Tanam</label>
-                                <select class="form-select" v-model="form.masa_tanam" required>
+                                <select class="form-select" v-model="form.masa_tanam"
+                                    :class="{ 'is-invalid': submitted && (!form.masa_tanam || form.masa_tanam.trim() === '') }">
                                     <option value="">-- Pilih --</option>
                                     <option value="I">I</option>
                                     <option value="II">II</option>
                                     <option value="III">III</option>
                                 </select>
+                                <div class="invalid-feedback">Masa Tanam wajib diisi.</div>
+
                             </div>
                         </div>
 
@@ -195,9 +212,17 @@
                             </div>
 
                             <!-- tampilkan keterangan kalau ada permasalahan -->
-                            <textarea v-if="form.permasalahan[p.id].status === 'ada'"
-                                v-model="form.permasalahan[p.id].keterangan" class="form-control mt-2" rows="2"
-                                placeholder="Jelaskan permasalahannya..."></textarea>
+                            <textarea
+                                v-if="form.permasalahan[p.id].status === 'ada'"
+                                v-model="form.permasalahan[p.id].keterangan"
+                                class="form-control mt-2"
+                                rows="2"
+                                placeholder="Jelaskan permasalahannya..."
+                                :class="{ 'is-invalid': submitted && (form.permasalahan[p.id].status === 'ada' && !form.permasalahan[p.id].keterangan || form.permasalahan[p.id].keterangan.trim() === '')}"></textarea>
+                            <div class="invalid-feedback">
+                                Keterangan wajib diisi jika ada permasalahan.
+                            </div>
+
                         </div>
 
 
@@ -205,7 +230,10 @@
                         <!-- Upload Foto pemantauan -->
                         <div class="mb-3">
                             <label class="form-label">Upload Foto Pemantauan (foto dengan Koordinat)</label>
-                            <input type="file" class="form-control" @change="handleFile">
+                            <input type="file" class="form-control" @change="handleFile"
+                                :class="{ 'is-invalid': submitted && (!form.foto_pemantauan || form.foto_pemantauan == '-') }">
+                            <div class="invalid-feedback">Foto Pemantauan wajib diisi.</div>
+
                         </div>
                         <div v-if="previewFoto" class="mb-3">
                             <h4>Foto Pemantauan</h4>
@@ -364,6 +392,7 @@
                         foto_pemantauan: '',
                     },
                     previewFoto: null,
+                    submitted: false
 
                 }
             },
@@ -667,7 +696,9 @@
                     }
                 },
                 validateForm() {
-                    console.log(this.form.foto_pemantauan);
+                    this.submitted = true; // tandai sudah dicoba submit
+
+                    // console.log(this.form.foto_pemantauan);
 
                     // cek semua key di form
                     for (let [key, value] of Object.entries(this.form)) {
@@ -683,9 +714,16 @@
                         return false;
                     }
 
-
+                    // validasi permasalahan
+                    for (let [id, per] of Object.entries(this.form.permasalahan)) {
+                        if (per.status === 'ada' && (!per.keterangan || per.keterangan.trim() === '')) {
+                            alert(`Keterangan permasalahan wajib diisi jika ada!`);
+                            return false;
+                        }
+                    }
                     return true; // valid
                 },
+
 
             },
             mounted() {
