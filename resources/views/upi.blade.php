@@ -35,18 +35,18 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-    .form-line {
-        margin-bottom: 8px;
-    }
+        .form-line {
+            margin-bottom: 8px;
+        }
 
-    .form-line span {
-        display: inline-block;
-        min-width: 250px;
-    }
+        .form-line span {
+            display: inline-block;
+            min-width: 250px;
+        }
 
-    [v-cloak] {
-        display: none;
-    }
+        [v-cloak] {
+            display: none;
+        }
     </style>
 </head>
 
@@ -126,7 +126,7 @@
                                     <td>@{{index+1}}</td>
                                     <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
                                     <td>@{{ f.petugas?.nama }}</td>
-                                    <td>@{{ f.saluran?.nama }}</td>
+                                    <td>@{{ f.saluran.nama }} / @{{ f.bangunan.nama }} / @{{ f.petak.nama }}</td>
                                     <td class="text-center">
                                         <span v-if="f.validasi && f.validasi.upi_valid == 1">✅ Valid</span>
                                         <span v-else>❌ Belum</span>
@@ -260,146 +260,146 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    const {
-        createApp
-    } = Vue;
+        const {
+            createApp
+        } = Vue;
 
-    createApp({
-        data() {
-            return {
-                kode: "",
-                upi: null,
-                forms: [],
-                item: {},
-                modalInstance: null,
-                filteredItems: [],
-                filterTanggalAwal: new Date().toISOString().slice(0, 10),
-                filterTanggalAkhir: new Date().toISOString().slice(0, 10),
-            }
-        },
-        methods: {
-            async cekUpi() {
-                try {
-                    let res = await axios.post("/api/upi/validasi-kode", {
-                        kode: this.kode
-                    });
-                    console.log(res);
-
-                    this.upi = res.data.upi;
-                    console.log(this.upi);
-                    localStorage.setItem("upi", JSON.stringify(res.data.upi));
-
-
-                    this.loadData()
-
-                } catch (e) {
-                    alert("Kode Upi tidak valid!");
+        createApp({
+            data() {
+                return {
+                    kode: "",
+                    upi: null,
+                    forms: [],
+                    item: {},
+                    modalInstance: null,
+                    filteredItems: [],
+                    filterTanggalAwal: new Date().toISOString().slice(0, 10),
+                    filterTanggalAkhir: new Date().toISOString().slice(0, 10),
                 }
             },
-            async loadData() {
-                try {
-                    const diIds = this.upi.daerah_irigasis.map(di => di.id);
-                    console.log(diIds);
+            methods: {
+                async cekUpi() {
+                    try {
+                        let res = await axios.post("/api/upi/validasi-kode", {
+                            kode: this.kode
+                        });
+                        console.log(res);
 
-                    let allData = [];
-                    for (let id of diIds) {
-                        let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
-                        allData = allData.concat(res.data);
+                        this.upi = res.data.upi;
+                        console.log(this.upi);
+                        localStorage.setItem("upi", JSON.stringify(res.data.upi));
+
+
+                        this.loadData()
+
+                    } catch (e) {
+                        alert("Kode Upi tidak valid!");
                     }
-                    console.log(allData);
+                },
+                async loadData() {
+                    try {
+                        const diIds = this.upi.daerah_irigasis.map(di => di.id);
+                        console.log(diIds);
 
-                    this.forms = allData;
-                    this.filteredItems = allData;
-                } catch (e) {
-                    console.error(e);
-                }
-            },
-            showForm(form) {
-                this.item = form;
-                console.log(this.item);
-
-                const modalEl = document.getElementById('formLTTModal');
-                this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-                this.modalInstance.show();
-            },
-            async validasi(formId) {
-
-                if (!confirm("Yakin validasi form ini?")) return;
-                try {
-                    let res = await axios.post(`/api/upi/validasi/${formId}`, {
-                        upi_id: this.upi.id
-                    });
-                    console.log(res);
-
-                    this.forms = this.forms.map(f => {
-                        if (f.id === formId) {
-                            f.validasi = {
-                                ...f.validasi,
-                                upi_valid: true
-                            };
+                        let allData = [];
+                        for (let id of diIds) {
+                            let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
+                            allData = allData.concat(res.data);
                         }
-                        return f;
-                    });
-                    if (this.modalInstance) {
-                        this.modalInstance.hide();
+                        console.log(allData);
+
+                        this.forms = allData;
+                        this.filteredItems = allData;
+                    } catch (e) {
+                        console.error(e);
                     }
-                } catch (e) {
-                    console.error(e);
-                    alert("Gagal validasi");
-                }
-            },
-            formatTanggal(tgl) {
-                if (!tgl) return '-';
+                },
+                showForm(form) {
+                    this.item = form;
+                    console.log(this.item);
 
-                // Format ke 17 September 2025
-                return new Date(tgl).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                });
-            },
-            logout() {
-                this.upi = null;
-                localStorage.removeItem("upi");
+                    const modalEl = document.getElementById('formLTTModal');
+                    this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    this.modalInstance.show();
+                },
+                async validasi(formId) {
 
-                this.kode = "";
-                this.forms = [];
-            },
-            applyFilter() {
-                if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
-                    this.filteredItems = this.forms;
-                } else {
-                    this.filteredItems = this.forms.filter(i =>
-                        i.tanggal_pantau >= this.filterTanggalAwal &&
-                        i.tanggal_pantau <= this.filterTanggalAkhir
-                    );
-                }
-            },
-            resetFilter() {
-                this.filterTanggalAwal = new Date().toISOString().slice(0, 10);
-                this.filterTanggalAkhir = new Date().toISOString().slice(0, 10)
-                this.loadData()
+                    if (!confirm("Yakin validasi form ini?")) return;
+                    try {
+                        let res = await axios.post(`/api/upi/validasi/${formId}`, {
+                            upi_id: this.upi.id
+                        });
+                        console.log(res);
 
-            },
-            syncTanggal() {
-                // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
-                this.filterTanggalAkhir = this.filterTanggalAwal;
-            },
-            loadUpi() {
-                let data = localStorage.getItem("upi");
-                // console.log('gg');
+                        this.forms = this.forms.map(f => {
+                            if (f.id === formId) {
+                                f.validasi = {
+                                    ...f.validasi,
+                                    upi_valid: true
+                                };
+                            }
+                            return f;
+                        });
+                        if (this.modalInstance) {
+                            this.modalInstance.hide();
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert("Gagal validasi");
+                    }
+                },
+                formatTanggal(tgl) {
+                    if (!tgl) return '-';
 
-                if (data) {
-                    this.upi = JSON.parse(data);
+                    // Format ke 17 September 2025
+                    return new Date(tgl).toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                },
+                logout() {
+                    this.upi = null;
+                    localStorage.removeItem("upi");
+
+                    this.kode = "";
+                    this.forms = [];
+                },
+                applyFilter() {
+                    if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
+                        this.filteredItems = this.forms;
+                    } else {
+                        this.filteredItems = this.forms.filter(i =>
+                            i.tanggal_pantau >= this.filterTanggalAwal &&
+                            i.tanggal_pantau <= this.filterTanggalAkhir
+                        );
+                    }
+                },
+                resetFilter() {
+                    this.filterTanggalAwal = new Date().toISOString().slice(0, 10);
+                    this.filterTanggalAkhir = new Date().toISOString().slice(0, 10)
                     this.loadData()
-                    // bisa optional: validasi token ke server
-                }
+
+                },
+                syncTanggal() {
+                    // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
+                    this.filterTanggalAkhir = this.filterTanggalAwal;
+                },
+                loadUpi() {
+                    let data = localStorage.getItem("upi");
+                    // console.log('gg');
+
+                    if (data) {
+                        this.upi = JSON.parse(data);
+                        this.loadData()
+                        // bisa optional: validasi token ke server
+                    }
+                },
             },
-        },
-        mounted() {
-            this.loadUpi();
-        }
-    }).mount("#app");
+            mounted() {
+                this.loadUpi();
+            }
+        }).mount("#app");
     </script>
 </body>
 
