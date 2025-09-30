@@ -7,7 +7,7 @@
 
  <li class="menu-item {{ request()->routeIs('form.*') ? 'open' : '' }}">
      <a href="javascript:void(0);" class="menu-link menu-toggle">
-         <i class="menu-icon tf-icons bx bx-detail"></i>
+         <i class="menu-icon tf-icons bx bx-file-detail"></i>
          <div data-i18n="Master Data">Form Masuk</div>
      </a>
 
@@ -59,7 +59,7 @@
 
  <li class="menu-item {{ request()->routeIs('admin.*') ? 'open' : '' }}">
      <a href="javascript:void(0);" class="menu-link menu-toggle">
-         <i class="menu-icon tf-icons bx bx-collection"></i>
+         <i class="menu-icon tf-icons bx bx-apps-alt"></i>
          <div data-i18n="Master Data">Petugas</div>
      </a>
 
