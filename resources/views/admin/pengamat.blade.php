@@ -65,12 +65,25 @@
                                 </div>
                                 <div class="mb-3">
                                     <label>Pilih DI</label>
-                                    <div v-for="di in daerahIrigasis" :key="di.id" class="form-check">
-                                        <input type="radio" class="form-check-input" :value="di.id"
-                                            v-model="form.daerah_irigasi_id">
-                                        <label class="form-check-label">@{{ di.nama }}</label>
+                                    <div v-for="di in daerahIrigasis" :key="di.id" class="mb-2">
+                                        <!-- DI Induk -->
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" :value="di.id"
+                                                v-model="form.daerah_irigasi_id">
+                                            <label class="form-check-label fw-bold">@{{ di.nama }}</label>
+                                        </div>
+
+                                        <!-- Sub DI (anak) -->
+                                        <div v-if="di.children && di.children.length" class="ms-4">
+                                            <div class="form-check" v-for="child in di.children" :key="child.id">
+                                                <input type="radio" class="form-check-input" :value="child.id"
+                                                    v-model="form.daerah_irigasi_id">
+                                                <label class="form-check-label">@{{ child.nama }}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -93,92 +106,96 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const {
-        createApp
-    } = Vue;
+const {
+    createApp
+} = Vue;
 
-    createApp({
-        data() {
-            return {
-                pengamats: [],
-                sesis: [],
-                daerahIrigasis: [],
-                form: {
+createApp({
+    data() {
+        return {
+            pengamats: [],
+            sesis: [],
+            daerahIrigasis: [],
+            form: {
+                id: null,
+                nama: '',
+                nomor_hp: '',
+                sesi_id: '',
+                daerah_irigasi_id: ''
+            },
+            modal: null,
+        }
+    },
+    mounted() {
+        this.fetchPengamats();
+        this.fetchSesis();
+        this.fetchDI();
+        this.modal = new bootstrap.Modal(document.getElementById('pengamatModal'));
+    },
+    methods: {
+        async fetchPengamats() {
+            let res = await axios.get('/api/pengamat');
+            this.pengamats = res.data;
+        },
+        async fetchSesis() {
+            let res = await axios.get('/api/master/sesi');
+            this.sesis = res.data;
+        },
+        async fetchDI() {
+            let res = await axios.get('/api/master/daerah-irigasi', {
+                params: {
+                    is_induk: 1
+                }
+            });
+            this.daerahIrigasis = res.data;
+        },
+        openModal(item = null) {
+            if (item) {
+                this.form = {
+                    ...item
+                };
+            } else {
+                this.form = {
                     id: null,
                     nama: '',
                     nomor_hp: '',
                     sesi_id: '',
                     daerah_irigasi_id: ''
-                },
-                modal: null,
+                };
+            }
+            this.modal.show();
+        },
+        async save() {
+            try {
+                console.log(this.form.id);
+
+                if (this.form.id) {
+                    await axios.put(`/api/master/pengamat/${this.form.id}`, this.form);
+                } else {
+                    await axios.post('/api/master/pengamat', this.form);
+                }
+                this.modal.hide();
+                this.fetchPengamats();
+            } catch (e) {
+                alert(e.response.data.message);
+                console.error(e.response?.data || e);
             }
         },
-        mounted() {
+        async remove(id) {
+            if (!confirm("Yakin hapus data ini?")) return;
+            await axios.delete(`/api/master/pengamat/${id}`);
             this.fetchPengamats();
-            this.fetchSesis();
-            this.fetchDI();
-            this.modal = new bootstrap.Modal(document.getElementById('pengamatModal'));
         },
-        methods: {
-            async fetchPengamats() {
-                let res = await axios.get('/api/pengamat');
-                this.pengamats = res.data;
-            },
-            async fetchSesis() {
-                let res = await axios.get('/api/master/sesi');
-                this.sesis = res.data;
-            },
-            async fetchDI() {
-                let res = await axios.get('/api/master/daerah-irigasi');
-                this.daerahIrigasis = res.data;
-            },
-            openModal(item = null) {
-                if (item) {
-                    this.form = {
-                        ...item
-                    };
-                } else {
-                    this.form = {
-                        id: null,
-                        nama: '',
-                        nomor_hp: '',
-                        sesi_id: '',
-                        daerah_irigasi_id: ''
-                    };
-                }
-                this.modal.show();
-            },
-            async save() {
-                try {
-                    console.log(this.form.id);
-
-                    if (this.form.id) {
-                        await axios.put(`/api/master/pengamat/${this.form.id}`, this.form);
-                    } else {
-                        await axios.post('/api/master/pengamat', this.form);
-                    }
-                    this.modal.hide();
-                    this.fetchPengamats();
-                } catch (e) {
-                    alert(e.response.data.message);
-                    console.error(e.response?.data || e);
-                }
-            },
-            async remove(id) {
-                if (!confirm("Yakin hapus data ini?")) return;
-                await axios.delete(`/api/master/pengamat/${id}`);
-                this.fetchPengamats();
-            },
-            async sendKode(p) {
-                try {
-                    let res = await axios.post(`/api/pengamat/${p.id}/send-kode`);
-                    window.open(res.data.link, '_blank'); // buka WhatsApp link
-                } catch (err) {
-                    console.error(err);
-                    alert('Gagal mengirim kode WA');
-                }
-            },
-        }
-    }).mount('#app');
+        async sendKode(p) {
+            try {
+                let res = await axios.post(`/api/pengamat/${p.id}/send-kode`);
+                window.open(res.data.link, '_blank'); // buka WhatsApp link
+            } catch (err) {
+                console.error(err);
+                alert('Gagal mengirim kode WA');
+            }
+        },
+    }
+}).mount('#app');
 </script>
 @endpush

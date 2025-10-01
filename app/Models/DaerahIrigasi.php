@@ -6,8 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class DaerahIrigasi extends Model
 {
-    protected $fillable = ['nama'];
+    protected $fillable = ['nama', 'parent_id'];
+    public function parent()
+    {
+        return $this->belongsTo(DaerahIrigasi::class, 'parent_id');
+    }
 
+    public function children()
+    {
+        return $this->hasMany(DaerahIrigasi::class, 'parent_id');
+    }
     public function kabupatens()
     {
         return $this->belongsToMany(Kabupaten::class, 'daerah_irigasi_kabupatens');
