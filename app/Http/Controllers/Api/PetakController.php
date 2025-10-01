@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Petak;
+use Illuminate\Support\Facades\Storage;
 
 class PetakController extends Controller
 {
@@ -24,14 +25,21 @@ class PetakController extends Controller
     {
         $request->validate([
             'bangunan_id' => 'required|exists:bangunans,id',
-            'nama' => 'required|string|max:255',
-            'luas' => 'required|numeric',
-            'gambar_skema' => 'nullable|string',
+            'nama'        => 'required|string|max:255',
+            'luas'        => 'required|numeric',
+            'gambar_skema' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = Petak::create($request->all());
+        $data = $request->only(['bangunan_id', 'nama', 'luas']);
 
-        return response()->json($data, 201);
+        if ($request->hasFile('gambar_skema')) {
+            $path = $request->file('gambar_skema')->store('petak', 'public');
+            $data['gambar_skema'] = $path;
+        }
+
+        $petak = Petak::create($data);
+
+        return response()->json($petak, 201);
     }
 
     public function show(Petak $petak)
@@ -43,19 +51,34 @@ class PetakController extends Controller
     {
         $request->validate([
             'bangunan_id' => 'required|exists:bangunans,id',
-            'nama' => 'required|string|max:255',
-            'luas' => 'required|numeric',
-            'gambar_skema' => 'nullable|string',
+            'nama'        => 'required|string|max:255',
+            'luas'        => 'required|numeric',
+            'gambar_skema' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
+        $data = $request->only(['bangunan_id', 'nama', 'luas']);
 
-        $petak->update($request->all());
+        if ($request->hasFile('gambar_skema')) {
+            // hapus gambar lama
+            if ($petak->gambar_skema && Storage::disk('public')->exists($petak->gambar_skema)) {
+                Storage::disk('public')->delete($petak->gambar_skema);
+            }
+            // simpan gambar baru
+            $path = $request->file('gambar_skema')->store('petak', 'public');
+            $data['gambar_skema'] = $path;
+        }
+
+        $petak->update($data);
 
         return response()->json($petak);
     }
 
     public function destroy(Petak $petak)
     {
+        if ($petak->gambar_skema && Storage::disk('public')->exists($petak->gambar_skema)) {
+            Storage::disk('public')->delete($petak->gambar_skema);
+        }
+
         $petak->delete();
 
         return response()->json(null, 204);
