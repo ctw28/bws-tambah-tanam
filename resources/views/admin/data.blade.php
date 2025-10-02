@@ -320,13 +320,15 @@
 
                 this.filteredItems = this.items.filter(item => {
                     const tgl = new Date(item.tanggal_pantau);
+                    console.log(`${di} -`);
+                    console.log(item.daerah_irigasi_id);
 
+                    // Filter daerah irigasi (jika diisi)
+                    if (di && item.daerah_irigasi_id !== di) return false;
                     // Filter tanggal
                     if (awal && tgl < awal) return false;
                     // if (akhir && tgl > akhir) return false;
 
-                    // Filter daerah irigasi (jika diisi)
-                    if (di && item.daerah_irigasi_id !== di) return false;
 
                     return true;
                 });
