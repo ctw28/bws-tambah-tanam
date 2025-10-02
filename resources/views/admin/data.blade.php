@@ -332,6 +332,8 @@
 
                     return true;
                 });
+                console.log(this.filteredItems);
+
             },
             syncTanggal() {
                 // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
