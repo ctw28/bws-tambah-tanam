@@ -354,6 +354,10 @@
 
                         if (mode === "equal" && tglStr !== awalStr) return false;
                         if (mode === "after" && tglStr < awalStr) return false;
+
+                        console.log(`star - ${tglStr}`);
+                        console.log(`starawal - ${awalStr}`);
+
                     }
 
                     return true;
