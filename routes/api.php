@@ -57,10 +57,10 @@ Route::prefix('master')->group(function () {
     Route::get('bangunan', [BangunanController::class, 'index']);
     Route::get('petak', [PetakController::class, 'index']);
     Route::get('permasalahan', [MasterPermasalahanController::class, 'index']);
+    Route::get('petugas', [PetugasController::class, 'index']);
+    Route::get('pengamat', [PengamatController::class, 'index']);
+    Route::get('upi', [UpiController::class, 'index']);
 });
-Route::get('petugas', [PetugasController::class, 'index']);
-Route::get('pengamat', [PengamatController::class, 'index']);
-Route::get('upi', [UpiController::class, 'index']);
 
 
 //validasi kode
