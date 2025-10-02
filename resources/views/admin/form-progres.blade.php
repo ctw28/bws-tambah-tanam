@@ -348,17 +348,13 @@
 
                     // Filter tanggal
                     if (awal && tgl instanceof Date && !isNaN(tgl)) {
-                        // Bandingkan dengan string YYYY-MM-DD biar aman timezone
                         const tglStr = tgl.toISOString().split("T")[0];
                         const awalStr = awal.toISOString().split("T")[0];
 
-                        if (mode === "equal" && tglStr !== awalStr) return false;
-                        if (mode === "after" && tglStr < awalStr) return false;
-
-                        console.log(`star - ${tglStr}`);
-                        console.log(`starawal - ${awalStr}`);
-
+                        // Hanya izinkan tanggal yang persis sama
+                        if (tglStr !== awalStr) return false;
                     }
+
 
                     return true;
                 });
