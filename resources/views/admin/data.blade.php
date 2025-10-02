@@ -316,25 +316,36 @@
             },
             applyFilter() {
                 const awal = this.filterTanggalPantau ? new Date(this.filterTanggalPantau) : null;
-                const di = this.filterDI; // pastikan ini ada di data()
+                const di = this.filterDI;
 
                 this.filteredItems = this.items.filter(item => {
-                    const tgl = new Date(item.tanggal_pantau);
-                    console.log(`${di} -`);
-                    console.log(item.daerah_irigasi_id);
+                    // pastikan tipe id sama (string)
+                    const itemDi = String(item.daerah_irigasi_id);
+                    const filterDi = di ? String(di) : null;
 
-                    // Filter daerah irigasi (jika diisi)
-                    if (di && item.daerah_irigasi_id !== di) return false;
+                    // handle tanggal supaya tetap valid
+                    let tgl = new Date(item.tanggal_pantau);
+                    if (isNaN(tgl)) {
+                        // coba replace format non-ISO "YYYY-MM-DD HH:mm:ss" → "YYYY-MM-DDTHH:mm:ss"
+                        tgl = new Date(item.tanggal_pantau.replace(" ", "T"));
+                    }
+
+                    console.log("FILTER DI:", filterDi, typeof filterDi);
+                    console.log("ITEM DI:", itemDi, typeof itemDi);
+                    console.log("TANGGAL:", item.tanggal_pantau, tgl);
+
+                    // Filter daerah irigasi
+                    if (filterDi && itemDi !== filterDi) return false;
+
                     // Filter tanggal
-                    if (awal && tgl < awal) return false;
-                    // if (akhir && tgl > akhir) return false;
-
+                    if (awal && tgl instanceof Date && !isNaN(tgl) && tgl < awal) return false;
 
                     return true;
                 });
-                console.log(this.filteredItems);
 
+                console.log("HASIL FILTER:", this.filteredItems);
             },
+
             syncTanggal() {
                 // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
                 this.filterTanggalAkhir = this.filterTanggalPantau;
