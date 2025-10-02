@@ -133,7 +133,7 @@
         },
         methods: {
             async fetchData() {
-                let res = await axios.get('/api/petugas');
+                let res = await axios.get('/api/master/petugas');
                 console.log(res.data);
 
                 // ubah tiap item is_aktif jadi boolean
