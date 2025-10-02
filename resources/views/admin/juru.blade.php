@@ -193,7 +193,9 @@
             },
             async deletePetugas(id) {
                 if (confirm('Yakin ingin menghapus petugas ini?')) {
-                    await axios.delete(`/api/master/petugas/${id}`);
+                    let res = await axios.delete(`/api/master/petugas/${id}`);
+                    console.log(res);
+
                     this.fetchData();
                 }
             },

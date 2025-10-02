@@ -118,7 +118,7 @@
         },
         methods: {
             async fetchUpis() {
-                let res = await axios.get('/api/upi');
+                let res = await axios.get('/api/master/upi');
                 this.upis = res.data;
             },
             async fetchMaster() {

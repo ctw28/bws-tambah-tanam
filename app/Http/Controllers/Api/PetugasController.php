@@ -95,12 +95,14 @@ class PetugasController extends Controller
     }
 
 
-    public function destroy(Petugas $petugas)
+    public function destroy($id)
     {
+        $petugas = Petugas::findOrFail($id);
         $petugas->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Petugas berhasil dihapus'], 200);
     }
+
     public function validasiKode(Request $request)
     {
         $request->validate([
@@ -129,18 +131,18 @@ class PetugasController extends Controller
 
 
 
-    public function sendKode(Petugas $petuga)
+    public function sendKode(Petugas $petugas)
     {
         // ambil kode yang sudah tersimpan
-        $kode = $petuga->kode;
+        $kode = $petugas->kode;
 
         // kalau ingin selalu generate baru:
         // $kode = strtoupper(Str::random(6));
         // $petuga->update(['kode' => $kode]);
 
         // buat link wa.me
-        $nomor = preg_replace('/^0/', '62', $petuga->hp); // ganti 0 -> 62
-        $pesan = "Halo {$petuga->nama}, kode petugas Anda adalah: {$kode}. JANGAN MEMBERIKAN KODE INI KEPADA SIAPAPUN!";
+        $nomor = preg_replace('/^0/', '62', $petugas->hp); // ganti 0 -> 62
+        $pesan = "Halo {$petugas->nama}, kode petugas Anda adalah: {$kode}. JANGAN MEMBERIKAN KODE INI KEPADA SIAPAPUN!";
         $link = "https://wa.me/{$nomor}?text=" . urlencode($pesan);
 
         return response()->json(['link' => $link]);

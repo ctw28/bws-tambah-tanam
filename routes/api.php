@@ -20,6 +20,18 @@ use App\Http\Controllers\Api\UpiController;
 use App\Http\Controllers\AuthController;
 
 Route::post('login', [AuthController::class, 'login']);
+Route::prefix('master')->group(function () {
+    Route::get('sesi', [SesiController::class, 'index']);
+    Route::get('kabupaten', [KabupatenController::class, 'index']);
+    Route::get('daerah-irigasi', [DaerahIrigasiController::class, 'index']);
+    Route::get('saluran', [SaluranController::class, 'index']);
+    Route::get('bangunan', [BangunanController::class, 'index']);
+    Route::get('petak', [PetakController::class, 'index']);
+    Route::get('permasalahan', [MasterPermasalahanController::class, 'index']);
+    Route::get('petugas', [PetugasController::class, 'index']);
+    Route::get('pengamat', [PengamatController::class, 'index']);
+    Route::get('upi', [UpiController::class, 'index']);
+});
 
 Route::middleware(['auth:api'])->group(function () {
     Route::middleware(['role:koordinator'])->group(function () {
@@ -43,24 +55,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('pengamat', PengamatController::class);
             Route::apiResource('upi', UpiController::class);
         });
-        Route::post('/petugas/{petuga}/send-kode', [PetugasController::class, 'sendKode']);
+        Route::post('/petugas/{petugas}/send-kode', [PetugasController::class, 'sendKode']);
         Route::post('/pengamat/{pengamat}/send-kode', [PengamatController::class, 'sendKode']);
         Route::post('/upi/{upi}/send-kode', [UpiController::class, 'sendKode']);
     });
 });
 
-Route::prefix('master')->group(function () {
-    Route::get('sesi', [SesiController::class, 'index']);
-    Route::get('kabupaten', [KabupatenController::class, 'index']);
-    Route::get('daerah-irigasi', [DaerahIrigasiController::class, 'index']);
-    Route::get('saluran', [SaluranController::class, 'index']);
-    Route::get('bangunan', [BangunanController::class, 'index']);
-    Route::get('petak', [PetakController::class, 'index']);
-    Route::get('permasalahan', [MasterPermasalahanController::class, 'index']);
-    Route::get('petugas', [PetugasController::class, 'index']);
-    Route::get('pengamat', [PengamatController::class, 'index']);
-    Route::get('upi', [UpiController::class, 'index']);
-});
 
 
 //validasi kode
