@@ -314,36 +314,38 @@
                 this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
                 this.modalInstance.show();
             },
-            applyFilter() {
+            applyFilter(mode = "equal") {
                 const awal = this.filterTanggalPantau ? new Date(this.filterTanggalPantau) : null;
                 const di = this.filterDI;
 
                 this.filteredItems = this.items.filter(item => {
-                    // pastikan tipe id sama (string)
+                    // pastikan tipe id sama
                     const itemDi = String(item.daerah_irigasi_id);
                     const filterDi = di ? String(di) : null;
 
-                    // handle tanggal supaya tetap valid
+                    // parsing tanggal item
                     let tgl = new Date(item.tanggal_pantau);
                     if (isNaN(tgl)) {
-                        // coba replace format non-ISO "YYYY-MM-DD HH:mm:ss" → "YYYY-MM-DDTHH:mm:ss"
                         tgl = new Date(item.tanggal_pantau.replace(" ", "T"));
                     }
-
-                    console.log("FILTER DI:", filterDi, typeof filterDi);
-                    console.log("ITEM DI:", itemDi, typeof itemDi);
-                    console.log("TANGGAL:", item.tanggal_pantau, tgl);
 
                     // Filter daerah irigasi
                     if (filterDi && itemDi !== filterDi) return false;
 
                     // Filter tanggal
-                    if (awal && tgl instanceof Date && !isNaN(tgl) && tgl < awal) return false;
+                    if (awal && tgl instanceof Date && !isNaN(tgl)) {
+                        const tglStr = tgl.toISOString().split("T")[0];
+                        const awalStr = awal.toISOString().split("T")[0];
+
+                        // Hanya izinkan tanggal yang persis sama
+                        if (tglStr !== awalStr) return false;
+                    }
+
 
                     return true;
                 });
 
-                console.log("HASIL FILTER:", this.filteredItems);
+                // console.log("HASIL FILTER:", this.filteredItems);
             },
 
             syncTanggal() {
