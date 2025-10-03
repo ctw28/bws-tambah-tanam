@@ -142,10 +142,23 @@
                             <div class="invalid-feedback">Petak wajib diisi.</div>
 
                             <!-- Preview Gambar -->
-                            <div v-if="form.petak_gambar" class="mt-3">
+                            <div v-if="form.petak_id && previewPetak" class="mt-3">
                                 <p class="fw-bold">Gambar Petak:</p>
-                                <img :src="form.petak_gambar" class="img-fluid rounded shadow" alt="Gambar Petak">
+                                <img :src="`/storage/${previewPetak}`"
+                                    class="img-fluid rounded shadow"
+                                    alt="Gambar Petak">
+                                <small class="text-muted d-block mt-2">
+                                    @{{ infoGambarSkema }}
+                                </small>
                             </div>
+
+                            <div v-else-if="form.petak_id && !previewPetak" class="mt-3">
+                                <p class="fw-bold">Gambar Petak: - </p>
+                                <small class="text-muted d-block mt-2">
+                                    @{{ infoGambarSkema }}
+                                </small>
+                            </div>
+
                         </div>
 
 
@@ -391,6 +404,8 @@
                         permasalahan: {},
                         foto_pemantauan: '',
                     },
+                    previewPetak: null,
+                    infoGambarSkema: '',
                     previewFoto: null,
                     submitted: false
 
@@ -537,22 +552,23 @@
                     } else {
                         this.petaks = [];
                     }
+                    // reset petak & preview
                     this.form.petak_id = '';
+                    this.previewPetak = null;
+                    this.infoGambarSkema = ''; // kosongkan pesan juga
                 },
+
                 checkPetak() {
-                    // if (this.form.petak_id && this.form.petak_id !== 'lain') {
                     let petak = this.petaks.find(p => p.id == this.form.petak_id);
-                    console.log(petak);
+                    console.log("Petak dipilih:", petak);
 
                     if (petak && petak.gambar_skema) {
-                        this.form.foto_pemantauan = petak.gambar_skema;
+                        this.previewPetak = petak.gambar_skema;
+                        this.infoGambarSkema = 'Gambar skema tidak sesuai? Silakan hubungi koordinator untuk pembaruan.';
                     } else {
-                        this.form.foto_pemantauan = null;
-                        this.petak_luas = petak.luas
+                        this.previewPetak = null;
+                        this.infoGambarSkema = 'Gambar petak belum tersedia. Silakan hubungi koordinator.';
                     }
-                    // } else {
-                    //     this.form.petak_gambar = null;
-                    // }
                 },
                 async getKabupaten() {
                     let res = await axios.get('/api/master/kabupaten');
