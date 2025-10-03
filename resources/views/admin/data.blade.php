@@ -204,6 +204,8 @@
                 filterDI: '',
                 daerahIrigasis: [],
                 modalInstance: null,
+                filterPetugas: "",
+
 
             }
         },
