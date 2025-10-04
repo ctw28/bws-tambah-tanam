@@ -143,7 +143,7 @@
 
                             <!-- Preview Gambar -->
                             <div v-if="form.petak_id && previewPetak" class="mt-3">
-                                <p class="fw-bold">Gambar Petak:</p>
+                                <p class="fw-bold">GGambar Petak Potensial : </p>
                                 <img :src="`/storage/${previewPetak}`"
                                     class="img-fluid rounded shadow"
                                     alt="Gambar Petak">
@@ -153,7 +153,7 @@
                             </div>
 
                             <div v-else-if="form.petak_id && !previewPetak" class="mt-3">
-                                <p class="fw-bold">Gambar Petak: - </p>
+                                <p class="fw-bold">Gambar Petak Potensial : - </p>
                                 <small class="text-muted d-block mt-2">
                                     @{{ infoGambarSkema }}
                                 </small>
@@ -564,10 +564,10 @@
 
                     if (petak && petak.gambar_skema) {
                         this.previewPetak = petak.gambar_skema;
-                        this.infoGambarSkema = 'Gambar skema tidak sesuai? Silakan hubungi koordinator untuk pembaruan.';
+                        this.infoGambarSkema = 'Apabila gambar petak potensial tidak sesuai, silahkan isi di PERMASALAHAN LAINNYA dan hubungi koordinator untuk perubahan.';
                     } else {
                         this.previewPetak = null;
-                        this.infoGambarSkema = 'Gambar petak belum tersedia. Silakan hubungi koordinator.';
+                        this.infoGambarSkema = 'Gambar petak potensial belum tersedia. Silahkan isi di PERMASALAHAN LAINNYA dan hubungi koordinator untuk penginputan gambar petak potensial.';
                     }
                 },
                 async getKabupaten() {
