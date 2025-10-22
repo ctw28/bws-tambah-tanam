@@ -66,7 +66,9 @@
                             <td>
                                 <ol class="mb-0">
                                     <li v-for="p in item.permasalahan" :key="p.id">
-                                        @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }}
+                                        @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }} <br>
+                                        <img v-if="p.foto_permasalahan" :src="`/storage/${p.foto_permasalahan}`" width="200">
+                                        <!-- <span v-else>Foto : tidak ada</span> -->
                                     </li>
                                 </ol>
                             </td>

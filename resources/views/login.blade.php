@@ -74,11 +74,11 @@
             <div class="authentication-inner">
                 <!-- Register -->
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body ">
                         <!-- Logo -->
                         <div class="text-center">
-                            <img src="{{asset('/logo-pu.jpg')}}" alt="" width="80">
-                            <h2>Pemantauan Luas Tambah Tanam</h2>
+                            <img src="{{asset('/logo-pu.jpg')}}" alt="" width="80" class="mb-2">
+                            <h2>SIPEMALUTAJIR</h2>
                         </div>
                         <!-- /Logo -->
                         <p class="mb-4 text-center">Login untuk masuk</p>
