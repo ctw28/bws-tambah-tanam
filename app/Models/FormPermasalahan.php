@@ -11,6 +11,7 @@ class FormPermasalahan extends Model
         'master_permasalahan_id',
         'status',
         'keterangan',
+        'foto_permasalahan',
     ];
 
     // Relasi: 1 kabupaten punya banyak daerah irigasi

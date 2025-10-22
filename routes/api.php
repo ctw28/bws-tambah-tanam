@@ -28,6 +28,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::get('user-dis', [FormPengisianController::class, 'getUserDis']);
+
         Route::get('koordinator-di', [KoordinatorController::class, 'getDaerahIrigasiUser']);
 
 
@@ -49,6 +50,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/upi/{upi}/send-kode', [UpiController::class, 'sendKode']);
     });
 });
+// Transaksi
+Route::apiResource('form-pengisian', FormPengisianController::class);
+Route::apiResource('form-permasalahan', FormPermasalahanController::class);
 
 Route::prefix('master')->group(function () {
     Route::get('sesi', [SesiController::class, 'index']);
@@ -63,14 +67,9 @@ Route::prefix('master')->group(function () {
     Route::get('upi', [UpiController::class, 'index']);
 });
 
+Route::post('/pengamat/validasi/{id}', [FormValidasiController::class, 'validateByPengamat']);
+Route::post('/upi/validasi/{id}', [FormValidasiController::class, 'validateByUpi']);
 //validasi kode
 Route::post('petugas/validasi-kode', [PetugasController::class, 'validasiKode']);
 Route::post('pengamat/validasi-kode', [PengamatController::class, 'validasiKode']);
 Route::post('upi/validasi-kode', [UpiController::class, 'validasiKode']);
-
-Route::post('/pengamat/validasi/{id}', [FormValidasiController::class, 'validateByPengamat']);
-Route::post('/upi/validasi/{id}', [FormValidasiController::class, 'validateByUpi']);
-
-// Transaksi
-Route::apiResource('form-pengisian', FormPengisianController::class);
-Route::apiResource('form-permasalahan', FormPermasalahanController::class);

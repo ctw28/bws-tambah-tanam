@@ -304,7 +304,7 @@
                         let allData = [];
                         for (let id of diIds) {
                             let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
-                            allData = allData.concat(res.data);
+                            allData = allData.concat(res.data.data);
                         }
                         console.log(allData);
 

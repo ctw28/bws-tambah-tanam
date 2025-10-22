@@ -69,18 +69,24 @@
                     <thead>
                         <tr>
                             <th>Daerah Irigasi</th>
-                            <th>Padi (ha)</th>
+                            <th>Baku</th>
+                            <th>Potensial</th>
+                            <th>Fungsional</th>
+                            <!-- <th>Padi (ha)</th>
                             <th>Palawija (ha)</th>
-                            <th>Lainnya (ha)</th>
+                            <th>Lainnya (ha)</th> -->
                             <th>Total (ha)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(data, namaDI) in rekapPerDaerahIrigasi" :key="namaDI">
                             <td>@{{ namaDI }}</td>
-                            <td>@{{ data.padi.toFixed(2) }}</td>
-                            <td>@{{ data.palawija.toFixed(2) }}</td>
-                            <td>@{{ data.lainnya.toFixed(2) }}</td>
+                            <td>@{{ data.baku.toFixed(3) }}</td>
+                            <td>@{{ data.potensial.toFixed(3) }}</td>
+                            <td>@{{ data.fungsional.toFixed(3) }}</td>
+                            <!-- <td>@{{ data.padi.toFixed(2) }}</td> -->
+                            <!-- <td>@{{ data.palawija.toFixed(2) }}</td> -->
+                            <!-- <td>@{{ data.lainnya.toFixed(2) }}</td> -->
                             <td>@{{ data.total.toFixed(2) }}</td>
                         </tr>
                     </tbody>
@@ -195,12 +201,18 @@
                     const namaDI = i.daerah_irigasi?.nama || 'Tidak Ada DI';
                     if (!rekap[namaDI]) {
                         rekap[namaDI] = {
+                            baku: 0,
+                            potensial: 0,
+                            fungsional: 0,
                             padi: 0,
                             palawija: 0,
                             lainnya: 0,
                             total: 0
                         };
                     }
+                    rekap[namaDI].baku = parseFloat(i.daerah_irigasi?.luas_baku ?? 0);
+                    rekap[namaDI].potensial = parseFloat(i.daerah_irigasi?.luas_potensial ?? 0);
+                    rekap[namaDI].fungsional = parseFloat(i.daerah_irigasi?.luas_fungsional ?? 0);
                     rekap[namaDI].padi += parseFloat(i.luas_padi);
                     rekap[namaDI].palawija += parseFloat(i.luas_palawija);
                     rekap[namaDI].lainnya += parseFloat(i.luas_lainnya);
@@ -215,17 +227,23 @@
                 // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
                 this.filterTanggalAkhir = this.filterTanggalAwal;
             },
+            // applyFilter() {
+            //     if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
+            //         this.filteredItems = this.items;
+            //     } else {
+            //         this.filteredItems = this.items.filter(i =>
+            //             i.tanggal_pantau >= this.filterTanggalAwal &&
+            //             i.tanggal_pantau <= this.filterTanggalAkhir
+            //         );
+            //     }
+            //     this.chartPerDI();
+            //     this.chartPerItem();
+            // },
             applyFilter() {
-                if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
-                    this.filteredItems = this.items;
-                } else {
-                    this.filteredItems = this.items.filter(i =>
-                        i.tanggal_pantau >= this.filterTanggalAwal &&
-                        i.tanggal_pantau <= this.filterTanggalAkhir
-                    );
-                }
-                this.chartPerDI();
-                this.chartPerItem();
+                // this.is_filtered = true
+                // this.is_loading = true;
+
+                this.loadData();
             },
             resetFilter() {
                 // kosongkan filter tanggal
@@ -326,8 +344,11 @@
                     let url = di.has_upi ?
                         `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&upi_valid=1` :
                         `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1`;
+                    if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                    if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
                     let res = await axios.get(url);
+                    console.log(res);
 
                     for (let d of res.data) {
                         if (!seen.has(d.id)) {

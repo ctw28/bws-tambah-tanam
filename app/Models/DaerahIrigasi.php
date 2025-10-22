@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DaerahIrigasi extends Model
 {
-    protected $fillable = ['nama', 'parent_id'];
+    protected $fillable = ['nama', 'parent_id', 'luas_baku', 'luas_potensial', 'luas_fungsional'];
     public function parent()
     {
         return $this->belongsTo(DaerahIrigasi::class, 'parent_id');

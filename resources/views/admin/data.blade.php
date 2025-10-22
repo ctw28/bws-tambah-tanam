@@ -6,34 +6,43 @@
         <div class="card-body">
             <h5 class="card-title">Data Pengisian Form Petugas</h5>
             <!-- Filter tanggal -->
-            <div class="mb-3">
-                <div class="row g-2">
-                    <div class="col-6 col-md-3">
-                        <select class="form-select" v-model="filterDI">
-                            <option value="">--Pilih DI--</option>
-                            <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
-                        </select>
-                    </div>
-                    <!-- Input tanggal awal -->
-                    <div class="col-6 col-md-3">
-                        <input type="date" v-model="filterTanggalPantau" class="form-control" />
-                        <!-- <input type="date" v-model="filterTanggalPantau" @change="syncTanggal" class="form-control" /> -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <!-- Pilih DI -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-bold">Daerah Irigasi</label>
+                            <select class="form-select form-select" v-model="filterDI">
+                                <option value="">-- Pilih DI --</option>
+                                <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
+                            </select>
+                        </div>
 
-                    </div>
-                    <!-- Tombol (hanya di layar md ke atas) -->
-                    <div class="col-md-3 col-12 d-none d-md-flex gap-2">
-                        <button class="btn btn-primary btn-sm" @click="applyFilter">Filter</button>
-                        <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
-                    </div>
-                </div>
+                        <!-- Tanggal awal -->
+                        <div class="col-6 col-md-2">
+                            <label class="form-label fw-bold">Tanggal Awal</label>
+                            <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
+                        </div>
 
-                <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
-                <div class="d-flex gap-2 mt-2 d-md-none">
-                    <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                    <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
+                        <!-- Tanggal akhir -->
+                        <div class="col-6 col-md-2">
+                            <label class="form-label fw-bold">Tanggal Akhir</label>
+                            <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                        </div>
+
+                        <!-- Tombol -->
+                        <div class="col-12 col-md-3 d-flex gap-2">
+                            <button class="btn btn-primary btn w-100" @click="applyFilter">
+                                <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
+                                <span v-else>Filter</span>
+                            </button>
+                            <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="table-responsive">
+
+            <div class="table-responsive" v-if="items.length > 0">
 
                 <table class="table table-bordered table-striped">
                     <thead class="table-light">
@@ -44,7 +53,7 @@
                             <!-- <th>Kec / Desa</th> -->
                             <th>Petugas</th>
                             <th>Saluran / Bangunan / Petak</th>
-                            <th>Debit Air</th>
+                            <!-- <th>Debit Air</th> -->
                             <th>Masa Tanam</th>
                             <th>Luas</th>
                             <th>Foto</th>
@@ -52,31 +61,85 @@
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in filteredItems" :key="item.id">
-                            <td>@{{ index + 1 }}</td>
+                            <!-- Nomor baris menyesuaikan pagination -->
+                            <td>@{{ (pagination.current - 1) * perPage + index + 1 }}</td>
+
                             <td>@{{ formatTanggal(item.tanggal_pantau) }}</td>
-                            <td>@{{ item.kabupaten?.nama ?? '-' }}<br>
+                            <td>
+                                @{{ item.kabupaten?.nama ?? '-' }}<br>
                                 <span class="badge bg-success">@{{ item.daerah_irigasi?.nama ?? '-' }}</span>
                             </td>
-                            <!-- <td>Kec : @{{ item.kecamatan }}<br>
-                            Desa : @{{ item.desa }}</td> -->
-
                             <td>@{{ item.petugas?.nama ?? '-' }}</td>
                             <td>@{{ item.saluran.nama }} / @{{ item.bangunan.nama }} / @{{ item.petak.nama }}</td>
-                            <td>@{{ item.debit_air }}</td>
+                            <!-- <td>@{{ item.debit_air }}</td> -->
                             <td>@{{ item.masa_tanam }}</td>
-                            <td><span class="badge bg-info">Padi : @{{ item.luas_padi }}</span> <br>
+                            <td>
+                                <span class="badge bg-info">Padi : @{{ item.luas_padi }}</span><br>
                                 <span class="badge bg-secondary">Palawija : @{{ item.luas_palawija }}</span><br>
                                 <span class="badge bg-dark">Lainnya : @{{ item.luas_lainnya }}</span>
                             </td>
                             <td>
                                 <img @click="showForm(item)" v-if="item.foto_pemantauan"
-                                    :src="'/storage/' + item.foto_pemantauan" class="img-thumbnail"
-                                    style="max-width: 80px;">
+                                    :src="'/storage/' + item.foto_pemantauan"
+                                    class="img-thumbnail" style="max-width: 80px;">
                             </td>
                         </tr>
                     </tbody>
+
                 </table>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <!-- Pilih jumlah data per halaman -->
+                    <div class="d-flex align-items-center gap-2">
+                        <select v-model="perPage" @change="loadData(1)" class="form-select form-select" style="width: auto;">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>per halaman</span>
+                    </div>
+
+
+                    <!-- Navigasi Pagination -->
+                    <nav>
+                        <ul class="pagination pagination mb-0">
+                            <li class="page-item" :class="{ disabled: pagination.current === 1 }">
+                                <a class="page-link" href="#" @click.prevent="loadData(pagination.current - 1)">Prev</a>
+                            </li>
+
+                            <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
+                                <a class="page-link" href="#" @click.prevent="loadData(page)">@{{ page }}</a>
+                            </li>
+
+                            <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
+                                <a class="page-link" href="#" @click.prevent="loadData(pagination.current + 1)">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
+            <!-- Placeholder ketika belum ada data -->
+            <!-- Saat loading -->
+            <div v-if="is_loading" class="alert alert-secondary text-center mt-3">
+                <div class="spinner-border spinner-border-sm me-2"></div>
+                Memuat data...
+            </div>
+
+            <!-- Saat sudah difilter tapi kosong -->
+            <div v-else-if="is_filtered && items.length === 0" class="alert alert-info text-center mt-3">
+                <div class="text-center text-muted">
+                    Data tidak ditemukan
+                </div>
+            </div>
+
+            <!-- Saat belum difilter -->
+            <div v-else-if="!is_filtered" class="alert alert-warning text-center mt-3">
+                <div class="text-center text-muted">
+                    Silakan filter data terlebih dahulu
+                </div>
+            </div>
+
+
+
 
         </div>
     </div>
@@ -200,79 +263,53 @@
                 items: [], // data asli
                 item: {}, //detail
                 filteredItems: [], // data hasil filter
-                filterTanggalPantau: '',
+                filterTanggalAwal: '',
+                filterTanggalAkhir: '',
                 filterDI: '',
+                is_filtered: false,
                 daerahIrigasis: [],
                 modalInstance: null,
                 filterPetugas: "",
-
+                pagination: {
+                    current: 1,
+                    last: 1,
+                    total: 0,
+                },
+                perPage: 25, // default
+                is_loading: false,
 
             }
         },
         mounted() {
-            this.loadData();
+            // this.loadData();
             this.loadDI();
         },
         methods: {
-            async loadData1(page = 1) {
-                let token = localStorage.getItem("token");
+            async loadData(page = 1) {
+                try {
+                    let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&pengamat_valid=1`;
 
-                let dis = await axios.get('/api/user-dis');
-                console.log(dis.data);
-
-                let items = [];
-                let seen = new Set();
-
-                for (let di of dis.data) {
-                    let url = di.has_upi ?
-                        `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&upi_valid=1&page=${page}&per_page=25` :
-                        `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&page=${page}&per_page=25`;
                     if (this.filterDI) url += `&di_id=${this.filterDI}`;
-                    if (this.filterTanggalPantau) url += `&tanggal_pantau=${this.filterTanggalPantau}`;
-
-                    console.log(url);
+                    if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                    if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
                     let res = await axios.get(url);
+                    console.log(res.data);
 
-                    for (let d of res.data) {
-                        if (!seen.has(d.id)) {
-                            seen.add(d.id);
-                            items.push(d);
-                        }
-                    }
+                    this.items = res.data.data;
+                    this.filteredItems = res.data.data;
+                    this.pagination = {
+                        current: res.data.current_page,
+                        last: res.data.last_page,
+                        total: res.data.total,
+                    };
+                } catch (err) {
+                    console.error(err);
+                } finally {
+                    this.is_loading = false;
                 }
-
-                console.log(items);
-
-                this.items = res.data.data; // isi data
-                this.filteredItems = res.data.data; // sama dulu
-                this.pagination = {
-                    current: res.data.current_page,
-                    last: res.data.last_page,
-                    total: res.data.total,
-                };
-
-
-
-
-                let url = `/api/form-pengisian?page=${page}&per_page=25`;
-
-                // tambahkan filter langsung di request
-                if (this.filterDI) url += `&di_id=${this.filterDI}`;
-                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
-
-                let res = await axios.get(url);
-
-                this.items = res.data.data; // isi data
-                this.filteredItems = res.data.data; // sama dulu
-                this.pagination = {
-                    current: res.data.current_page,
-                    last: res.data.last_page,
-                    total: res.data.total,
-                };
             },
-            async loadData() {
+            async loadData1() {
                 let token = localStorage.getItem("token");
 
                 let dis = await axios.get('/api/user-dis');
@@ -316,49 +353,62 @@
                 this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
                 this.modalInstance.show();
             },
-            applyFilter(mode = "equal") {
-                const awal = this.filterTanggalPantau ? new Date(this.filterTanggalPantau) : null;
-                const di = this.filterDI;
+            // applyFilter(mode = "equal") {
+            //     const awal = this.filterTanggalPantau ? new Date(this.filterTanggalPantau) : null;
+            //     const di = this.filterDI;
 
-                this.filteredItems = this.items.filter(item => {
-                    // pastikan tipe id sama
-                    const itemDi = String(item.daerah_irigasi_id);
-                    const filterDi = di ? String(di) : null;
+            //     this.filteredItems = this.items.filter(item => {
+            //         // pastikan tipe id sama
+            //         const itemDi = String(item.daerah_irigasi_id);
+            //         const filterDi = di ? String(di) : null;
 
-                    // parsing tanggal item
-                    let tgl = new Date(item.tanggal_pantau);
-                    if (isNaN(tgl)) {
-                        tgl = new Date(item.tanggal_pantau.replace(" ", "T"));
-                    }
+            //         // parsing tanggal item
+            //         let tgl = new Date(item.tanggal_pantau);
+            //         if (isNaN(tgl)) {
+            //             tgl = new Date(item.tanggal_pantau.replace(" ", "T"));
+            //         }
 
-                    // Filter daerah irigasi
-                    if (filterDi && itemDi !== filterDi) return false;
+            //         // Filter daerah irigasi
+            //         if (filterDi && itemDi !== filterDi) return false;
 
-                    // Filter tanggal
-                    if (awal && tgl instanceof Date && !isNaN(tgl)) {
-                        const tglStr = tgl.toISOString().split("T")[0];
-                        const awalStr = awal.toISOString().split("T")[0];
+            //         // Filter tanggal
+            //         if (awal && tgl instanceof Date && !isNaN(tgl)) {
+            //             const tglStr = tgl.toISOString().split("T")[0];
+            //             const awalStr = awal.toISOString().split("T")[0];
 
-                        // Hanya izinkan tanggal yang persis sama
-                        if (tglStr !== awalStr) return false;
-                    }
+            //             // Hanya izinkan tanggal yang persis sama
+            //             if (tglStr !== awalStr) return false;
+            //         }
 
 
-                    return true;
-                });
+            //         return true;
+            //     });
+            // },
+            // resetFilter() {
+            //     this.filterTanggalPantau = '';
+            //     this.filterTanggalAkhir = '';
+            //     this.filteredItems = this.items;
+            //     this.filterDI = ''
+            // },
+            applyFilter() {
+                this.is_filtered = true
+                this.is_loading = true;
 
-                // console.log("HASIL FILTER:", this.filteredItems);
+                this.loadData(1);
             },
+            resetFilter() {
+                this.filterDI = "";
+                this.filterTanggalAwal = "";
+                this.filterTanggalAkhir = "";
+                this.items = [];
+                this.is_filtered = false
+
+            },
+
 
             syncTanggal() {
                 // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
-                this.filterTanggalAkhir = this.filterTanggalPantau;
-            },
-            resetFilter() {
-                this.filterTanggalPantau = '';
-                this.filterTanggalAkhir = '';
-                this.filteredItems = this.items;
-                this.filterDI = ''
+                this.filterTanggalAkhir = this.filterTanggalAwal;
             },
             formatTanggal(tgl) {
                 if (!tgl) return '-';
@@ -384,7 +434,7 @@
                     modal.hide();
 
                     // Refresh data tabel
-                    this.loadData();
+                    this.loadData(1);
 
                 } catch (e) {
                     console.error(e);

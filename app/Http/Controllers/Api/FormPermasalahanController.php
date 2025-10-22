@@ -20,6 +20,7 @@ class FormPermasalahanController extends Controller
             'pemantauan_permasalahan_id' => 'required|exists:pemantauan_permasalahans,id',
             'status' => 'required',
             'keterangan' => 'nullable|string',
+            'foto_permasalahan' => 'nullable|string',
         ]);
         $data = FormPermasalahan::create($request->all());
 
@@ -38,6 +39,7 @@ class FormPermasalahanController extends Controller
             'pemantauan_permasalahan_id' => 'required|exists:pemantauan_permasalahans,id',
             'status' => 'required',
             'keterangan' => 'nullable|string',
+            'foto_permasalahan' => 'nullable|string',
         ]);
         $data->update($request->all());
 

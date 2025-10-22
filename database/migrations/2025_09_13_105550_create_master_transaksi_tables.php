@@ -31,6 +31,9 @@ return new class extends Migration
         Schema::create('daerah_irigasis', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->double('luas_baku');
+            $table->double('luas_potensial');
+            $table->double('luas_fungsional');
             $table->timestamps();
         });
 
@@ -64,7 +67,7 @@ return new class extends Migration
             $table->foreignId('bangunan_id')->constrained()->cascadeOnDelete();
             $table->string('nama');
             $table->decimal('luas', 10, 2); // hektar
-            $table->string('gambar_skema');
+            $table->string('gambar_skema')->nullable();
             $table->timestamps();
         });
         // SESI PENGISIAN
@@ -136,7 +139,7 @@ return new class extends Migration
             $table->foreignId('petugas_id')->constrained();
             $table->string('kecamatan');
             $table->string('desa');
-            $table->string('koordinat');
+            $table->string('koordinat')->nullable();
             $table->decimal('debit_air', 10, 2);
             $table->enum('masa_tanam', ['I', 'II', 'III']);
             $table->decimal('luas_padi', 10, 2)->default(0);
@@ -153,6 +156,7 @@ return new class extends Migration
             $table->foreignId('master_permasalahan_id')->constrained()->cascadeOnDelete();
             $table->boolean('status')->default(false);
             $table->string('keterangan')->nullable();
+            $table->string('foto_permasalahan')->nullable();
             $table->timestamps();
         });
 

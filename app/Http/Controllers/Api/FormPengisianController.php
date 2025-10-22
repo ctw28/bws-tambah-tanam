@@ -12,9 +12,106 @@ use Illuminate\Support\Facades\Auth;
 
 class FormPengisianController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $data = FormPengisian::with([
+    //         'kabupaten',
+    //         'daerahIrigasi',
+    //         'petugas',
+    //         'saluran',
+    //         'bangunan',
+    //         'petak',
+    //         'validasi',
+    //         'permasalahan' => function ($q) {
+    //             $q->where('status', 1)
+    //                 ->whereNotNull('keterangan')
+    //                 ->where('keterangan', '!=', '');
+    //         },
+    //         'permasalahan.masterPermasalahan',
+    //     ])
+    //         ->when($request->id, function ($q) use ($request) {
+    //             $q->where('id', $request->id);
+    //         })
+    //         ->when($request->di_id, function ($q) use ($request) {
+    //             $q->where('daerah_irigasi_id', $request->di_id);
+    //         })
+    //         ->when($request->pengamat_valid, function ($q) use ($request) {
+    //             $q->whereHas('validasi', function ($qq) use ($request) {
+    //                 $qq->where('pengamat_valid', (bool) $request->pengamat_valid);
+    //             });
+    //         })
+    //         ->when($request->upi_valid, function ($q) use ($request) {
+    //             $q->whereHas('validasi', function ($qq) use ($request) {
+    //                 $qq->where('upi_valid', (bool) $request->upi_valid);
+    //             });
+    //         })
+    //         ->when($request->has_permasalahan, function ($q) {
+    //             $q->whereHas('permasalahan', function ($qq) {
+    //                 $qq->where('status', 1)
+    //                     ->whereNotNull('keterangan')
+    //                     ->where('keterangan', '!=', '');
+    //             });
+    //         })
+    //         ->latest()
+    //         ->get();
+
+    //     return response()->json($data);
+    // }
+
+    // public function index(Request $request)
+    // {
+    //     $data = FormPengisian::with([
+    //         'kabupaten',
+    //         'daerahIrigasi',
+    //         'petugas',
+    //         'saluran',
+    //         'bangunan',
+    //         'petak',
+    //         'validasi',
+    //         'permasalahan' => function ($q) {
+    //             $q->where('status', 1)
+    //                 ->whereNotNull('keterangan')
+    //                 ->where('keterangan', '!=', '');
+    //         },
+    //         'permasalahan.masterPermasalahan',
+    //     ])
+    //         ->when($request->id, fn($q) => $q->where('id', $request->id))
+    //         ->when($request->di_id, fn($q) => $q->where('daerah_irigasi_id', $request->di_id))
+    //         ->when($request->pengamat_valid, function ($q) use ($request) {
+    //             $q->whereHas('validasi', fn($qq) => $qq->where('pengamat_valid', (bool) $request->pengamat_valid));
+    //         })
+    //         ->when($request->upi_valid, function ($q) use ($request) {
+    //             $q->whereHas('validasi', fn($qq) => $qq->where('upi_valid', (bool) $request->upi_valid));
+    //         })
+    //         ->when($request->has_permasalahan, function ($q) {
+    //             $q->whereHas('permasalahan', function ($qq) {
+    //                 $qq->where('status', 1)
+    //                     ->whereNotNull('keterangan')
+    //                     ->where('keterangan', '!=', '');
+    //             });
+    //         })
+    //         ->when($request->tanggal_awal, function ($q) use ($request) {
+    //             $q->whereDate('tanggal_pantau', '>=', $request->tanggal_awal);
+    //         })
+    //         ->when($request->tanggal_akhir, function ($q) use ($request) {
+    //             $q->whereDate('tanggal_pantau', '<=', $request->tanggal_akhir);
+    //         })
+    //         ->latest()
+    //         ->paginate($request->per_page ?? 25);
+
+    //     return response()->json($data);
+    // }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:api')->only('index');
+    // }
+
+
     public function index(Request $request)
     {
-        $data = FormPengisian::with([
+        $user = Auth::guard('api')->user(); // ✅ bisa null kalau tidak login
+
+        $query = FormPengisian::with([
             'kabupaten',
             'daerahIrigasi',
             'petugas',
@@ -29,22 +126,6 @@ class FormPengisianController extends Controller
             },
             'permasalahan.masterPermasalahan',
         ])
-            ->when($request->id, function ($q) use ($request) {
-                $q->where('id', $request->id);
-            })
-            ->when($request->di_id, function ($q) use ($request) {
-                $q->where('daerah_irigasi_id', $request->di_id);
-            })
-            ->when($request->pengamat_valid, function ($q) use ($request) {
-                $q->whereHas('validasi', function ($qq) use ($request) {
-                    $qq->where('pengamat_valid', (bool) $request->pengamat_valid);
-                });
-            })
-            ->when($request->upi_valid, function ($q) use ($request) {
-                $q->whereHas('validasi', function ($qq) use ($request) {
-                    $qq->where('upi_valid', (bool) $request->upi_valid);
-                });
-            })
             ->when($request->has_permasalahan, function ($q) {
                 $q->whereHas('permasalahan', function ($qq) {
                     $qq->where('status', 1)
@@ -52,17 +133,42 @@ class FormPengisianController extends Controller
                         ->where('keterangan', '!=', '');
                 });
             })
-            ->latest()
-            ->get();
+            ->when($request->pengamat_valid, function ($q) use ($request) {
+                $q->whereHas('validasi', fn($qq) => $qq->where('pengamat_valid', (bool) $request->pengamat_valid));
+            });
+        if ($user) {
+            $kabupatens = $user->kabupatens()->with(['daerahIrigasis' => fn($q) => $q->withCount('upis')])->get();
+
+            $userDis = $kabupatens->flatMap(
+                fn($kab) =>
+                $kab->daerahIrigasis->map(fn($di) => [
+                    'id' => $di->id,
+                    'has_upi' => $di->upis_count > 0,
+                ])
+            );
+
+            $diIds = $userDis->pluck('id')->toArray();
+            $query->whereIn('daerah_irigasi_id', $diIds);
+        }
+
+        // Tambahkan filter dari request
+        $query->when($request->di_id, fn($q) => $q->where('daerah_irigasi_id', $request->di_id))
+            ->when($request->tanggal_awal, fn($q) => $q->whereDate('tanggal_pantau', '>=', $request->tanggal_awal))
+            ->when($request->tanggal_akhir, fn($q) => $q->whereDate('tanggal_pantau', '<=', $request->tanggal_akhir));
+
+        if ($request->has('per_page')) {
+            $data = $query->latest()->paginate($request->per_page);
+        } else {
+            $data = $query->latest()->get();
+        }
 
         return response()->json($data);
     }
 
 
-
     public function store(Request $request)
     {
-        // return $request->all();
+        // --- 1️⃣ Validasi ---
         $request->validate([
             'tanggal_pantau' => 'required|date',
             'kabupaten_id' => 'required|exists:kabupatens,id',
@@ -81,40 +187,44 @@ class FormPengisianController extends Controller
             'luas_lainnya' => 'required|numeric',
             'foto_pemantauan' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'permasalahan' => 'required',
-            'permasalahan.*.pemantauan_permasalahan_id' => 'required|exists:pemantauan_permasalahans,id',
-            'permasalahan.*.status' => 'required|boolean',
-            'permasalahan.*.keterangan' => 'nullable|string',
         ]);
 
-        // upload file
+        // --- 2️⃣ Upload foto pemantauan utama ---
         $fotoPath = null;
         if ($request->hasFile('foto_pemantauan')) {
             $fotoPath = $request->file('foto_pemantauan')->store('foto_pemantauan', 'public');
         }
 
-        // simpan data utama
+        // --- 3️⃣ Simpan data utama ---
         $formPengisian = FormPengisian::create([
             ...$request->except(['permasalahan', 'foto_pemantauan']),
             'foto_pemantauan' => $fotoPath,
         ]);
 
-        // simpan permasalahan
-        // Decode the JSON string before iterating
-        $permasalahans = json_decode($request->permasalahan, true);
+        // --- 4️⃣ Decode data permasalahan (karena dikirim dari Vue sebagai JSON) ---
+        $permasalahans = $request->permasalahan;
 
         if (is_array($permasalahans)) {
-            $i = 1;
-            foreach ($permasalahans as $p) {
+            foreach ($permasalahans as $index => $p) {
+                $fotoPermasalahanPath = null;
+
+                // Cek apakah file permasalahan dikirim (misalnya name="foto_permasalahan[1]" di FormData)
+                if ($request->hasFile("foto_permasalahan.$index")) {
+                    $fotoPermasalahanPath = $request->file("foto_permasalahan.$index")
+                        ->store('foto_permasalahan', 'public');
+                }
+
                 FormPermasalahan::create([
                     'form_pengisian_id' => $formPengisian->id,
                     'master_permasalahan_id' => $p['master_permasalahan_id'],
-                    'status' => $p['status'] === 'ada', // Convert 'ada' to boolean true
+                    'status' => $p['status'] === 'ada',
                     'keterangan' => $p['keterangan'] ?? null,
+                    'foto_permasalahan' => $fotoPermasalahanPath, // ✅ simpan foto permasalahan
                 ]);
-                $i++;
             }
         }
-        //langsung insert juga di form validasi
+
+        // --- 5️⃣ Insert otomatis ke form_validasi ---
         FormValidasi::create([
             'form_pengisian_id' => $formPengisian->id,
             'pengamat_id' => null,
@@ -122,11 +232,13 @@ class FormPengisianController extends Controller
             'upi_valid' => false,
         ]);
 
+        // --- 6️⃣ Response ---
         return response()->json([
             'message' => 'Data berhasil disimpan',
             'data' => $formPengisian->load('permasalahan')
         ], 201);
     }
+
 
 
 

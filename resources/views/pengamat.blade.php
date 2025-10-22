@@ -282,7 +282,7 @@
                         let res = await axios.post("/api/pengamat/validasi-kode", {
                             kode: this.kode
                         });
-                        console.log(res);
+                        console.log(res.data);
 
                         this.pengamat = res.data.pengamat;
                         console.log(this.pengamat);
@@ -302,7 +302,7 @@
                         console.log(res);
 
                         this.forms = res.data;
-                        this.filteredItems = res.data;
+                        this.filteredItems = res.data.data;
                     } catch (e) {
                         console.error(e);
                     }

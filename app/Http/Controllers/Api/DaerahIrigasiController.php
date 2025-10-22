@@ -32,12 +32,18 @@ class DaerahIrigasiController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'kabupaten_ids' => 'required|array',
-            'parent_id' => 'nullable|exists:daerah_irigasis,id' // ✅ validasi parent
+            'parent_id' => 'nullable|exists:daerah_irigasis,id', // ✅ validasi parent
+            'luas_baku' => 'required|numeric',
+            'luas_potensial' => 'required|numeric',
+            'luas_fungsional' => 'required|numeric'
         ]);
 
         $di = DaerahIrigasi::create([
             'nama' => $request->nama,
             'parent_id' => $request->parent_id, // ✅ simpan parent
+            'luas_baku' => $request->luas_baku,
+            'luas_potensial' => $request->luas_potensial,
+            'luas_fungsional' => $request->luas_fungsional,
         ]);
 
         $di->kabupatens()->sync($request->kabupaten_ids);
@@ -58,12 +64,20 @@ class DaerahIrigasiController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'kabupaten_ids' => 'required|array',
-            'parent_id' => 'nullable|exists:daerah_irigasis,id'
+            'parent_id' => 'nullable|exists:daerah_irigasis,id',
+            'luas_baku' => 'required|numeric',
+            'luas_potensial' => 'required|numeric',
+            'luas_fungsional' => 'required|numeric'
+
         ]);
 
         $daerahIrigasi->update([
             'nama' => $request->nama,
             'parent_id' => $request->parent_id,
+            'luas_baku' => $request->luas_baku,
+            'luas_potensial' => $request->luas_potensial,
+            'luas_fungsional' => $request->luas_fungsional,
+
         ]);
 
         $daerahIrigasi->kabupatens()->sync($request->kabupaten_ids);
