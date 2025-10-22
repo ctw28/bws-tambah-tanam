@@ -76,8 +76,8 @@
                     <div class="card-body text-center">
                         <!-- Logo -->
                         <div>
-                            <img src="{{asset('/logo-pu.jpg')}}" alt="" width="80">
-                            <h2 class="mb-2">SIPEMALUTAJIR</h2>
+                            <img src="{{asset('/logo-pu.jpg')}}" alt="" width="80" class="mb-2">
+                            <h2>SIPEMALUTAJIR</h2>
                         </div>
                         <!-- /Logo -->
                         <h5 class="mb-3">SILAHKAN PILIH SEBAGAI : </h5>
