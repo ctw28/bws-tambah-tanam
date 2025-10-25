@@ -71,6 +71,7 @@
                     <div class="mb-2">
                         <label>Sesi</label>
                         <select class="form-select" v-model="form.sesi_id">
+                            <option value="">Pilih Sesi</option>
                             <option v-for="s in sesis" :key="s.id" :value="s.id">@{{ s.nama }}</option>
                         </select>
                     </div>
@@ -122,7 +123,7 @@
                 this.upis = res.data;
             },
             async fetchMaster() {
-                this.daerahIrigasis = (await axios.get('/api/master/daerah-irigasi')).data;
+                this.daerahIrigasis = (await axios.get('/api/master/daerah-irigasi?per_page=all')).data;
                 this.sesis = (await axios.get('/api/master/sesi')).data;
             },
             openModal() {

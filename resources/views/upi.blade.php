@@ -283,7 +283,7 @@
                         let res = await axios.post("/api/upi/validasi-kode", {
                             kode: this.kode
                         });
-                        console.log(res);
+                        // console.log(res);
 
                         this.upi = res.data.upi;
                         console.log(this.upi);
@@ -304,7 +304,9 @@
                         let allData = [];
                         for (let id of diIds) {
                             let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
-                            allData = allData.concat(res.data.data);
+                            console.log(res);
+
+                            allData = allData.concat(res.data);
                         }
                         console.log(allData);
 
@@ -316,7 +318,7 @@
                 },
                 showForm(form) {
                     this.item = form;
-                    console.log(this.item);
+                    // console.log(this.item);
 
                     const modalEl = document.getElementById('formLTTModal');
                     this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -329,7 +331,7 @@
                         let res = await axios.post(`/api/upi/validasi/${formId}`, {
                             upi_id: this.upi.id
                         });
-                        console.log(res);
+                        // console.log(res);
 
                         this.forms = this.forms.map(f => {
                             if (f.id === formId) {

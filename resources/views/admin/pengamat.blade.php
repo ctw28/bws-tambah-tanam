@@ -142,7 +142,7 @@
                 this.sesis = res.data;
             },
             async fetchDI() {
-                let res = await axios.get('/api/master/daerah-irigasi', {
+                let res = await axios.get('/api/master/daerah-irigasi?per_page=all', {
                     params: {
                         is_induk: 1
                     }

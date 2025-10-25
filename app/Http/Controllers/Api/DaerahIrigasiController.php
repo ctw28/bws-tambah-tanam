@@ -10,21 +10,44 @@ class DaerahIrigasiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DaerahIrigasi::with(['kabupatens:id,nama', 'parent:id,nama', 'children']);
+        $perPage = $request->query('per_page', 25);
+        $search = $request->query('search');
+
+        $query = DaerahIrigasi::with([
+            'kabupatens:id,nama',
+            'parent:id,nama',
+            'children:id,nama,parent_id'
+        ]);
 
         if ($request->has('kabupaten_id')) {
             $query->whereHas('kabupatens', function ($q) use ($request) {
                 $q->where('kabupatens.id', $request->kabupaten_id);
             });
         }
-        // filter induk/anak
+
+        // Filter induk/anak
         if ($request->boolean('is_induk')) {
-            $query->whereNull('parent_id');   // hanya induk
+            $query->whereNull('parent_id');
         } elseif ($request->boolean('is_child')) {
-            $query->whereNotNull('parent_id'); // hanya anak
+            $query->whereNotNull('parent_id');
         }
-        return response()->json($query->get());
+
+        // Search nama
+        if ($search) {
+            $query->where('nama', 'like', "%{$search}%");
+        }
+
+        // ✅ Jika user ingin semua data tanpa pagination
+        if ($perPage === 'all' || $perPage == 0) {
+            $data = $query->orderBy('id', 'desc')->get();
+        } else {
+            $data = $query->orderBy('id', 'desc')->paginate($perPage);
+        }
+
+        return response()->json($data);
     }
+
+
 
 
     public function store(Request $request)

@@ -14,8 +14,11 @@ class PetugasController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Petugas::with(['salurans.daerahIrigasi']);
+        $query = Petugas::with(['salurans.daerahIrigasi.kabupatens']);
 
+        if ($request->has('petugas_id')) {
+            $query->where('id', $request->petugas_id);
+        }
         if ($request->has('saluran_id')) {
             $query->where('saluran_id', $request->saluran_id);
         }
@@ -106,26 +109,30 @@ class PetugasController extends Controller
     public function validasiKode(Request $request)
     {
         $request->validate([
-            'saluran_id' => 'required|exists:salurans,id',   // pastikan saluran valid
-            'petugas_id' => 'required|exists:petugas,id',
+            // 'saluran_id' => 'required|exists:salurans,id',   // pastikan saluran valid
+            // 'petugas_id' => 'required|exists:petugas,id',
             'kode'       => 'required|string'
         ]);
 
-        $petugas = Petugas::where('id', $request->petugas_id)
-            ->where('is_aktif', true)                   // 🔹 hanya yg aktif
-            ->where('kode', $request->kode)                   // 🔹 hanya yg aktif
-            ->first();
-
-        if (!$petugas) {
-            return response()->json(['message' => 'Kode salah atau petugas tidak aktif'], 401);
-        }
+        // $petugas = Petugas::where('id', $request->petugas_id) //ini sebelum ubah UX kode duluan
+        //     ->where('is_aktif', true)                   // 🔹 hanya yg aktif
+        //     ->where('kode', $request->kode)                   // 🔹 hanya yg aktif
+        //     ->first();
 
         // if (!$petugas || !Hash::check($request->kode, $petugas->kode)) {
         //     return response()->json(['message' => 'Kode salah atau petugas tidak aktif'], 401);
         // }
+        $petugas = Petugas::with('salurans')
+            ->where('is_aktif', true)                   // 🔹 hanya yg aktif
+            ->where('kode', $request->kode)                   // 🔹 hanya yg aktif
+            ->first();
+        if (!$petugas) {
+            return response()->json(['message' => 'Kode salah atau petugas tidak aktif'], 401);
+        }
+
         return response()->json([
             'message' => 'Kode benar',
-            'petugas' => $petugas->only(['id', 'nama', 'saluran_id'])
+            'petugas' => $petugas->makeHidden('kode')
         ]);
     }
 

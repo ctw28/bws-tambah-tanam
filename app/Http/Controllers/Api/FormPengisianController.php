@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\DaerahIrigasi;
 use Illuminate\Http\Request;
 use App\Models\FormPengisian;
+use App\Models\FormPengisianP3a;
 use App\Models\FormPermasalahan;
 use App\Models\FormValidasi;
+use App\Models\P3a;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FormPengisianController extends Controller
 {
@@ -125,6 +128,7 @@ class FormPengisianController extends Controller
                     ->where('keterangan', '!=', '');
             },
             'permasalahan.masterPermasalahan',
+            'formPengisianP3a.p3a'
         ])
             ->when($request->has_permasalahan, function ($q) {
                 $q->whereHas('permasalahan', function ($qq) {
@@ -168,75 +172,92 @@ class FormPengisianController extends Controller
 
     public function store(Request $request)
     {
-        // --- 1️⃣ Validasi ---
-        $request->validate([
-            'tanggal_pantau' => 'required|date',
-            'kabupaten_id' => 'required|exists:kabupatens,id',
-            'daerah_irigasi_id' => 'required|exists:daerah_irigasis,id',
-            'petugas_id' => 'required|exists:petugas,id',
-            'saluran_id' => 'required|exists:salurans,id',
-            'bangunan_id' => 'required|exists:bangunans,id',
-            'petak_id' => 'required|exists:petaks,id',
-            'kecamatan' => 'required|string|max:255',
-            'desa' => 'required|string|max:255',
-            'koordinat' => 'required|string|max:255',
-            'debit_air' => 'required|numeric',
-            'masa_tanam' => 'required|in:I,II,III',
-            'luas_padi' => 'required|numeric',
-            'luas_palawija' => 'required|numeric',
-            'luas_lainnya' => 'required|numeric',
-            'foto_pemantauan' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'permasalahan' => 'required',
-        ]);
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'tanggal_pantau' => 'required|date',
+                'kabupaten_id' => 'required|exists:kabupatens,id',
+                'daerah_irigasi_id' => 'required|exists:daerah_irigasis,id',
+                'petugas_id' => 'required|exists:petugas,id',
+                'saluran_id' => 'required|exists:salurans,id',
+                'bangunan_id' => 'required|exists:bangunans,id',
+                'petak_id' => 'required|exists:petaks,id',
+                'kecamatan' => 'required|string|max:255',
+                'desa' => 'required|string|max:255',
+                'koordinat' => 'required|string|max:255',
+                'debit_air' => 'required|numeric',
+                'masa_tanam' => 'required|in:I,II,III',
+                'luas_padi' => 'required|numeric',
+                'luas_palawija' => 'required|numeric',
+                'luas_lainnya' => 'required|numeric',
+                'foto_pemantauan' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+                'permasalahan' => 'required',
+                'p3a' => 'nullable',
+            ]);
 
-        // --- 2️⃣ Upload foto pemantauan utama ---
-        $fotoPath = null;
-        if ($request->hasFile('foto_pemantauan')) {
-            $fotoPath = $request->file('foto_pemantauan')->store('foto_pemantauan', 'public');
-        }
-
-        // --- 3️⃣ Simpan data utama ---
-        $formPengisian = FormPengisian::create([
-            ...$request->except(['permasalahan', 'foto_pemantauan']),
-            'foto_pemantauan' => $fotoPath,
-        ]);
-
-        // --- 4️⃣ Decode data permasalahan (karena dikirim dari Vue sebagai JSON) ---
-        $permasalahans = $request->permasalahan;
-
-        if (is_array($permasalahans)) {
-            foreach ($permasalahans as $index => $p) {
-                $fotoPermasalahanPath = null;
-
-                // Cek apakah file permasalahan dikirim (misalnya name="foto_permasalahan[1]" di FormData)
-                if ($request->hasFile("foto_permasalahan.$index")) {
-                    $fotoPermasalahanPath = $request->file("foto_permasalahan.$index")
-                        ->store('foto_permasalahan', 'public');
-                }
-
-                FormPermasalahan::create([
-                    'form_pengisian_id' => $formPengisian->id,
-                    'master_permasalahan_id' => $p['master_permasalahan_id'],
-                    'status' => $p['status'] === 'ada',
-                    'keterangan' => $p['keterangan'] ?? null,
-                    'foto_permasalahan' => $fotoPermasalahanPath, // ✅ simpan foto permasalahan
-                ]);
+            // --- 2️⃣ Upload foto pemantauan utama ---
+            $fotoPath = null;
+            if ($request->hasFile('foto_pemantauan')) {
+                $fotoPath = $request->file('foto_pemantauan')->store('foto_pemantauan', 'public');
             }
+
+            // --- 3️⃣ Simpan data utama ---
+            $formPengisian = FormPengisian::create([
+                ...$request->except(['permasalahan', 'foto_pemantauan']),
+                'foto_pemantauan' => $fotoPath,
+            ]);
+
+            // --- 4️⃣ Decode data permasalahan (karena dikirim dari Vue sebagai JSON) ---
+            $permasalahans = $request->permasalahan;
+
+            if (is_array($permasalahans)) {
+                foreach ($request->permasalahan as $index => $p) {
+                    $fotoPermasalahanPath = null;
+
+                    if (isset($p['foto_permasalahan']) && $p['foto_permasalahan'] instanceof \Illuminate\Http\UploadedFile) {
+                        $fotoPermasalahanPath = $p['foto_permasalahan']->store('foto_permasalahan', 'public');
+                    }
+
+                    FormPermasalahan::create([
+                        'form_pengisian_id' => $formPengisian->id,
+                        'master_permasalahan_id' => $p['master_permasalahan_id'],
+                        'status' => $p['status'] === 'ada',
+                        'keterangan' => $p['keterangan'] ?? null,
+                        'foto_permasalahan' => $fotoPermasalahanPath,
+                    ]);
+                }
+            }
+            $p3as = $request->p3a;
+
+            if (is_array($p3as)) {
+                foreach ($p3as as $index => $p) {
+                    FormPengisianP3a::create([
+                        'form_pengisian_id' => $formPengisian->id,
+                        'p3a_id' => $p['p3a_id'] ?? $p['id'], // ✅ fallback ke 'id' kalau 'p3a_id' tidak ada
+                    ]);
+                }
+            }
+
+            // --- 5️⃣ Insert otomatis ke form_validasi ---
+            FormValidasi::create([
+                'form_pengisian_id' => $formPengisian->id,
+                'pengamat_id' => null,
+                'pengamat_valid' => false,
+                'upi_valid' => false,
+            ]);
+            DB::commit();
+
+            // --- 6️⃣ Response ---
+            return response()->json([
+                'message' => 'Data berhasil disimpan',
+                'data' => $formPengisian->load('permasalahan')
+            ], 201);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal menyimpan data: ' . $th->getMessage(),
+            ], 500);
         }
-
-        // --- 5️⃣ Insert otomatis ke form_validasi ---
-        FormValidasi::create([
-            'form_pengisian_id' => $formPengisian->id,
-            'pengamat_id' => null,
-            'pengamat_valid' => false,
-            'upi_valid' => false,
-        ]);
-
-        // --- 6️⃣ Response ---
-        return response()->json([
-            'message' => 'Data berhasil disimpan',
-            'data' => $formPengisian->load('permasalahan')
-        ], 201);
     }
 
 

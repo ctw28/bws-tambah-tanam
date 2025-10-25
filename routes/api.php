@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\FormPengisianController;
 use App\Http\Controllers\Api\FormPermasalahanController;
 use App\Http\Controllers\Api\FormValidasiController;
 use App\Http\Controllers\Api\KoordinatorController;
+use App\Http\Controllers\Api\P3aController;
 use App\Http\Controllers\Api\PengamatController;
 use App\Http\Controllers\Api\SesiController;
 use App\Http\Controllers\Api\UpiController;
@@ -44,6 +45,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('petugas', PetugasController::class);
             Route::apiResource('pengamat', PengamatController::class);
             Route::apiResource('upi', UpiController::class);
+            Route::apiResource('p3a', P3aController::class);
         });
         Route::post('/petugas/{petugas}/send-kode', [PetugasController::class, 'sendKode']);
         Route::post('/pengamat/{pengamat}/send-kode', [PengamatController::class, 'sendKode']);
@@ -65,6 +67,7 @@ Route::prefix('master')->group(function () {
     Route::get('petugas', [PetugasController::class, 'index']);
     Route::get('pengamat', [PengamatController::class, 'index']);
     Route::get('upi', [UpiController::class, 'index']);
+    Route::get('p3a', [P3aController::class, 'index']);
 });
 
 Route::post('/pengamat/validasi/{id}', [FormValidasiController::class, 'validateByPengamat']);

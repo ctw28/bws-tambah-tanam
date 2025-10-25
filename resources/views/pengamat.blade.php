@@ -156,93 +156,121 @@
                         </div>
 
                         <div class="modal-body">
-                            <!-- Header -->
-                            <h4 class="text-center mb-3">FORM PEMANTAUAN LUAS TAMBAH TANAM (LTT)</h4>
 
-                            <!-- Identitas -->
-                            <div class="mb-3">
-                                <div class="form-line"><span>Nama Petugas OP</span>:
-                                    @{{ item.petugas ? item.petugas.nama : '-' }}</div>
-                                <div class="form-line"><span>Tanggal Pemantauan</span>:
-                                    @{{ formatTanggal(item.tanggal_pantau) }}</div>
-                                <div class="form-line"><span>Daerah Irigasi</span>: DI
-                                    @{{ item.daerah_irigasi ? item.daerah_irigasi.nama : '-' }}</div>
-                                <div class="form-line"><span>Desa/Kelurahan</span>: @{{item.desa}}</div>
-                                <div class="form-line"><span>Kecamatan</span>: @{{item.kecamatan}}</div>
-                                <div class="form-line"><span>Kabupaten/Kota</span>:
-                                    @{{item.kabupaten ? item.kabupaten.nama : '-'}}
+                            <div class="p-3 rounded shadow-sm bg-light mb-4">
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Nama Petugas OP</small>
+                                    <span class="fw-semibold">@{{ item.petugas ? item.petugas.nama : '-' }}</span>
                                 </div>
-                                <div class="form-line"><span>Nama Saluran (Sekunder/Primer)</span>:
-                                    @{{item.saluran ? item.saluran.nama : '-'}}</div>
-                                <div class="form-line"><span>Nama Bangunan Bagi/Sadap</span>:
-                                    @{{item.bangunan ? item.bangunan.nama : '-'}}</div>
-                                <div class="form-line"><span>Kode/Nama Petak Layanan</span>:
-                                    @{{item.petak ? item.petak.nama : '-'}}
-                                </div>
-                                <div class="form-line"><span>Koordinat Bangunan Bagi/Sadap</span>: @{{item.koordinat}}
-                                </div>
-                            </div>
-                            <div class="table-responsive">
 
-                                <!-- Tabel -->
-                                <table class="table table-bordered text-center align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th rowspan="2">Debit Air (lt/detik)</th>
-                                            <th rowspan="2">Luas Petak Skema (Ha)</th>
-                                            <th colspan="3">Pemantauan Luas Tambah Tanam (LTT)</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Padi (Ha)</th>
-                                            <th>Palawija (Ha)</th>
-                                            <th>Lainnya (Ha)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td height="50px">@{{item.debit_air}}</td>
-                                            <td>@{{item.petak ? item.petak.luas : '-'}}</td>
-                                            <td>@{{item.luas_padi}}</td>
-                                            <td>@{{item.luas_palawija}}</td>
-                                            <td>@{{item.luas_lainnya}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="table-responsive">
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Tanggal Pemantauan</small>
+                                    <span class="fw-semibold">@{{ formatTanggal(item.tanggal_pantau) }}</span>
+                                </div>
 
-                                <!-- Tabel -->
-                                <table class="table table-bordered text-center align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Pemantauan Permasalahan</th>
-                                            <th>Ada/Tidak</th>
-                                            <th>Keterangan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
-                                        <tr>
-                                            <td>@{{ index+1}}</td>
-                                            <td>@{{ p.master_permasalahan.nama }}
-                                            </td>
-                                            <td class="text-center">
-                                                <span v-if="p.status==1">Ada</span>
-                                                <span v-else="p.status==0">Tidak</span>
-                                            </td>
-                                            <td>@{{ p.keterangan}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Daerah Irigasi</small>
+                                    <span class="fw-semibold">@{{ item.daerah_irigasi ? item.daerah_irigasi.nama : '-' }}</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Desa/Kelurahan</small>
+                                    <span class="fw-semibold">@{{ item.desa }}</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Kecamatan</small>
+                                    <span class="fw-semibold">@{{ item.kecamatan }}</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Kabupaten/Kota</small>
+                                    <span class="fw-semibold">@{{item.kabupaten ? item.kabupaten.nama : '-'}}</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Nama Saluran (Sekunder/Primer)</small>
+                                    <span class="fw-semibold">@{{item.saluran ? item.saluran.nama : '-'}}</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Nama Bangunan Bagi/Sadap</small>
+                                    <span class="fw-semibold">@{{item.bangunan ? item.bangunan.nama : '-'}}</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Kode/Nama Petak Layanan</small>
+                                    <span class="fw-semibold">@{{item.petak ? item.petak.nama : '-'}}</span>
+                                </div>
+                                <!-- Tabel LTT -->
+                                <hr class="mt-2">
+
+                                <h5 class="fw-bold">Pemantauan Luas Tambah Tanam (LTT)</h5>
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Luas Komulatif Padi</small>
+                                    <span class="fw-semibold">@{{ item.luas_padi }} ha</span>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Luas Komulatif Palawija</small>
+                                    <span class="fw-semibold">@{{ item.luas_palawija }} ha</span>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Luas Komulatif Lainnya</small>
+                                    <span class="fw-semibold">@{{ item.luas_lainnya }} ha</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h4>Foto Pemantauan</h4>
+                                    <img
+                                        v-if="item.foto_pemantauan"
+                                        :src="`/storage/${item.foto_pemantauan}`"
+                                        alt="Preview Foto"
+                                        class="img-fluid rounded"
+                                        width="300" />
+                                </div>
+                                <hr class="mt-2">
+                                <h5 class="fw-bold">Kelembagaan P3A</h5>
+
+                                <div class="mb-3">
+                                    <template v-if="item.form_pengisian_p3a && item.form_pengisian_p3a.length">
+                                        <span v-for="p in item.form_pengisian_p3a" :key="p.id" class="badge bg-primary me-1 mb-1">
+                                            @{{ p.p3a.nama }}
+                                        </span>
+                                    </template>
+                                    <p v-else class="text-muted fst-italic">Data P3A tidak ada / tidak diisi.</p>
+                                </div>
+
+
+                                <!-- Tabel Permasalahan -->
+                                <hr class="mt-2">
+
+                                <h5 class="fw-bold">Permasalahan di Lapangan</h5>
+
+                                <div class="mb-2" v-for="(p, index) in item.permasalahan" :key="p.id">
+                                    <span class="fw-semibold">
+                                        @{{ p.master_permasalahan.id }}. @{{ p.master_permasalahan.nama }} <br>
+                                        <span class="text-danger fw-bold">
+                                            Ada
+                                        </span> <br>
+                                        Keterangan : @{{ p.keterangan || '-' }}<br>
+                                        Foto permasalahan :
+                                        <img
+                                            :src="`/storage/${p.foto_permasalahan}`"
+                                            alt="Preview Foto Permasalahan"
+                                            class="img-fluid rounded mt-2"
+                                            width="300">
+                                    </span>
+                                </div>
+
+
                             </div>
-                            <h4>Foto Pemantauan</h4>
-                            <img v-if="modalInstance" :src="`/storage/${item.foto_pemantauan}`" width="100%">
 
                         </div>
 
                         <div class="modal-footer">
+                            <button v-if="item.validasi?.pengamat_valid==0" class="btn btn-danger me-auto" @click="hapus(item.id)"><i class="menu-icon tf-icons bx bx-trash"></i> Hapus / Tidak Valid</button>
+
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button v-if="!item.form_validasi || !item.form_validasi.pengamat_valid"
+                            <button v-if="item.validasi?.pengamat_valid==0"
                                 class="btn btn-warning" @click="validasi(item.id)">
                                 Validasi
                             </button>
@@ -302,7 +330,7 @@
                         console.log(res);
 
                         this.forms = res.data;
-                        this.filteredItems = res.data.data;
+                        this.filteredItems = res.data;
                     } catch (e) {
                         console.error(e);
                     }
@@ -386,6 +414,27 @@
                         // bisa optional: validasi token ke server
                     }
                 },
+                async hapus(id) {
+                    if (!confirm("Yakin ingin menghapus data ini?")) {
+                        return;
+                    }
+
+                    try {
+                        let res = await axios.delete(`/api/form-pengisian/${id}`);
+                        console.log(res);
+
+                        // Tutup modal setelah berhasil hapus
+                        let modal = bootstrap.Modal.getInstance(document.getElementById('formLTTModal'));
+                        modal.hide();
+
+                        // Refresh data tabel
+                        this.loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert("Gagal menghapus data!");
+                    }
+                }
             },
             mounted() {
                 this.loadPengamat();

@@ -64,13 +64,12 @@
                                 / @{{ item.petak?.nama ?? '-' }}
                             </td>
                             <td>
-                                <ol class="mb-0">
+                                <ul class="mb-0" style="list-style: none; padding-left: 0;">
                                     <li v-for="p in item.permasalahan" :key="p.id">
-                                        @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }} <br>
+                                        @{{ p.master_permasalahan?.id }}. @{{ p.master_permasalahan?.nama }} : @{{ p.keterangan }} <br>
                                         <img v-if="p.foto_permasalahan" :src="`/storage/${p.foto_permasalahan}`" width="200">
-                                        <!-- <span v-else>Foto : tidak ada</span> -->
                                     </li>
-                                </ol>
+                                </ul>
                             </td>
                             <td>
                                 <button @click="showForm(item)" class="btn btn-primary btn-sm"><i
@@ -210,7 +209,7 @@
                             </thead>
                             <tbody v-for="(p,index) in item.permasalahan" :key="p.id">
                                 <tr>
-                                    <td>@{{ index+1}}</td>
+                                    <td>@{{ p.id }}</td>
                                     <td>@{{ p.master_permasalahan.nama }}
                                     </td>
                                     <td class="text-center">

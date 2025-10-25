@@ -50,78 +50,65 @@
         [v-cloak] {
             display: none;
         }
+
+        .hover-bg:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 
 <body class="bg-light">
+
     <div id="app" v-cloak class="container my-5">
-        <form @submit.prevent="submitForm">
-            <div class="card shadow-lg pb-2">
+        <div class="col-12 mb-3">
+            <a href="/">
+                <span class="tf-icons bx bx-arrow-left"></span>&nbsp; Kembali ke halaman depan
+            </a>
+        </div>
+        <div v-if="!juru">
+            <div class="card shadow-lg">
                 <div class="card-body">
-
-                    <div class="col-12 ">
-                        <a href="/">
-                            <span class="tf-icons bx bx-arrow-left"></span>&nbsp; Kembali ke halaman depan
-                        </a>
-                    </div>
-
-                    <h3 class="my-3">Form Pengisian Pemantauan Luas Tambah Tanam</h3>
-                    <!-- Lokasi -->
-
-                    <h5 class="my-3">I. Pilih Lokasi</h5>
+                    <h5 class="card-title mt-2">Masuk Juru</h5>
                     <div class="mb-3">
-                        <label class="form-label">Kabupaten <span class="text-danger">*</span></label>
-                        <select class="form-select" v-model="form.kabupaten_id" @change="checkKabupaten">
-                            <option value="">-- Pilih --</option>
-                            <option v-for="k in kabupaten" :value="k.id">@{{ k.nama }}</option>
-                        </select>
-                        <input v-if="form.daerah_irigasi_id === 'lain'" type="text" class="form-control mt-2"
-                            placeholder="Isi manual daerah irigasi" v-model="form.daerah_irigasi_lain">
+                        <label class="form-label">Masukkan Kode Juru</label>
+                        <input type="text" v-model="kode" class="form-control" placeholder="Kode unik juru">
                     </div>
-                    <!-- Daerah Irigasi -->
-                    <div class="mb-3">
-                        <label class="form-label">Daerah Irigasi <span class="text-danger">*</span></label>
-                        <select class="form-select" v-model="form.daerah_irigasi_id" @change="checkIrigasi">
-                            <option value="">-- Pilih --</option>
-                            <option v-for="d in daerahIrigasi" :value="d.id">@{{ d.nama }}</option>
-                        </select>
-                    </div>
-                    <!-- Saluran -->
-                    <div class="mb-3">
-                        <label class="form-label">Saluran <span class="text-danger">*</span></label>
-                        <select class="form-select" v-model="form.saluran_id" @change="checkSaluran">
-                            <option value="">-- Pilih --</option>
-                            <option v-for="s in salurans" :value="s.id">@{{ s.nama }}</option>
-                        </select>
+                    <button class="btn btn-primary" @click="cekJuru">Masuk
+                </div>
+            </div>
+        </div>
+        <div v-else>
+
+            <form @submit.prevent="submitForm">
+
+                <div class="card shadow-lg">
+                    <div class="card-body text-center">
+
+
+                        <h3 class="mb-3">Form Pengisian Pemantauan Luas Tambah Tanam</h3>
+                        <!-- Lokasi -->
+                        <h4 class="mb-3">Selamat datang, Juru - @{{petugas_nama}}</h4>
+                        <button type="button" class="btn btn-outline-danger btn-sm" @click="keluarJuru">
+                            <i class="bx bx-log-out"></i> Keluar
+                        </button>
                     </div>
                 </div>
-                <div v-if="showForm">
-                    <div class="card shadow-lg p-4 mt-2">
-                        <h3 class="mb-3">Petugas : @{{petugas_nama}}</h3>
-                        <h5 class="my-3">II. Detail Pengisian</h5>
-                        <!-- Tanggal -->
+                <div class="card shadow-lg pb-2 mt-2">
+                    <div class="card-body">
+                        <h5 class="my-3">I. Pilih Saluran, Lokasi dan Tanggal Pantau</h5>
                         <div class="mb-3">
-                            <label class="form-label">Tanggal Pantau <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" v-model="form.tanggal_pantau" required>
+
+                            <label class="form-label">Saluran <span class="text-danger">*</span></label>
+                            <select class="form-select" v-model="form.saluran_id" @change="checkSaluran">
+                                <option value="">-- Pilih --</option>
+                                <option
+                                    v-for="s in salurans"
+                                    :key="s.id"
+                                    :value="s.id">
+                                    @{{ s.nama }} - DI @{{ s.daerah_irigasi.nama }} - Kab. @{{ s.daerah_irigasi.kabupatens[0].nama }}
+                                </option>
+                            </select>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Kecamatan <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="form.kecamatan"
-                                    :class="{ 'is-invalid': submitted && (!form.kecamatan || form.kecamatan.trim() === '') }">
-                                <div class="invalid-feedback">Kecamtan wajib diisi.</div>
-
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Desa <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="form.desa"
-                                    :class="{ 'is-invalid': submitted && (!form.desa || form.desa.trim() === '') }">
-                                <div class="invalid-feedback">Desa wajib diisi.</div>
-
-                            </div>
-                        </div>
-
-                        <!-- Saluran -->
                         <div class="mb-3">
                             <label class="form-label">Bangunan <span class="text-danger">*</span></label>
                             <select class="form-select" v-model="form.bangunan_id" @change="checkBangunan"
@@ -152,41 +139,61 @@
                                     @{{ infoGambarSkema }}
                                 </small>
                             </div>
-
                             <div v-else-if="form.petak_id && !previewPetak" class="mt-3">
                                 <p class="fw-bold">Gambar Petak : - </p>
                                 <small class="text-muted d-block mt-2">
                                     @{{ infoGambarSkema }}
                                 </small>
                             </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Kecamatan <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="form.kecamatan"
+                                    :class="{ 'is-invalid': submitted && (!form.kecamatan || form.kecamatan.trim() === '') }">
+                                <div class="invalid-feedback">Kecamtan wajib diisi.</div>
 
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Desa <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="form.desa"
+                                    :class="{ 'is-invalid': submitted && (!form.desa || form.desa.trim() === '') }">
+                                <div class="invalid-feedback">Desa wajib diisi.</div>
+
+                            </div>
                         </div>
 
 
 
-                        <!-- Koordinat -->
-                        <!-- <div class="mb-3">
-                            <label class="form-label">Koordinat</label>
-                            <input type="text" class="form-control" v-model="form.koordinat"
-                                placeholder="-3.98123, 122.5123"
-                                :class="{ 'is-invalid': submitted && (!form.koordinat || form.koordinat.trim() === '') }">
-                            <div class="invalid-feedback">Koordinat wajib diisi.</div>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            :disabled="!isReadyToContinue"
+                            @click="showForm">
+                            Lanjut <i class="bx bx-arrow-right"></i>
+                        </button>
 
-                        </div> -->
                     </div>
+                </div>
+                <div v-if="is_show_form">
 
                     <!-- Debit & Masa Tanam -->
-                    <div class="card shadow-lg p-4 mt-1">
+                    <div class="card shadow-lg p-4 mt-1" id="showForm">
 
-                        <h5 class="my-3">III. Pemantauan luas Tambah Tanam</h5>
+                        <h5 class="my-3">II. Pemantauan luas Tambah Tanam</h5>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <!-- <div class="col-md-6">
                                 <label class="form-label">Debit Air (lt/det)</label>
                                 <input type="number" step="0.01" class="form-control" v-model="form.debit_air">
+                            </div> -->
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Pantau <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" v-model="form.tanggal_pantau" required>
+                                <small class="text-muted">Tanggal pengambilan data, bukan tanggal saat mengisi form</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Masa Tanam <span class="text-danger">*</span></label>
+                                <label class="form-label">Masa Tanam (MT)<span class="text-danger">*</span></label>
                                 <select class="form-select" v-model="form.masa_tanam"
                                     :class="{ 'is-invalid': submitted && (!form.masa_tanam || form.masa_tanam.trim() === '') }">
                                     <option value="">-- Pilih --</option>
@@ -204,15 +211,21 @@
                             <div class="col-md-4">
                                 <label class="form-label">Luas Padi (Ha) <span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" class="form-control" v-model="form.luas_padi">
+                                <small class="text-muted">Isi dengan luas komulatif padi</small>
                             </div>
+
                             <div class="col-md-4">
                                 <label class="form-label">Luas Palawija (Ha) <span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" class="form-control" v-model="form.luas_palawija">
+                                <small class="text-muted">Isi dengan luas komulatif palawija</small>
                             </div>
+
                             <div class="col-md-4">
                                 <label class="form-label">Luas Lainnya (Ha) <span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" class="form-control" v-model="form.luas_lainnya">
+                                <small class="text-muted">Isi dengan luas komulatif lainnya</small>
                             </div>
+
                         </div>
                         <!-- Upload Foto pemantauan -->
                         <div class="mb-3">
@@ -229,17 +242,46 @@
                     </div>
                     <div class="card shadow-lg p-4 mt-1">
 
-                        <h5 class="my-3">IV. Kelembagaan</h5>
+                        <h5 class="my-3">III. Kelembagaan</h5>
                         <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label">Nama P3A <span class="text-danger">*</span></label>
-                                <input type="number" step="0.01" class="form-control">
+                            <div class="col-md-12">
+                                <label class="form-label">P3A</label>
+
+                                <!-- input pencarian -->
+                                <input type="text" class="form-control" v-model="p3aSearch"
+                                    placeholder="Ketik minimal 3 huruf untuk mencari P3A..."
+                                    @input="searchP3A">
+
+                                <!-- dropdown hasil pencarian -->
+                                <div v-if="showP3ASearch && p3aResults.length"
+                                    class="border rounded mt-1 bg-white position-absolute w-50 shadow-sm"
+                                    style="z-index: 1000;">
+                                    <div v-for="p in p3aResults" :key="p.id"
+                                        class="p-2 hover-bg"
+                                        @click="selectP3A(p)"
+                                        style="cursor:pointer;">
+                                        @{{ p.nama }}
+                                    </div>
+                                </div>
+
+                                <!-- daftar P3A terpilih -->
+                                <div class="mt-2">
+                                    <span v-for="(p, i) in form.p3a" :key="p.id"
+                                        class="badge bg-primary me-2">
+                                        @{{ p.nama }}
+                                        <button type="button" class="btn-close btn-close-white btn-sm ms-1"
+                                            style="font-size: .6rem;"
+                                            @click="removeP3A(i)">
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                     <div class="card shadow-lg p-4 mt-1">
 
-                        <h5 class="my-3">V. Pemantauan Permasalahan</h5>
+                        <h5 class="my-3">IV. Pemantauan Permasalahan</h5>
 
                         <div v-for="(p,index) in permasalahans" :key="p.id" class="mb-4 pb-3">
                             <!-- Nama permasalahan -->
@@ -306,12 +348,11 @@
 
 
                         <!-- Submit -->
-                        <button type="button" class="btn btn-primary" @click="openForm">Submit</button>
+                        <button type="button" class="btn btn-primary" @click="openForm">Review</button>
                     </div>
-                </div>
-            </div>
 
-        </form>
+            </form>
+        </div>
 
         <!-- Modal -->
         <div class="modal fade" id="formLTTModal" tabindex="-1" aria-hidden="true">
@@ -319,94 +360,139 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h5 class="modal-title">Form Pemantauan LTT</h5>
+                        <h5 class="modal-title">Review Form Pemantauan LTT</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
                     <div class="modal-body">
-                        <!-- Header -->
-                        <h4 class="text-center mb-3">FORM PEMANTAUAN LUAS TAMBAH TANAM (LTT)</h4>
 
                         <!-- Identitas -->
-                        <div class="mb-3">
-                            <div class="form-line"><span>Nama Petugas OP</span>:
-                                @{{ petugas_nama || '-' }}</div>
-                            <div class="form-line"><span>Tanggal Pemantauan</span>:
-                                @{{ formatTanggal(form?.tanggal_pantau) }}</div>
-                            <div class="form-line"><span>Daerah Irigasi</span>:
-                                @{{selectedDINama}}</div>
-                            <div class="form-line"><span>Desa/Kelurahan</span>: @{{form.desa}}</div>
-                            <div class="form-line"><span>Kecamatan</span>: @{{form.kecamatan}}</div>
-                            <div class="form-line"><span>Kabupaten/Kota</span>:
-                                @{{selectedKabupatenNama}}</div>
-                            <div class="form-line"><span>Nama Saluran (Sekunder/Primer)</span>:
-                                @{{selectedSaluranNama}}</div>
-                            <div class="form-line"><span>Nama Bangunan Bagi/Sadap</span>:
-                                @{{selectedBangunanNama}}</div>
-                            <div class="form-line"><span>Kode/Nama Petak Layanan</span>:
-                                @{{selectedPetakNama}}</div>
-                            <!-- <div class="form-line"><span>Koordinat Bangunan Bagi/Sadap</span>: @{{form.koordinat}} -->
-                            <!-- </div> -->
-                        </div>
-                        <div class="table-responsive">
+                        <div class="p-3 rounded shadow-sm bg-light mb-4">
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Nama Petugas OP</small>
+                                <span class="fw-semibold">@{{ petugas_nama || '-' }}</span>
+                            </div>
 
-                            <!-- Tabel -->
-                            <table class="table table-bordered text-center align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th rowspan="2">Debit Air (lt/detik)</th>
-                                        <th rowspan="2">Luas Petak Skema (Ha)</th>
-                                        <th colspan="3">Pemantauan Luas Tambah Tanam (LTT)</th>
-                                    </tr>
-                                    <tr>
-                                        <th>Padi (Ha)</th>
-                                        <th>Palawija (Ha)</th>
-                                        <th>Lainnya (Ha)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>@{{ form.debit_air}}</td>
-                                        <td>@{{ petak_luas}}</td>
-                                        <td>@{{ form.luas_padi}}</td>
-                                        <td>@{{ form.luas_palawija}}</td>
-                                        <td>@{{ form.luas_lainnya}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-responsive">
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Tanggal Pemantauan</small>
+                                <span class="fw-semibold">@{{ formatTanggal(form?.tanggal_pantau) }}</span>
+                            </div>
 
-                            <!-- Tabel -->
-                            <table class="table table-bordered text-center align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Pemantauan Permasalahan</th>
-                                        <th>Ada/Tidak</th>
-                                        <th>Keterangan</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-for="(p,index) in form.permasalahan" :key="p.id">
-                                    <tr>
-                                        <td>@{{ index}}</td>
-                                        <td>@{{ permasalahans.find(pm => pm.id == p.master_permasalahan_id)?.nama }}
-                                        </td>
-                                        <td class="text-center">
-                                            <span v-if="p.status=='ada'">Ada</span>
-                                            <span v-else>Tidak</span>
-                                        </td>
-                                        <td>@{{ p.keterangan}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Daerah Irigasi</small>
+                                <span class="fw-semibold">@{{ selectedDINama }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Desa/Kelurahan</small>
+                                <span class="fw-semibold">@{{ form.desa }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Kecamatan</small>
+                                <span class="fw-semibold">@{{ form.kecamatan }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Kabupaten/Kota</small>
+                                <span class="fw-semibold">@{{ selectedKabupatenNama }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Nama Saluran (Sekunder/Primer)</small>
+                                <span class="fw-semibold">@{{ selectedSaluranNama }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Nama Bangunan Bagi/Sadap</small>
+                                <span class="fw-semibold">@{{ selectedBangunanNama }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Kode/Nama Petak Layanan</small>
+                                <span class="fw-semibold">@{{ selectedPetakNama }}</span>
+                            </div>
+                            <!-- Tabel LTT -->
+                            <hr class="mt-2">
+
+                            <h5 class="fw-bold mt-3">Pemantauan Luas Tambah Tanam (LTT)</h5>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Luas Komulatif Padi</small>
+                                <span class="fw-semibold">@{{ form.luas_padi }} ha</span>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Luas Komulatif Palawija</small>
+                                <span class="fw-semibold">@{{ form.luas_palawija }} ha</span>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Luas Komulatif Lainnya</small>
+                                <span class="fw-semibold">@{{ form.luas_lainnya }} ha</span>
+                            </div>
+                            <div v-if="previewFoto" class="mt-3">
+                                <h4>Foto Pemantauan</h4>
+                                <img :src="previewFoto" alt="Preview Foto" class="img-fluid rounded" width="300">
+                            </div>
+                            <!-- <div class="table-responsive mb-4">
+                                <table class="table table-bordered text-center align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th rowspan="2">Luas Petak Skema (Ha)</th>
+                                            <th colspan="3">Pemantauan Luas Tambah Tanam (Ha)</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Padi</th>
+                                            <th>Palawija</th>
+                                            <th>Lainnya</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@{{ petak_luas }}</td>
+                                            <td>@{{ form.luas_padi }}</td>
+                                            <td>@{{ form.luas_palawija }}</td>
+                                            <td>@{{ form.luas_lainnya }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> -->
+                            <hr class="mt-2">
+
+                            <h5 class="fw-bold mt-3">Kelembagaan P3A</h5>
+
+                            <div class="mb-3">
+                                <template v-if="form.p3a && form.p3a.length">
+                                    <span v-for="p in form.p3a" :key="p.id" class="badge bg-primary me-1 mb-1">
+                                        @{{ p.nama }}
+                                    </span>
+                                </template>
+                                <p v-else class="text-muted fst-italic">Data P3A tidak ada / tidak diisi.</p>
+                            </div>
+
+
+                            <!-- Tabel Permasalahan -->
+                            <hr class="mt-2">
+
+                            <h5 class="fw-bold">Permasalahan di Lapangan</h5>
+
+                            <div class="mb-2" v-for="(p, index) in form.permasalahan" :key="p.id">
+                                <span class="fw-semibold">
+                                    <div v-if="p.status=='ada'">
+                                        @{{ index }}. @{{ permasalahans.find(pm => pm.id == p.master_permasalahan_id)?.nama }} <br>
+                                        <span class="text-danger fw-bold">
+                                            Ada
+                                        </span> <br>
+                                        Keterangan : @{{ p.keterangan || '-' }}<br>
+                                        Foto permasalahan :
+                                        <img :src="p.foto_permasalahanPreview" alt="Preview Foto Permasalahan" class="img-fluid rounded" width="300">
+                                    </div>
+
+                                </span>
+                            </div>
+
+
                         </div>
-                        <div v-if="previewFoto" class="mt-3">
-                            <h4>Foto Pemantauan</h4>
-                            <img :src="previewFoto" alt="Preview Foto" class="img-fluid rounded" width="300">
-                        </div>
+
                     </div>
-
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         <button class="btn btn-primary" @click="submitForm">Kirim Formulir</button>
@@ -414,174 +500,195 @@
                 </div>
             </div>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
-    <script>
-        const {
-            createApp
-        } = Vue;
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+        <script>
+            const {
+                createApp
+            } = Vue;
 
-        createApp({
-            data() {
-                return {
-                    kabupaten: [],
-                    daerahIrigasi: [],
-                    salurans: [],
-                    bangunans: [],
-                    petaks: [],
-                    permasalahans: [], // ambil dari API form_permasalahans
-                    petugas: [], // ambil dari API petugas
-                    showForm: false,
-                    petugas_nama: '',
-                    petak_luas: 0,
-                    form: {
-                        sesi_id: 1,
-                        petugas_id: '',
-                        tanggal_pantau: new Date().toISOString().slice(0, 10), // hasil: "2025-09-17"
-                        kabupaten_id: '',
-                        daerah_irigasi_id: '',
-                        saluran_id: '',
-                        bangunan_id: '',
-                        petak_id: '',
-                        kecamatan: '',
-                        desa: '',
-                        koordinat: '-',
-                        debit_air: 0,
-                        masa_tanam: '',
-                        luas_padi: 0,
-                        luas_palawija: 0,
-                        luas_lainnya: 0,
-                        permasalahan: {},
-                        foto_pemantauan: '',
+            createApp({
+                data() {
+                    return {
+                        juru: false,
+                        kode: '',
+                        kabupaten: [],
+                        daerahIrigasi: [],
+                        salurans: [],
+                        bangunans: [],
+                        petaks: [],
+                        permasalahans: [], // ambil dari API form_permasalahans
+                        petugas: [], // ambil dari API petugas
+                        is_show_form: false,
+                        petugas_nama: '',
+                        petak_luas: 0,
+                        form: {
+                            sesi_id: 1,
+                            petugas_id: '',
+                            tanggal_pantau: new Date().toISOString().slice(0, 10), // hasil: "2025-09-17"
+                            kabupaten_id: '',
+                            daerah_irigasi_id: '',
+                            saluran_id: '',
+                            bangunan_id: '',
+                            petak_id: '',
+                            kecamatan: '',
+                            desa: '',
+                            koordinat: '-',
+                            debit_air: 0,
+                            masa_tanam: '',
+                            luas_padi: 0,
+                            luas_palawija: 0,
+                            luas_lainnya: 0,
+                            permasalahan: {},
+                            p3a: [], // ✅ ubah ke array
+                            foto_pemantauan: '',
+                        },
+                        previewPetak: null,
+                        infoGambarSkema: '',
+                        previewFoto: null,
+                        submitted: false,
+                        p3aSearch: '',
+                        p3aResults: [],
+                        showP3ASearch: false,
+                        searchTimeout: null,
+                        selectedKabupatenNama: '',
+                        selectedDINama: ''
+
+                    }
+                },
+                computed: {
+                    isReadyToContinue() {
+                        return (
+                            this.form.saluran_id &&
+                            this.form.bangunan_id &&
+                            this.form.petak_id &&
+                            this.form.kecamatan &&
+                            this.form.desa
+                        );
                     },
-                    previewPetak: null,
-                    infoGambarSkema: '',
-                    previewFoto: null,
-                    submitted: false
-
-                }
-            },
-            computed: {
-                selectedDINama() {
-                    let di = this.daerahIrigasi.find(d => d.id == this.form.daerah_irigasi_id);
-                    return di ? di.nama : '';
+                    selectedSaluranNama() {
+                        let data = this.salurans.find(d => d.id == this.form.saluran_id);
+                        return data ? data.nama : '';
+                    },
+                    selectedBangunanNama() {
+                        let data = this.bangunans.find(d => d.id == this.form.bangunan_id);
+                        return data ? data.nama : '';
+                    },
+                    selectedPetakNama() {
+                        let data = this.petaks.find(d => d.id == this.form.petak_id);
+                        return data ? data.nama : '';
+                    },
                 },
-                selectedKabupatenNama() {
-                    let data = this.kabupaten.find(d => d.id == this.form.kabupaten_id);
-                    return data ? data.nama : '';
-                },
-                selectedSaluranNama() {
-                    let data = this.salurans.find(d => d.id == this.form.saluran_id);
-                    return data ? data.nama : '';
-                },
-                selectedBangunanNama() {
-                    let data = this.bangunans.find(d => d.id == this.form.bangunan_id);
-                    return data ? data.nama : '';
-                },
-                selectedPetakNama() {
-                    let data = this.petaks.find(d => d.id == this.form.petak_id);
-                    return data ? data.nama : '';
-                },
-            },
-            methods: {
-                async checkKabupaten() {
-                    if (this.form.kabupaten_id) {
-                        let res = await axios.get(
-                            `/api/master/daerah-irigasi?kabupaten_id=${this.form.kabupaten_id}`);
-                        this.daerahIrigasi = res.data;
-                    } else {
-                        this.daerahIrigasi = [];
-                    }
-                    this.form.daerah_irigasi_id = '';
-                    this.form.petugas_id = '';
-                    this.form.saluran_id = '';
-                    this.form.petak_id = '';
-                    this.petugas = [];
-                    this.salurans = [];
-                    this.petaks = [];
-                },
-                async checkIrigasi() {
-                    if (this.form.daerah_irigasi_id) {
-                        let res = await axios.get(
-                            `/api/master/saluran?daerah_irigasi_id=${this.form.daerah_irigasi_id}`);
-                        this.salurans = res.data;
-                    } else {
-                        this.salurans = [];
-                    }
-                    console.log(this.salurans);
-
-                    this.form.saluran_id = '';
-                    this.form.petak_id = '';
-                    this.bangunans = [];
-                    this.petaks = [];
-                },
-
-                async checkSaluran() {
-                    if (this.form.saluran_id) {
-                        // minta kode dulu
-                        const saluran = this.salurans.find(s => s.id === this.form.saluran_id);
-                        console.log(saluran.petugas)
-                        if (saluran && saluran.petugas) {
-                            this.form.petugas_id = saluran.petugas[0].id
-                            this.petugas_nama = saluran.petugas[0].nama
-                        } else {
-                            this.form.petugas_id = '';
-                            this.petugas_nama = '';
-                        }
-                        const kode = prompt("Masukkan kode petugas:");
-                        if (!kode) {
-                            this.form.saluran_id = '';
-                            this.form.petugas_id = '';
-                            this.petugas_nama = '';
-                            this.showForm = false;
+                methods: {
+                    async searchP3A() {
+                        // minimal 3 huruf
+                        if (this.p3aSearch.length < 3) {
+                            this.p3aResults = [];
+                            this.showP3ASearch = false;
                             return;
                         }
 
-                        try {
-                            // cek kode ke server
-                            await axios.post('/api/petugas/validasi-kode', {
-                                saluran_id: this.form.saluran_id,
-                                petugas_id: this.form.petugas_id, // 🔹 sudah ada
-                                kode: kode
-                            });
-
-                            // kalau sukses → ambil saluran
-                            let res = await axios.get(
-                                `/api/master/bangunan?saluran_id=${this.form.saluran_id}`);
-                            this.bangunans = res.data;
-
-                            // reset field turunan
-                            this.form.bangunan_id = '';
-                            this.form.petak_id = '';
-                            this.form.kecamatan = '';
-                            this.form.desa = '';
-                            this.form.koordinat = '-';
-                            this.form.luas_padi = 0;
-                            this.form.luas_palawija = 0;
-                            this.form.luas_lainnya = 0;
-                            this.form.debit_air = 0;
-                            this.form.masa_tanam = '';
-                            this.getMasterPermasalahan();
-
-                            this.petaks = [];
-                            this.showForm = true; // tampilkan form lanjutan
-                        } catch (err) {
-                            alert("Kode salah, atau pengguna sudah dinon aktifkan!, hubungi koordinator anda.");
-                            // reset kembali dropdown dan field
-                            this.form.saluran_id = '';
-
-                            this.petaks = [];
-                            this.bangunans = [];
-                            this.showForm = false;
+                        // debounce agar tidak spam API
+                        clearTimeout(this.searchTimeout);
+                        this.searchTimeout = setTimeout(async () => {
+                            try {
+                                let res = await axios.get(`/api/master/p3a?search=${this.p3aSearch}&per_page=all`);
+                                this.p3aResults = res.data.data || res.data; // bisa paginate atau full
+                                this.showP3ASearch = true;
+                            } catch (err) {
+                                console.error(err);
+                            }
+                        }, 400);
+                    },
+                    selectP3A(p) {
+                        // hindari duplikat
+                        if (!this.form.p3a.some(item => item.id === p.id)) {
+                            this.form.p3a.push(p);
                         }
-                    } else {
-                        // kalau kembali ke "-- Pilih --"
-                        this.petaks = [];
-                        this.bangunans = [];
+                        this.p3aSearch = '';
+                        this.p3aResults = [];
+                        this.showP3ASearch = false;
+                    },
+                    removeP3A(index) {
+                        this.form.p3a.splice(index, 1);
+                    },
+                    async cekJuru() {
+                        try {
+                            let res = await axios.post('/api/petugas/validasi-kode', {
+                                kode: this.kode
+                            });
+                            alert("Kode benar, silakan isi form.");
+                            console.log(res);
 
+                            this.juru = true
+                            this.petugas_nama = res.data.petugas.nama
+                            this.form.petugas_id = res.data.petugas.id
+                            localStorage.setItem("juru", JSON.stringify(res.data.petugas));
+
+                        } catch (err) {
+                            alert("Kode salah!");
+                            this.form.petugas_id = '';
+                        }
+                    },
+                    async loadData() {
+                        this.loadSaluran()
+                        // alert('data terisi')
+                    },
+                    async loadSaluran() {
+                        const juru = JSON.parse(localStorage.getItem("juru"));
+                        console.log(juru.id);
+
+                        let res = await axios.get('/api/master/petugas', {
+                            params: {
+                                petugas_id: juru.id
+                            }
+                        });
+
+                        console.log(res.data);
+
+                        // Karena hasil dari controller adalah array (->get()), ambil data pertama
+                        if (res.data.length > 0) {
+                            this.salurans = res.data[0].salurans;
+                        } else {
+                            this.salurans = [];
+                        }
+                    },
+
+                    showForm() {
+                        if (!this.isReadyToContinue) return; // aman-amanin kalau ditekan manual
+                        this.is_show_form = true; // tampilkan form lanjutan
+                        this.$nextTick(() => {
+                            // Tunggu DOM update, lalu scroll ke elemen dengan id="showForm"
+                            const target = document.getElementById("showForm");
+                            if (target) {
+                                target.scrollIntoView({
+                                    behavior: "smooth", // animasi halus
+                                    block: "start" // posisikan di atas layar
+                                });
+                            }
+                        });
+                    },
+                    async checkSaluran() {
+                        let res = await axios.get(
+                            `/api/master/bangunan?saluran_id=${this.form.saluran_id}`);
+                        console.log(res.data);
+
+                        this.bangunans = res.data;
+
+                        // reset field turunan
+                        const selected = this.salurans.find(s => s.id === this.form.saluran_id);
+
+                        if (selected) {
+                            this.form.daerah_irigasi_id = selected.daerah_irigasi.id;
+                            this.form.kabupaten_id = selected.daerah_irigasi.kabupatens[0].id;
+                            this.selectedKabupatenNama = selected.daerah_irigasi.kabupatens[0].nama
+                            this.selectedDINama = selected.daerah_irigasi.nama
+                        } else {
+                            this.form.daerah_irigasi_id = '';
+                            this.form.kabupaten_id = '';
+                        }
                         this.form.bangunan_id = '';
                         this.form.petak_id = '';
                         this.form.kecamatan = '';
@@ -594,254 +701,267 @@
                         this.form.masa_tanam = '';
                         this.getMasterPermasalahan();
 
-                        this.showForm = false;
-                        // alert('gg')
-                    }
-                },
-                async checkBangunan() {
-                    if (this.form.bangunan_id) {
-                        let res = await axios.get(`/api/master/petak?bangunan_id=${this.form.bangunan_id}`);
-                        this.petaks = res.data;
-                    } else {
                         this.petaks = [];
-                    }
-                    // reset petak & preview
-                    this.form.petak_id = '';
-                    this.previewPetak = null;
-                    this.infoGambarSkema = ''; // kosongkan pesan juga
-                },
 
-                checkPetak() {
-                    let petak = this.petaks.find(p => p.id == this.form.petak_id);
-                    console.log("Petak dipilih:", petak);
-
-                    if (petak && petak.gambar_skema) {
-                        this.previewPetak = petak.gambar_skema;
-                        this.infoGambarSkema = 'Apabila gambar petak tidak sesuai, silahkan isi di PERMASALAHAN LAINNYA dan hubungi koordinator untuk perubahan.';
-                    } else {
+                    },
+                    async checkBangunan() {
+                        if (this.form.bangunan_id) {
+                            let res = await axios.get(`/api/master/petak?bangunan_id=${this.form.bangunan_id}`);
+                            this.petaks = res.data;
+                        } else {
+                            this.petaks = [];
+                        }
+                        // reset petak & preview
+                        this.form.petak_id = '';
                         this.previewPetak = null;
-                        this.infoGambarSkema = 'Gambar petak belum tersedia. Silahkan isi di PERMASALAHAN LAINNYA dan hubungi koordinator untuk penginputan gambar petak.';
-                    }
-                },
-                async getKabupaten() {
-                    let res = await axios.get('/api/master/kabupaten');
-                    this.kabupaten = res.data;
-                },
-                async getMasterPermasalahan() {
-                    // contoh fetch data dari API
-                    axios.get('/api/master/permasalahan').then(res => {
-                        this.permasalahans = res.data;
+                        this.infoGambarSkema = ''; // kosongkan pesan juga
+                    },
 
-                        this.permasalahans.forEach(p => {
-                            // Vue 3: langsung assign, tidak perlu $set
-                            if (!this.form.permasalahan[p.id]) {
-                                this.form.permasalahan[p.id] = {
-                                    master_permasalahan_id: p.id,
-                                    status: '',
-                                    keterangan: '',
-                                    foto_permasalahan: ''
-                                };
+                    checkPetak() {
+                        let petak = this.petaks.find(p => p.id == this.form.petak_id);
+                        console.log("Petak dipilih:", petak);
 
+                        if (petak && petak.gambar_skema) {
+                            this.previewPetak = petak.gambar_skema;
+                            this.infoGambarSkema = 'Apabila gambar petak tidak sesuai, silahkan isi di PERMASALAHAN LAINNYA dan hubungi koordinator untuk perubahan.';
+                        } else {
+                            this.previewPetak = null;
+                            this.infoGambarSkema = 'Gambar petak belum tersedia. Silahkan isi di PERMASALAHAN LAINNYA dan hubungi koordinator untuk penginputan gambar petak.';
+                        }
+                    },
+                    async getKabupaten() {
+                        let res = await axios.get('/api/master/kabupaten');
+                        this.kabupaten = res.data;
+                    },
+                    async getMasterPermasalahan() {
+                        // contoh fetch data dari API
+                        axios.get('/api/master/permasalahan').then(res => {
+                            this.permasalahans = res.data;
+
+                            this.permasalahans.forEach(p => {
+                                // Vue 3: langsung assign, tidak perlu $set
+                                if (!this.form.permasalahan[p.id]) {
+                                    this.form.permasalahan[p.id] = {
+                                        master_permasalahan_id: p.id,
+                                        status: '',
+                                        keterangan: '',
+                                        foto_permasalahan: ''
+                                    };
+
+                                }
+                            });
+                        });
+                    },
+                    handleFile(event, id = null) {
+                        const file = event.target.files[0];
+                        if (!file) return;
+
+                        if (id === null) {
+                            // 👉 Jika tanpa ID → berarti upload foto pemantauan utama
+                            this.form.foto_pemantauan = file;
+                            this.previewFoto = URL.createObjectURL(file);
+                        } else {
+                            // 👉 Jika ada ID → berarti upload foto permasalahan
+                            this.form.permasalahan[id].foto_permasalahan = file;
+                            this.form.permasalahan[id].foto_permasalahanPreview = URL.createObjectURL(file);
+                        }
+                    },
+                    openForm() {
+                        console.log(this.form);
+                        if (!this.validateForm()) {
+                            return; // stop kalau tidak valid
+                        }
+                        new bootstrap.Modal(document.getElementById('formLTTModal')).show();
+                    },
+                    formatTanggal(tgl) {
+                        if (!tgl) return '-';
+
+                        // Format ke 17 September 2025
+                        return new Date(tgl).toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    },
+                    async submitForm() {
+                        if (!this.validateForm()) {
+                            return;
+                        }
+
+                        const konfirm = confirm('Yakin simpan? Pastikan semua data sudah benar.');
+                        if (!konfirm) return;
+
+                        const formData = new FormData();
+
+                        // --- data utama ---
+                        for (let key in this.form) {
+                            if (key === 'permasalahan' || key === 'foto_pemantauan') continue;
+                            if (this.form[key] !== null && this.form[key] !== '') {
+                                formData.append(key, this.form[key]);
                             }
-                        });
-                    });
-                },
-                // handleFile(event) {
-                //     const file = event.target.files[0];
-                //     if (file) {
-                //         this.form.foto_pemantauan = file;
-                //         this.previewFoto = URL.createObjectURL(file); // buat URL sementara
-                //         this.previewFoto = URL.createObjectURL(file); // buat URL sementara
-                //     }
-                // },
-                handleFile(event, id = null) {
-                    const file = event.target.files[0];
-                    if (!file) return;
-
-                    if (id === null) {
-                        // 👉 Jika tanpa ID → berarti upload foto pemantauan utama
-                        this.form.foto_pemantauan = file;
-                        this.previewFoto = URL.createObjectURL(file);
-                    } else {
-                        // 👉 Jika ada ID → berarti upload foto permasalahan
-                        this.form.permasalahan[id].foto_permasalahan = file;
-                        this.form.permasalahan[id].foto_permasalahanPreview = URL.createObjectURL(file);
-                    }
-                },
-                openForm() {
-                    console.log(this.form);
-                    if (!this.validateForm()) {
-                        // alert('pastikan semua data terisi')
-                        return; // stop kalau tidak valid
-                    }
-                    new bootstrap.Modal(document.getElementById('formLTTModal')).show();
-                },
-                formatTanggal(tgl) {
-                    if (!tgl) return '-';
-
-                    // Format ke 17 September 2025
-                    return new Date(tgl).toLocaleDateString('id-ID', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                },
-                async submitForm() {
-                    if (!this.validateForm()) {
-                        return;
-                    }
-
-                    const konfirm = confirm('Yakin simpan? Pastikan semua data sudah benar.');
-                    if (!konfirm) return;
-
-                    const formData = new FormData();
-
-                    // --- data utama ---
-                    for (let key in this.form) {
-                        if (key === 'permasalahan' || key === 'foto_pemantauan') continue;
-                        if (this.form[key] !== null && this.form[key] !== '') {
-                            formData.append(key, this.form[key]);
-                        }
-                    }
-
-                    // --- foto pemantauan utama ---
-                    if (this.form.foto_pemantauan) {
-                        formData.append('foto_pemantauan', this.form.foto_pemantauan);
-                    }
-
-                    // --- data permasalahan ---
-                    // gunakan urutan index agar bisa dibaca backend (misalnya permasalahan[0], permasalahan[1])
-                    let index = 0;
-                    for (let id in this.form.permasalahan) {
-                        const p = this.form.permasalahan[id];
-                        formData.append(`permasalahan[${index}][master_permasalahan_id]`, p.master_permasalahan_id);
-                        formData.append(`permasalahan[${index}][status]`, p.status);
-                        formData.append(`permasalahan[${index}][keterangan]`, p.keterangan || '');
-
-                        // tambahkan foto kalau ada
-                        if (p.foto_permasalahan instanceof File) {
-                            formData.append(`foto_permasalahan[${index}]`, p.foto_permasalahan);
                         }
 
-                        index++;
-                    }
+                        // --- foto pemantauan utama ---
+                        if (this.form.foto_pemantauan) {
+                            formData.append('foto_pemantauan', this.form.foto_pemantauan);
+                        }
 
-                    // --- kirim ke backend ---
-                    try {
-                        const res = await axios.post('/api/form-pengisian', formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
+                        // --- data permasalahan ---
+                        // gunakan urutan index agar bisa dibaca backend (misalnya permasalahan[0], permasalahan[1])
+                        let index = 0;
+                        for (let id in this.form.permasalahan) {
+                            const p = this.form.permasalahan[id];
+                            formData.append(`permasalahan[${index}][master_permasalahan_id]`, p.master_permasalahan_id);
+                            formData.append(`permasalahan[${index}][status]`, p.status);
+                            formData.append(`permasalahan[${index}][keterangan]`, p.keterangan || '');
+
+                            if (p.foto_permasalahan instanceof File) {
+                                formData.append(`permasalahan[${index}][foto_permasalahan]`, p.foto_permasalahan);
                             }
-                        });
+                            index++;
+                        }
+                        // --- data p3a ---
+                        if (Array.isArray(this.form.p3a)) {
+                            this.form.p3a.forEach((p, index) => {
+                                formData.append(`p3a[${index}][p3a_id]`, p.id); // ✅ gunakan p.id, bukan p.p3a_id
+                            });
+                        }
 
-                        alert('Data berhasil disimpan');
-                        this.resetForm();
 
-                        // tutup modal jika ada
-                        const modalEl = document.getElementById('formLTTModal');
-                        const modal = bootstrap.Modal.getInstance(modalEl);
-                        if (modal) modal.hide();
+                        console.log(this.form.p3a);
 
-                    } catch (error) {
-                        console.error('Error submitting form:', error.response ? error.response.data : error.message);
-                        const errorMessage = error.response?.data?.message || 'Terjadi kesalahan saat menyimpan data.';
-                        alert(errorMessage);
-                    }
-                },
-                resetForm() {
-                    this.form = {
-                        sesi_id: 1,
-                        petugas_id: '',
-                        tanggal_pantau: new Date().toISOString().slice(0, 10), // tetap default hari ini
-                        kabupaten_id: '',
-                        daerah_irigasi_id: '',
-                        saluran_id: '',
-                        bangunan_id: '',
-                        petak_id: '',
-                        kecamatan: '',
-                        desa: '',
-                        koordinat: '-',
-                        debit_air: '',
-                        masa_tanam: '',
-                        luas_padi: 0,
-                        luas_palawija: 0,
-                        luas_lainnya: 0,
-                        permasalahan: {},
-                        foto_pemantauan: '',
-                    }
-                    this.previewFoto = null
-                    this.showForm = false
-                    this.getMasterPermasalahan();
+                        // --- kirim ke backend ---
+                        try {
+                            const res = await axios.post('/api/form-pengisian', formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            });
 
-                },
-                async mintaKode() {
-                    if (!this.form.petugas_id) return;
+                            alert('Data berhasil disimpan');
+                            location.reload(); // 🔄 reload halaman setelah berhasil
 
-                    const kode = prompt("Masukkan kode petugas:");
-                    if (!kode) {
-                        this.form.petugas_id = '';
-                        this.form.saluran_id = '';
-                        return;
-                    }
+                        } catch (error) {
+                            console.error('Error submitting form:', error.response ? error.response.data : error.message);
+                            const errorMessage = error.response?.data?.message || 'Terjadi kesalahan saat menyimpan data.';
+                            alert(errorMessage);
+                        }
+                    },
+                    resetForm() {
+                        this.form = {
+                            sesi_id: 1,
+                            tanggal_pantau: new Date().toISOString().slice(0, 10), // tetap default hari ini
+                            kabupaten_id: '',
+                            daerah_irigasi_id: '',
+                            saluran_id: '',
+                            bangunan_id: '',
+                            petak_id: '',
+                            kecamatan: '',
+                            desa: '',
+                            koordinat: '-',
+                            debit_air: 0,
+                            masa_tanam: '',
+                            luas_padi: 0,
+                            luas_palawija: 0,
+                            luas_lainnya: 0,
+                            permasalahan: {},
+                            foto_pemantauan: '',
+                        }
+                        this.previewFoto = null
+                        this.is_show_form = false
+                        this.getMasterPermasalahan();
 
-                    try {
-                        await axios.post('/api/petugas/validasi-kode', {
-                            petugas_id: this.form.petugas_id,
-                            saluran_id: this.form.saluran_id,
-                            kode: kode
-                        });
-                        alert("Kode benar, silakan isi form.");
-                    } catch (err) {
-                        alert("Kode salah!");
-                        this.form.petugas_id = '';
-                    }
-                },
-                validateForm() {
-                    this.submitted = true; // tandai sudah dicoba submit
+                    },
+                    async mintaKode() {
+                        if (!this.form.petugas_id) return;
 
-                    console.log(this.form.foto_pemantauan);
+                        const kode = prompt("Masukkan kode petugas:");
+                        if (!kode) {
+                            this.form.petugas_id = '';
+                            this.form.saluran_id = '';
+                            return;
+                        }
 
-                    // cek semua key di form
-                    for (let [key, value] of Object.entries(this.form)) {
-                        if (key !== 'foto_pemantauan' && (value === '' || value === null)) {
-                            alert(`Field ${key} wajib diisi!`);
+                        try {
+                            await axios.post('/api/petugas/validasi-kode', {
+                                petugas_id: this.form.petugas_id,
+                                saluran_id: this.form.saluran_id,
+                                kode: kode
+                            });
+                            alert("Kode benar, silakan isi form.");
+                        } catch (err) {
+                            alert("Kode salah!");
+                            this.form.petugas_id = '';
+                        }
+                    },
+                    validateForm() {
+                        this.submitted = true; // tandai sudah dicoba submit
+
+                        console.log(this.form.foto_pemantauan);
+
+                        const optionalFields = ['foto_pemantauan', 'p3a', 'permasalahan'];
+
+                        for (let [key, value] of Object.entries(this.form)) {
+                            if (!optionalFields.includes(key) && (value === '' || value === null)) {
+                                alert(`Field ${key} wajib diisi!`);
+                                return false;
+                            }
+                        }
+
+
+                        // validasi khusus foto
+                        if (this.form.foto_pemantauan === "") {
+                            alert("Foto pemantauan wajib diisi!");
                             return false;
+                        }
+                        if (this.form.debit_air === "" || this.form.debit_air === "0") {
+                            return true;
+                        }
+
+
+                        // validasi permasalahan
+                        for (let [id, per] of Object.entries(this.form.permasalahan)) {
+
+                            if (per.status === 'ada' && (!per.keterangan || per.keterangan.trim() === '')) {
+                                alert(`Keterangan permasalahan wajib diisi jika ada!`);
+                                return false;
+                            }
+                            if (per.status === 'ada' && (!per.foto_permasalahan)) {
+                                alert(`Foto permasalahan wajib diisi jika ada!`);
+                                return false;
+                            }
+                        }
+                        return true; // valid
+                    },
+                    loadJuru() {
+                        let juru = localStorage.getItem("juru");
+                        if (juru) {
+                            const data = JSON.parse(juru);
+                            this.petugas_nama = data.nama;
+                            this.form.petugas_id = data.id;
+                            this.juru = true
+
+                            this.loadData()
+
+                        }
+                    },
+                    keluarJuru() {
+                        if (confirm('Yakin ingin keluar dari akun juru ini?')) {
+                            localStorage.removeItem('juru');
+                            this.juru = null;
+                            alert('Anda telah keluar.');
                         }
                     }
 
-                    // validasi khusus foto
-                    if (this.form.foto_pemantauan === "") {
-                        alert("Foto pemantauan wajib diisi!");
-                        return false;
-                    }
-                    if (this.form.debit_air === "" || this.form.debit_air === "0") {
-                        return true;
-                    }
-
-                    // validasi permasalahan
-                    for (let [id, per] of Object.entries(this.form.permasalahan)) {
-                        console.log(per.foto_permasalahan);
-
-                        if (per.status === 'ada' && (!per.keterangan || per.keterangan.trim() === '')) {
-                            alert(`Keterangan permasalahan wajib diisi jika ada!`);
-                            return false;
-                        }
-                        if (per.status === 'ada' && (!per.foto_permasalahan)) {
-                            alert(`Foto permasalahan wajib diisi jika ada!`);
-                            return false;
-                        }
-                    }
-                    return true; // valid
                 },
+                mounted() {
+                    this.loadJuru();
 
-
-            },
-            mounted() {
-                this.getKabupaten();
-                this.getMasterPermasalahan();
-            },
-        }).mount('#app')
-    </script>
+                    // this.getKabupaten();
+                    // this.getMasterPermasalahan();
+                },
+            }).mount('#app')
+        </script>
 </body>
 
 </html>

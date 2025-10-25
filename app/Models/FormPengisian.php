@@ -38,6 +38,10 @@ class FormPengisian extends Model
     {
         return $this->hasMany(FormPermasalahan::class);
     }
+    public function formPengisianP3a()
+    {
+        return $this->hasMany(FormPengisianP3a::class);
+    }
 
     public function validasi()
     {

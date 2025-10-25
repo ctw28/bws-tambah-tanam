@@ -4,7 +4,7 @@
 <div id="app" v-cloak class="p-4">
     <div class="card h-100">
         <div class="card-body">
-            <h2>📊 Dashboard Rekap Laporan</h2>
+            <h2>📊 Informasi Hasil Pemantauan Luas Tanam</h2>
             <!-- Filter tanggal -->
             <div class="mb-3">
                 <div class="row g-2">
@@ -33,32 +33,32 @@
             <div class="row text-center mb-3">
                 <div class="col">
                     <div class="card shadow-sm p-3">
-                        <h6>Total Laporan</h6>
+                        <h6>Total Laporan Juru Tervalidasi</h6>
                         <h4>@{{ filteredItems.length }}</h4>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card shadow-sm p-3">
-                        <h6>Total Luas Padi</h6>
-                        <h4>@{{ totalLuas.padi.toFixed(2) }} ha</h4>
+                        <h6>Total Luas Tanam Padi</h6>
+                        <h4>@{{ totalLuas.padi }} ha</h4>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card shadow-sm p-3">
-                        <h6>Total Luas Palawija</h6>
-                        <h4>@{{ totalLuas.palawija.toFixed(2) }} ha</h4>
+                        <h6>Total Luas Tanam Palawija</h6>
+                        <h4>@{{ totalLuas.palawija }} ha</h4>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card shadow-sm p-3">
-                        <h6>Total Luas Lainnya</h6>
-                        <h4>@{{ totalLuas.lainnya.toFixed(2) }} ha</h4>
+                        <h6>Total Luas Tanam Lainnya</h6>
+                        <h4>@{{ totalLuas.lainnya }} ha</h4>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card shadow-sm p-3">
-                        <h6>Total Semua</h6>
-                        <h4>@{{ totalLuas.total.toFixed(2) }} ha</h4>
+                        <h6>Total Luas Tanam</h6>
+                        <h4>@{{ totalLuas.total }} ha</h4>
                     </div>
                 </div>
             </div>
@@ -68,32 +68,34 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
+                            <th>No</th>
                             <th>Daerah Irigasi</th>
+                            <th>Total (ha)</th>
                             <th>Baku</th>
                             <th>Potensial</th>
                             <th>Fungsional</th>
                             <!-- <th>Padi (ha)</th>
                             <th>Palawija (ha)</th>
                             <th>Lainnya (ha)</th> -->
-                            <th>Total (ha)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(data, namaDI) in rekapPerDaerahIrigasi" :key="namaDI">
+                        <tr v-for="(data, namaDI,index) in rekapPerDaerahIrigasi" :key="namaDI">
+                            <td>@{{ index + 1 }}</td>
                             <td>@{{ namaDI }}</td>
+                            <td>@{{ data.total.toFixed(2) }}</td>
                             <td>@{{ data.baku.toFixed(3) }}</td>
                             <td>@{{ data.potensial.toFixed(3) }}</td>
                             <td>@{{ data.fungsional.toFixed(3) }}</td>
                             <!-- <td>@{{ data.padi.toFixed(2) }}</td> -->
                             <!-- <td>@{{ data.palawija.toFixed(2) }}</td> -->
                             <!-- <td>@{{ data.lainnya.toFixed(2) }}</td> -->
-                            <td>@{{ data.total.toFixed(2) }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <!-- Rekap per petugas -->
-            <h4 class="mt-5">📌 Rekap per Petugas</h4>
+            <!-- <h4 class="mt-5">📌 Rekap per Petugas</h4>
             <div class="table-responsive">
 
                 <table class="table">
@@ -118,11 +120,11 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div> -->
             <!-- Chart -->
-            <h4 class="mt-5">📈 Grafik Per DI</h4>
+            <h4 class="mt-5">📈 Informasi Grafis Luas Tanam Daerah Irigasi : </h4>
             <canvas id="chartDI" height="100"></canvas>
-            <h4 class="mt-5">📈 Grafik Per Item</h4>
+            <h4 class="mt-5">📈 Infromasi Grafis Jenis Tanaman</h4>
             <canvas id="chartItem" height="100"></canvas>
         </div>
     </div>
@@ -158,20 +160,27 @@
                     palawija = 0,
                     lainnya = 0,
                     debit_air = 0;
+
                 this.filteredItems.forEach(i => {
-                    padi += parseFloat(i.luas_padi);
-                    palawija += parseFloat(i.luas_palawija);
-                    lainnya += parseFloat(i.luas_lainnya);
-                    debit_air += parseFloat(i.debit_air);
+                    padi += parseFloat(i.luas_padi) || 0;
+                    palawija += parseFloat(i.luas_palawija) || 0;
+                    lainnya += parseFloat(i.luas_lainnya) || 0;
+                    debit_air += parseFloat(i.debit_air) || 0;
                 });
+
+                const format = (n) => new Intl.NumberFormat('id-ID', {
+                    maximumFractionDigits: 2
+                }).format(n);
+
                 return {
-                    padi,
-                    palawija,
-                    lainnya,
-                    debit_air,
-                    total: padi + palawija + lainnya
+                    padi: format(padi),
+                    palawija: format(palawija),
+                    lainnya: format(lainnya),
+                    debit_air: format(debit_air),
+                    total: format(padi + palawija + lainnya)
                 };
             },
+
             // rekap per petugas
             rekapPerPetugas() {
                 const rekap = {};

@@ -48,6 +48,11 @@
                  <div data-i18n="Saluran">Saluran</div>
              </a>
          </li>
+         <li class="menu-item {{ request()->routeIs('master.p3a') ? 'active' : '' }}">
+             <a href="{{ route('master.p3a') }}" class="menu-link">
+                 <div data-i18n="Saluran">P3A</div>
+             </a>
+         </li>
          <li class="menu-item {{ request()->routeIs('master.import.form') ? 'active' : '' }}">
              <a href="{{ route('master.import.form') }}" class="menu-link">
                  <div data-i18n="Saluran">Import</div>
