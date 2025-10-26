@@ -429,6 +429,8 @@
                             last: res.data.last_page,
                             total: res.data.total,
                         };
+                        this.is_loading = true;
+
                     } catch (err) {
                         console.error(err);
                     } finally {
