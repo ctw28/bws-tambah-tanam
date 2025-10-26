@@ -124,7 +124,7 @@
             <!-- Chart -->
             <h4 class="mt-5">📈 Informasi Grafis Luas Tanam Daerah Irigasi : </h4>
             <canvas id="chartDI" height="100"></canvas>
-            <h4 class="mt-5">📈 Infromasi Grafis Jenis Tanaman</h4>
+            <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
             <canvas id="chartItem" height="100"></canvas>
         </div>
     </div>
