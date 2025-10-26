@@ -62,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <h4>Rekap Per Daerah Irigasi</h4>
+            <h4>Rekap Daerah Irigasi</h4>
             <div class="table-responsive">
 
                 <table class="table table-bordered">
@@ -70,26 +70,26 @@
                         <tr>
                             <th>No</th>
                             <th>Daerah Irigasi</th>
-                            <th>Total (ha)</th>
+                            <th>Padi (ha)</th>
+                            <th>Palawija (ha)</th>
+                            <th>Lainnya (ha)</th>
+                            <th>Total Luas Tanam (ha)</th>
                             <th>Baku</th>
                             <th>Potensial</th>
                             <th>Fungsional</th>
-                            <!-- <th>Padi (ha)</th>
-                            <th>Palawija (ha)</th>
-                            <th>Lainnya (ha)</th> -->
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(data, namaDI,index) in rekapPerDaerahIrigasi" :key="namaDI">
                             <td>@{{ index + 1 }}</td>
                             <td>@{{ namaDI }}</td>
-                            <td>@{{ data.total.toFixed(2) }}</td>
-                            <td>@{{ data.baku.toFixed(3) }}</td>
-                            <td>@{{ data.potensial.toFixed(3) }}</td>
-                            <td>@{{ data.fungsional.toFixed(3) }}</td>
-                            <!-- <td>@{{ data.padi.toFixed(2) }}</td> -->
-                            <!-- <td>@{{ data.palawija.toFixed(2) }}</td> -->
-                            <!-- <td>@{{ data.lainnya.toFixed(2) }}</td> -->
+                            <td>@{{ data.padi }}</td>
+                            <td>@{{ data.palawija }}</td>
+                            <td>@{{ data.lainnya }}</td>
+                            <td>@{{ data.total }}</td>
+                            <td>@{{ data.baku }}</td>
+                            <td>@{{ data.potensial }}</td>
+                            <td>@{{ data.fungsional }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -204,10 +204,28 @@
                 });
                 return rekap;
             },
+            formatNumber(value) {
+                const num = Number(value);
+
+
+                return num.toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            },
+
+
             rekapPerDaerahIrigasi() {
                 const rekap = {};
+                const format = (n) =>
+                    new Intl.NumberFormat('id-ID', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(Number(n) || 0);
+
                 this.filteredItems.forEach(i => {
                     const namaDI = i.daerah_irigasi?.nama || 'Tidak Ada DI';
+
                     if (!rekap[namaDI]) {
                         rekap[namaDI] = {
                             baku: 0,
@@ -219,17 +237,40 @@
                             total: 0
                         };
                     }
-                    rekap[namaDI].baku = parseFloat(i.daerah_irigasi?.luas_baku ?? 0);
-                    rekap[namaDI].potensial = parseFloat(i.daerah_irigasi?.luas_potensial ?? 0);
-                    rekap[namaDI].fungsional = parseFloat(i.daerah_irigasi?.luas_fungsional ?? 0);
-                    rekap[namaDI].padi += parseFloat(i.luas_padi);
-                    rekap[namaDI].palawija += parseFloat(i.luas_palawija);
-                    rekap[namaDI].lainnya += parseFloat(i.luas_lainnya);
-                    rekap[namaDI].total += parseFloat(i.luas_padi) + parseFloat(i.luas_palawija) +
-                        parseFloat(i.luas_lainnya);
+
+                    // Pastikan semua nilai numerik valid
+                    const baku = Number(i.daerah_irigasi?.luas_baku) || 0;
+                    const potensial = Number(i.daerah_irigasi?.luas_potensial) || 0;
+                    const fungsional = Number(i.daerah_irigasi?.luas_fungsional) || 0;
+                    const padi = Number(i.luas_padi) || 0;
+                    const palawija = Number(i.luas_palawija) || 0;
+                    const lainnya = Number(i.luas_lainnya) || 0;
+
+                    rekap[namaDI].baku = baku;
+                    rekap[namaDI].potensial = potensial;
+                    rekap[namaDI].fungsional = fungsional;
+                    rekap[namaDI].padi += padi;
+                    rekap[namaDI].palawija += palawija;
+                    rekap[namaDI].lainnya += lainnya;
+                    rekap[namaDI].total += padi + palawija + lainnya;
                 });
+
+                // Format hasil akhir agar sudah siap ditampilkan
+                Object.keys(rekap).forEach(namaDI => {
+                    rekap[namaDI] = {
+                        baku: format(rekap[namaDI].baku),
+                        potensial: format(rekap[namaDI].potensial),
+                        fungsional: format(rekap[namaDI].fungsional),
+                        padi: format(rekap[namaDI].padi),
+                        palawija: format(rekap[namaDI].palawija),
+                        lainnya: format(rekap[namaDI].lainnya),
+                        total: format(rekap[namaDI].total)
+                    };
+                });
+
                 return rekap;
-            }
+            },
+
         },
         methods: {
             syncTanggal() {

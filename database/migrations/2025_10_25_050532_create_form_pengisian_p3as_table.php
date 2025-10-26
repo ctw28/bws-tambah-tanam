@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('form_pengisian_id')->constrained()->cascadeOnDelete();
             $table->foreignId('p3a_id')->constrained()->cascadeOnDelete();
-
             $table->timestamps();
         });
     }
