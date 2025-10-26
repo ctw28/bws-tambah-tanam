@@ -232,13 +232,41 @@
                     <div v-else>
                         <!-- Isi halaman rekap juru -->
                         <h4 class="mt-4">Rekap Juru</h4>
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <div class="row g-2 align-items-end">
+
+                                    <!-- Tanggal awal -->
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label fw-bold">Tanggal Awal</label>
+                                        <input type="date" v-model="filterTanggalAwalRekap" @change="syncTanggalRekap" class="form-control form-control" />
+                                    </div>
+                                    <!-- Tanggal awal -->
+
+                                    <!-- Tanggal akhir -->
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label fw-bold">Tanggal Akhir</label>
+                                        <input type="date" v-model="filterTanggalAkhirRekap" class="form-control form-control" />
+                                    </div>
+
+                                    <!-- Tombol -->
+                                    <div class="col-12 col-md-3 d-flex gap-2">
+                                        <button class="btn btn-primary btn w-100" @click="applyFilterRekap">
+                                            <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
+                                            <span v-else>Filter</span>
+                                        </button>
+                                        <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Terakhir Mengisi</th>
-                                        <th>Petugas</th>
+                                        <th>Petugas / Saluran</th>
                                         <th>Luas Tanam Padi</th>
                                         <th>Luas Tanam Palawija</th>
                                         <th>Luas Tanam Lainnya</th>
@@ -461,7 +489,7 @@
 
                         // this.loadData(1)
                         this.loadPetugas()
-                        this.loadRekap();
+                        // this.loadRekap();
 
 
                     } catch (e) {
@@ -487,8 +515,8 @@
                         let url = `/api/form-pengisian?di_id=${pengamat.daerah_irigasi_id}`;
 
                         // if (this.filterSaluran) url += `&saluran=${this.filterSaluran}`;
-                        // if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                        // if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                        if (this.filterTanggalAwalRekap) url += `&tanggal_awal=${this.filterTanggalAwalRekap}`;
+                        if (this.filterTanggalAkhirRekap) url += `&tanggal_akhir=${this.filterTanggalAkhirRekap}`;
                         // if (this.filterpengamatValid != "") url += `&pengamat_valid=${this.filterpengamatValid}`;
 
                         let res = await axios.get(url);
@@ -584,6 +612,9 @@
                     this.kode = "";
                     this.forms = [];
                 },
+                applyFilterRekap() {
+                    this.loadRekap()
+                },
                 applyFilter() {
                     this.is_filtered = true
                     this.loadData(1)
@@ -601,13 +632,17 @@
                     // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
                     this.filterTanggalAkhir = this.filterTanggalAwal;
                 },
+                syncTanggal() {
+                    // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
+                    this.filterTanggalAkhirRekap = this.filterTanggalAwalRekap;
+                },
                 loadPengamat() {
                     let data = localStorage.getItem("pengamat");
                     if (data) {
                         this.pengamat = JSON.parse(data);
                         // this.loadData(1)
                         this.loadPetugas()
-                        this.loadRekap();
+                        // this.loadRekap();
 
                         // bisa optional: validasi token ke server
                     }
