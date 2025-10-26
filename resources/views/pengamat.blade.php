@@ -231,9 +231,9 @@
                     </div>
                     <div v-else>
                         <!-- Isi halaman rekap juru -->
-                        <h4 class="mt-3">Rekap Juru</h4>
+                        <h4 class="mt-4">Rekap Juru</h4>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -649,7 +649,7 @@
                 rekapPerPetugas() {
                     const rekap = {};
 
-                    this.rekapPetugas.forEach(i => {
+                    this.filteredItems.forEach(i => {
                         const petugasNama = i.petugas?.nama || 'Tanpa Nama';
                         const saluranNama = i.saluran?.nama || 'Tanpa Saluran';
                         const key = `${petugasNama} - ${saluranNama}`;
@@ -663,7 +663,7 @@
                                 lainnya: 0,
                                 debit_air: 0,
                                 total: 0,
-                                terakhir_isi: i.tanggal_pantau // inisialisasi awal
+                                terakhir_isi: i.tanggal_pantau
                             };
                         }
 
@@ -676,15 +676,21 @@
                             (parseFloat(i.luas_palawija) || 0) +
                             (parseFloat(i.luas_lainnya) || 0);
 
-                        // 🗓️ cek tanggal terakhir pengisian
+                        // ambil tanggal terakhir isi
                         if (new Date(i.tanggal_pantau) > new Date(rekap[key].terakhir_isi)) {
                             rekap[key].terakhir_isi = i.tanggal_pantau;
                         }
                     });
 
-                    return rekap;
+                    // 🔹 ubah jadi array & urutkan berdasarkan nama petugas
+                    const sorted = Object.entries(rekap)
+                        .sort(([, a], [, b]) => a.petugas.localeCompare(b.petugas))
+                        .reduce((obj, [key, val]) => {
+                            obj[key] = val;
+                            return obj;
+                        }, {});
 
-
+                    return sorted;
                 }
             },
             mounted() {
