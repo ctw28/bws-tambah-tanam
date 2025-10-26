@@ -622,13 +622,21 @@
                     this.loadData(1)
                 },
                 resetFilter() {
-                    this.filterTanggalAwal = ''
-                    this.filterTanggalAkhir = ''
-                    this.filterpengamatValid = ''
-                    this.filterSaluran = ''
-                    this.filteredItems = []
-                    this.is_filtered = false
+                    this.filterTanggalAwal = '';
+                    this.filterTanggalAkhir = '';
+                    this.filterpengamatValid = '';
+                    this.filterSaluran = '';
+                    this.filteredItems = [];
+                    this.is_filtered = false;
+                    this.is_loading = false;
 
+                    this.pagination = {
+                        current: 1,
+                        last: 1,
+                        total: 0,
+                    };
+
+                    this.perPage = 25; // default nilai per halaman
                 },
                 resetFilterRekap() {
                     this.filterTanggalAwalRekap = ''
