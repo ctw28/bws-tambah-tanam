@@ -231,7 +231,7 @@
                     </div>
                     <div v-else>
                         <!-- Isi halaman rekap juru -->
-                        <h4>Rekap Juru</h4>
+                        <h4 class="mt-2">Rekap Juru</h4>
                         <div class="table-responsive">
 
                             <table class="table">
