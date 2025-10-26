@@ -649,7 +649,7 @@
                 rekapPerPetugas() {
                     const rekap = {};
 
-                    this.filteredItems.forEach(i => {
+                    this.rekapPetugas.forEach(i => {
                         const petugasNama = i.petugas?.nama || 'Tanpa Nama';
                         const saluranNama = i.saluran?.nama || 'Tanpa Saluran';
                         const key = `${petugasNama} - ${saluranNama}`;
