@@ -255,7 +255,7 @@
                                             <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
                                             <span v-else>Filter</span>
                                         </button>
-                                        <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                                        <button class="btn btn-secondary btn w-100" @click="resetFilterRekap">Reset</button>
                                     </div>
                                 </div>
                             </div>
@@ -460,7 +460,9 @@
                     filteredItems: [],
                     filterpengamatValid: '',
                     filterTanggalAwal: '',
+                    filterTanggalAwalRekap: '',
                     filterTanggalAkhir: '',
+                    filterTanggalAkhirRekap: '',
                     pagination: {
                         current: 1,
                         last: 1,
@@ -627,6 +629,11 @@
                     this.filteredItems = []
                     this.is_filtered = false
 
+                },
+                resetFilterRekap() {
+                    this.filterTanggalAwalRekap = ''
+                    this.filterTanggalAkhirRekap = ''
+                    this.rekapPetugas = []
                 },
                 syncTanggal() {
                     // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
