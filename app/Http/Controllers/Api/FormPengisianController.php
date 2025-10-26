@@ -117,7 +117,7 @@ class FormPengisianController extends Controller
 
         $query = FormPengisian::with([
             'kabupaten',
-            'daerahIrigasi',
+            'daerahIrigasi.pengamat',
             'petugas',
             'saluran',
             'bangunan',
@@ -141,6 +141,11 @@ class FormPengisianController extends Controller
             ->when($request->filled('pengamat_valid'), function ($q) use ($request) {
                 $q->whereHas('validasi', function ($qq) use ($request) {
                     $qq->where('pengamat_valid', (int) $request->pengamat_valid);
+                });
+            })
+            ->when($request->filled('upi_valid'), function ($q) use ($request) {
+                $q->whereHas('validasi', function ($qq) use ($request) {
+                    $qq->where('upi_valid', (int) $request->upi_valid);
                 });
             });
 

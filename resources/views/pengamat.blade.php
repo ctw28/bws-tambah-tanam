@@ -154,7 +154,7 @@
                                     <tr class="text-center">
                                         <th>No</th>
                                         <th>Tanggal</th>
-                                        <th>Petugas</th>
+                                        <th>Juru</th>
                                         <th>Saluran</th>
                                         <th>Status Validasi</th>
                                         <th>Aksi</th>
@@ -162,8 +162,6 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="(f,index) in filteredItems" :key="f.id">
-                                        <!-- <td>@{{index+1}}</td> -->
-
                                         <td>@{{ (pagination.current - 1) * perPage + (index + 1) }}</td>
                                         <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
                                         <td>@{{ f.petugas.nama }}</td>
@@ -266,7 +264,7 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Terakhir Mengisi</th>
-                                        <th>Petugas / Saluran</th>
+                                        <th>Juru / Saluran</th>
                                         <th>Luas Tanam Padi</th>
                                         <th>Luas Tanam Palawija</th>
                                         <th>Luas Tanam Lainnya</th>
@@ -655,11 +653,7 @@
                     let data = localStorage.getItem("pengamat");
                     if (data) {
                         this.pengamat = JSON.parse(data);
-                        // this.loadData(1)
                         this.loadPetugas()
-                        // this.loadRekap();
-
-                        // bisa optional: validasi token ke server
                     }
                 },
                 async loadPetugas() {
@@ -674,8 +668,6 @@
                                 id: pengamat.daerah_irigasi_id
                             }
                         });
-
-                        console.log(res.data.salurans);
                         this.petugas_saluran = res.data.salurans
 
 

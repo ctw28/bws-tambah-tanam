@@ -81,41 +81,65 @@
 
             <div class="card shadow-lg">
                 <div class="card-body">
-                    <h5 class="mb-3">Daftar Form Pengisian - @{{ upi.daerah_irigasis.nama }}</h5>
+                    <h5 class="mb-3">Daftar Validasi Form</h5>
                     <!-- Filter tanggal -->
-                    <div class="mb-3">
-                        <div class="row g-2">
-                            <!-- Input tanggal awal -->
-                            <div class="col-6 col-md-3">
-                                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal"
-                                    class="form-control" />
-                            </div>
-                            <!-- Input tanggal akhir -->
-                            <div class="col-6 col-md-3">
-                                <input type="date" v-model="filterTanggalAkhir" class="form-control" />
-                            </div>
-                            <!-- Tombol (hanya di layar md ke atas) -->
-                            <div class="col-md-6 d-none d-md-flex gap-2">
-                                <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                                <button class="btn btn-secondary" @click="resetFilter">Reset</button>
-                            </div>
-                        </div>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-2 align-items-end">
+                                <!-- Pilih DI -->
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Daerah Irigasi</label>
+                                    <select class="form-select" v-model="filterDi">
+                                        <option value="">-- Pilih Daerah Irigasi --</option>
+                                        <option
+                                            v-for="s in upi.daerah_irigasis"
+                                            :key="s.id"
+                                            :value="s.id">
+                                            @{{ s.nama }}
+                                        </option>
+                                    </select>
+                                </div>
 
-                        <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
-                        <div class="d-flex gap-2 mt-2 d-md-none">
-                            <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                            <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Status Validasi</label>
+                                    <select class="form-select" v-model="filterUpiValid">
+                                        <option value="">Pilih Status</option>
+                                        <option value="0">Belum Valid</option>
+                                        <option value="1">Valid</option>
+                                    </select>
+                                </div>
+                                <!-- Tanggal awal -->
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Tanggal Awal</label>
+                                    <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
+                                </div>
+                                <!-- Tanggal awal -->
+
+                                <!-- Tanggal akhir -->
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Tanggal Akhir</label>
+                                    <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                                </div>
+
+                                <!-- Tombol -->
+                                <div class="col-12 col-md-3 d-flex gap-2">
+                                    <button class="btn btn-primary btn w-100" @click="applyFilter">
+                                        <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
+                                        <span v-else>Filter</span>
+                                    </button>
+                                    <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-sm">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
                                     <th>Tanggal</th>
-                                    <th>Petugas</th>
+                                    <th>Pengamat</th>
                                     <th>Saluran</th>
                                     <th>Status Validasi</th>
                                     <th>Aksi</th>
@@ -123,9 +147,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(f,index) in filteredItems" :key="f.id">
-                                    <td>@{{index+1}}</td>
+                                    <td>@{{ (pagination.current - 1) * perPage + (index + 1) }}</td>
+
                                     <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
-                                    <td>@{{ f.petugas?.nama }}</td>
+                                    <td>@{{ f.daerah_irigasi?.pengamat?.nama }}</td>
                                     <td>@{{ f.saluran.nama }} / @{{ f.bangunan.nama }} / @{{ f.petak.nama }}</td>
                                     <td class="text-center">
                                         <span v-if="f.validasi && f.validasi.upi_valid == 1">✅ Valid</span>
@@ -140,10 +165,53 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
 
-                    <p v-if="forms.length === 0" class="text-muted text-center mt-2">Belum ada form pengisian untuk
-                        divalidasi.</p>
+                        <!-- Loading -->
+                        <div v-if="is_loading" class="alert alert-secondary text-center mt-3">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            Memuat data...
+                        </div>
+
+                        <!-- Tidak loading -->
+                        <div v-else>
+                            <p v-if="!is_filtered" class="text-muted text-center mt-2">
+                                Filter data terlebih dahulu
+                            </p>
+
+                            <p v-else-if="filteredItems.length === 0" class="text-muted text-center mt-2">
+                                Data tidak ditemukan
+                            </p>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <!-- Pilih jumlah data per halaman -->
+                            <div class="d-flex align-items-center gap-2">
+                                <select v-model="perPage" @change="loadData(1)" class="form-select form-select" style="width: auto;">
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span>per halaman</span>
+                            </div>
+
+                            <!-- Navigasi Pagination -->
+                            <nav>
+                                <ul class="pagination pagination mb-0">
+                                    <li class="page-item" :class="{ disabled: pagination.current === 1 }">
+                                        <a class="page-link" href="#" @click.prevent="loadData(pagination.current - 1)">Prev</a>
+                                    </li>
+
+                                    <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
+                                        <a class="page-link" href="#" @click.prevent="loadData(page)">@{{ page }}</a>
+                                    </li>
+
+                                    <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
+                                        <a class="page-link" href="#" @click.prevent="loadData(pagination.current + 1)">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Modal -->
@@ -243,8 +311,8 @@
 
                         <div class="modal-footer">
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button v-if="!item.form_validasi || !item.form_validasi.upi_valid" class="btn btn-warning"
-                                @click="validasi(item.id)">
+                            <button v-if="item.validasi?.upi_valid==0"
+                                class="btn btn-warning" @click="validasi(item.id)">
                                 Validasi
                             </button>
                         </div>
@@ -273,8 +341,18 @@
                     item: {},
                     modalInstance: null,
                     filteredItems: [],
-                    filterTanggalAwal: new Date().toISOString().slice(0, 10),
-                    filterTanggalAkhir: new Date().toISOString().slice(0, 10),
+                    filterDi: '',
+                    filterTanggalAwal: '',
+                    filterTanggalAkhir: '',
+                    filterUpiValid: '',
+                    pagination: {
+                        current: 1,
+                        last: 1,
+                        total: 0,
+                    },
+                    perPage: 25, // default
+                    is_filtered: false,
+                    is_loading: false
                 }
             },
             methods: {
@@ -283,39 +361,58 @@
                         let res = await axios.post("/api/upi/validasi-kode", {
                             kode: this.kode
                         });
-                        // console.log(res);
-
                         this.upi = res.data.upi;
                         console.log(this.upi);
                         localStorage.setItem("upi", JSON.stringify(res.data.upi));
-
-
-                        this.loadData()
-
                     } catch (e) {
                         alert("Kode Upi tidak valid!");
                     }
                 },
-                async loadData() {
+                async loadData(page = 1) {
                     try {
-                        const diIds = this.upi.daerah_irigasis.map(di => di.id);
-                        console.log(diIds);
+                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&di_id=${this.filterDi}`;
 
-                        let allData = [];
-                        for (let id of diIds) {
-                            let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
-                            console.log(res);
+                        if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                        if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                        if (this.filterUpiValid != "") url += `&upi_valid=${this.filterUpiValid}`;
 
-                            allData = allData.concat(res.data);
-                        }
-                        console.log(allData);
+                        let res = await axios.get(url);
+                        console.log(res.data);
+                        this.filteredItems = res.data.data;
+                        this.is_filtered = true
+                        this.is_loading = true;
+                        this.pagination = {
+                            current: res.data.current_page,
+                            last: res.data.last_page,
+                            total: res.data.total,
+                        };
 
-                        this.forms = allData;
-                        this.filteredItems = allData;
                     } catch (e) {
                         console.error(e);
+                    } finally {
+                        this.is_loading = false;
                     }
                 },
+                // async loadData() {
+                //     try {
+                //         const diIds = this.upi.daerah_irigasis.map(di => di.id);
+                //         console.log(diIds);
+
+                //         let allData = [];
+                //         for (let id of diIds) {
+                //             let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
+                //             console.log(res);
+
+                //             allData = allData.concat(res.data);
+                //         }
+                //         console.log(allData);
+
+                //         this.forms = allData;
+                //         this.filteredItems = allData;
+                //     } catch (e) {
+                //         console.error(e);
+                //     }
+                // },
                 showForm(form) {
                     this.item = form;
                     // console.log(this.item);
@@ -368,15 +465,18 @@
                     this.forms = [];
                 },
                 applyFilter() {
-                    if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
-                        this.filteredItems = this.forms;
-                    } else {
-                        this.filteredItems = this.forms.filter(i =>
-                            i.tanggal_pantau >= this.filterTanggalAwal &&
-                            i.tanggal_pantau <= this.filterTanggalAkhir
-                        );
-                    }
+                    this.loadData(1)
                 },
+                // applyFilter() {
+                //     if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
+                //         this.filteredItems = this.forms;
+                //     } else {
+                //         this.filteredItems = this.forms.filter(i =>
+                //             i.tanggal_pantau >= this.filterTanggalAwal &&
+                //             i.tanggal_pantau <= this.filterTanggalAkhir
+                //         );
+                //     }
+                // },
                 resetFilter() {
                     this.filterTanggalAwal = new Date().toISOString().slice(0, 10);
                     this.filterTanggalAkhir = new Date().toISOString().slice(0, 10)
@@ -393,7 +493,7 @@
 
                     if (data) {
                         this.upi = JSON.parse(data);
-                        this.loadData()
+                        // this.loadData()
                         // bisa optional: validasi token ke server
                     }
                 },

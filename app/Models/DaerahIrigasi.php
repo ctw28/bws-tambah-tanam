@@ -25,6 +25,10 @@ class DaerahIrigasi extends Model
     {
         return $this->hasMany(Saluran::class);
     }
+    public function pengamat()
+    {
+        return $this->hasOne(Pengamat::class);
+    }
     public function upis()
     {
         return $this->belongsToMany(Upi::class, 'daerah_irigasi_upis')
