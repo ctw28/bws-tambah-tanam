@@ -594,6 +594,8 @@
                         this.pengamat = JSON.parse(data);
                         // this.loadData(1)
                         this.loadPetugas()
+                        this.loadRekap();
+
                         // bisa optional: validasi token ke server
                     }
                 },
@@ -668,7 +670,6 @@
             },
             mounted() {
                 this.loadPengamat();
-                this.loadRekap();
             }
         }).mount("#app");
     </script>
