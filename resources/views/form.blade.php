@@ -626,7 +626,7 @@
                             this.petugas_nama = res.data.petugas.nama
                             this.form.petugas_id = res.data.petugas.id
                             localStorage.setItem("juru", JSON.stringify(res.data.petugas));
-
+                            this.loadData()
                         } catch (err) {
                             alert("Kode salah!");
                             this.form.petugas_id = '';

@@ -112,6 +112,7 @@ class FormPengisianController extends Controller
 
     public function index(Request $request)
     {
+        // return $request->all();
         $user = Auth::guard('api')->user(); // ✅ bisa null kalau tidak login
 
         $query = FormPengisian::with([
@@ -137,9 +138,12 @@ class FormPengisianController extends Controller
                         ->where('keterangan', '!=', '');
                 });
             })
-            ->when($request->pengamat_valid, function ($q) use ($request) {
-                $q->whereHas('validasi', fn($qq) => $qq->where('pengamat_valid', (bool) $request->pengamat_valid));
+            ->when($request->has('pengamat_valid'), function ($q) use ($request) {
+                $q->whereHas('validasi', function ($qq) use ($request) {
+                    $qq->where('pengamat_valid', (bool) $request->pengamat_valid);
+                });
             });
+
         if ($user) {
             $kabupatens = $user->kabupatens()->with(['daerahIrigasis' => fn($q) => $q->withCount('upis')])->get();
 
@@ -157,6 +161,8 @@ class FormPengisianController extends Controller
 
         // Tambahkan filter dari request
         $query->when($request->di_id, fn($q) => $q->where('daerah_irigasi_id', $request->di_id))
+            ->when($request->saluran, fn($q) => $q->where('saluran_id', $request->saluran)) // 🔹 Filter saluran_id
+
             ->when($request->tanggal_awal, fn($q) => $q->whereDate('tanggal_pantau', '>=', $request->tanggal_awal))
             ->when($request->tanggal_akhir, fn($q) => $q->whereDate('tanggal_pantau', '<=', $request->tanggal_akhir));
 

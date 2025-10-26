@@ -10,14 +10,28 @@ class DaerahIrigasiController extends Controller
 {
     public function index(Request $request)
     {
+        // return "aaa";
+        // return $request->id;
         $perPage = $request->query('per_page', 25);
         $search = $request->query('search');
 
         $query = DaerahIrigasi::with([
             'kabupatens:id,nama',
             'parent:id,nama',
-            'children:id,nama,parent_id'
+            'children:id,nama,parent_id',
+            'salurans.petugas'
         ]);
+
+        // ✅ Filter berdasarkan ID jika dikirim
+        if ($request->has('id')) {
+            $data = $query->where('id', $request->id)->first();
+
+            if (!$data) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            return response()->json($data);
+        }
 
         if ($request->has('kabupaten_id')) {
             $query->whereHas('kabupatens', function ($q) use ($request) {
@@ -37,7 +51,7 @@ class DaerahIrigasiController extends Controller
             $query->where('nama', 'like', "%{$search}%");
         }
 
-        // ✅ Jika user ingin semua data tanpa pagination
+        // Pagination atau semua data
         if ($perPage === 'all' || $perPage == 0) {
             $data = $query->orderBy('id', 'desc')->get();
         } else {
@@ -46,6 +60,7 @@ class DaerahIrigasiController extends Controller
 
         return response()->json($data);
     }
+
 
 
 

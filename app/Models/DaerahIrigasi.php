@@ -21,7 +21,7 @@ class DaerahIrigasi extends Model
         return $this->belongsToMany(Kabupaten::class, 'daerah_irigasi_kabupatens');
     }
 
-    public function saluran()
+    public function salurans()
     {
         return $this->hasMany(Saluran::class);
     }

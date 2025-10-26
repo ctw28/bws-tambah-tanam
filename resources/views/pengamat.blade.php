@@ -81,35 +81,61 @@
 
             <div class="card">
                 <div class="card-body">
-                    <h5 class="mb-3">Daftar Form Pengisian - @{{ pengamat.daerah_irigasi.nama }}</h5>
+                    <h5 class="mb-3">Daftar Validasi Form Pengisian - Daerah Irigasi @{{ pengamat.daerah_irigasi.nama }}</h5>
                     <!-- Filter tanggal -->
-                    <div class="mb-3">
-                        <div class="row g-2">
-                            <!-- Input tanggal awal -->
-                            <div class="col-6 col-md-3">
-                                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal"
-                                    class="form-control" />
-                            </div>
-                            <!-- Input tanggal akhir -->
-                            <div class="col-6 col-md-3">
-                                <input type="date" v-model="filterTanggalAkhir" class="form-control" />
-                            </div>
-                            <!-- Tombol (hanya di layar md ke atas) -->
-                            <div class="col-md-6 d-none d-md-flex gap-2">
-                                <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                                <button class="btn btn-secondary" @click="resetFilter">Reset</button>
-                            </div>
-                        </div>
 
-                        <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
-                        <div class="d-flex gap-2 mt-2 d-md-none">
-                            <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                            <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-2 align-items-end">
+                                <!-- Pilih DI -->
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Juru</label>
+                                    <select class="form-select" v-model="filterSaluran">
+                                        <option value="">-- Pilih Juru --</option>
+                                        <option
+                                            v-for="s in petugas_saluran"
+                                            :key="s.id"
+                                            :value="s.id">
+                                            @{{ s.petugas[0].nama }} - @{{ s.nama }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Status Validasi</label>
+                                    <select class="form-select" v-model="filterpengamatValid">
+                                        <option value="">Pilih Status</option>
+                                        <option value="0">Belum Valid</option>
+                                        <option value="1">Valid</option>
+                                    </select>
+                                </div>
+                                <!-- Tanggal awal -->
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Tanggal Awal</label>
+                                    <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
+                                </div>
+                                <!-- Tanggal awal -->
+
+                                <!-- Tanggal akhir -->
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label fw-bold">Tanggal Akhir</label>
+                                    <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                                </div>
+
+                                <!-- Tombol -->
+                                <div class="col-12 col-md-3 d-flex gap-2">
+                                    <button class="btn btn-primary btn w-100" @click="applyFilter">
+                                        <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
+                                        <span v-else>Filter</span>
+                                    </button>
+                                    <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-sm">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
@@ -122,7 +148,9 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(f,index) in filteredItems" :key="f.id">
-                                    <td>@{{index+1}}</td>
+                                    <!-- <td>@{{index+1}}</td> -->
+
+                                    <td>@{{ (pagination.current - 1) * perPage + (index + 1) }}</td>
                                     <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
                                     <td>@{{ f.petugas.nama }}</td>
                                     <td>@{{ f.saluran.nama }} / @{{ f.bangunan.nama }} / @{{ f.petak.nama }}</td>
@@ -132,16 +160,45 @@
                                         <span v-else>❌ Belum</span>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-warning" @click="showForm(f)">
-                                            Lihat Form / Validasi
-                                        </button>
+                                        <button class="btn btn-sm btn-warning" @click="showForm(f)">Validasi</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                        <p v-if="filteredItems.length === 0 && is_filtered" class="text-muted text-center mt-2">Data tidak ditemukan</p>
+                        <p v-if="!is_filtered" class="text-muted text-center mt-2">Filter data terlebih dahulu</p>
 
-                        <p v-if="forms.length === 0" class="text-muted text-center mt-2">Belum ada form pengisian untuk
-                            divalidasi.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <!-- Pilih jumlah data per halaman -->
+                            <div class="d-flex align-items-center gap-2">
+                                <select v-model="perPage" @change="loadData(1)" class="form-select form-select" style="width: auto;">
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span>per halaman</span>
+                            </div>
+
+
+                            <!-- Navigasi Pagination -->
+                            <nav>
+                                <ul class="pagination pagination mb-0">
+                                    <li class="page-item" :class="{ disabled: pagination.current === 1 }">
+                                        <a class="page-link" href="#" @click.prevent="loadData(pagination.current - 1)">Prev</a>
+                                    </li>
+
+                                    <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
+                                        <a class="page-link" href="#" @click.prevent="loadData(page)">@{{ page }}</a>
+                                    </li>
+
+                                    <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
+                                        <a class="page-link" href="#" @click.prevent="loadData(pagination.current + 1)">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+
                     </div>
                 </div>
             </div>
@@ -296,12 +353,22 @@
                 return {
                     kode: "",
                     pengamat: null,
+                    petugas_saluran: [],
+                    filterSaluran: '',
                     forms: [],
                     item: {},
                     modalInstance: null,
                     filteredItems: [],
-                    filterTanggalAwal: new Date().toISOString().slice(0, 10),
-                    filterTanggalAkhir: new Date().toISOString().slice(0, 10),
+                    filterpengamatValid: '',
+                    filterTanggalAwal: '',
+                    filterTanggalAkhir: '',
+                    pagination: {
+                        current: 1,
+                        last: 1,
+                        total: 0,
+                    },
+                    perPage: 25, // default
+                    is_filtered: false,
                 }
             },
             methods: {
@@ -317,22 +384,51 @@
                         localStorage.setItem("pengamat", JSON.stringify(res.data.pengamat));
 
 
-                        this.loadData()
+                        // this.loadData(1)
+                        this.loadPetugas()
 
                     } catch (e) {
                         alert("Kode pengamat tidak valid!");
                     }
                 },
-                async loadData() {
-                    try {
-                        let res = await axios.get(
-                            `/api/form-pengisian?di_id=${this.pengamat.daerah_irigasi_id}`);
-                        console.log(res);
+                // async loadData() {
+                //     try {
+                //         let res = await axios.get(
+                //             `/api/form-pengisian?di_id=${this.pengamat.daerah_irigasi_id}`);
+                //         console.log(res);
 
-                        this.forms = res.data;
-                        this.filteredItems = res.data;
-                    } catch (e) {
-                        console.error(e);
+                //         this.forms = res.data;
+                //         this.filteredItems = res.data;
+                //     } catch (e) {
+                //         console.error(e);
+                //     }
+                // },
+                async loadData(page = 1) {
+                    try {
+                        const pengamat = JSON.parse(localStorage.getItem("pengamat"));
+
+
+                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&di_id=${pengamat.daerah_irigasi_id}`;
+
+                        if (this.filterSaluran) url += `&saluran=${this.filterSaluran}`;
+                        if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                        if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                        if (this.filterpengamatValid) url += `&pengamat_valid=${this.filterpengamatValid}`;
+
+                        let res = await axios.get(url);
+                        console.log(res.data);
+
+                        this.items = res.data.data;
+                        this.filteredItems = res.data.data;
+                        this.pagination = {
+                            current: res.data.current_page,
+                            last: res.data.last_page,
+                            total: res.data.total,
+                        };
+                    } catch (err) {
+                        console.error(err);
+                    } finally {
+                        this.is_loading = false;
                     }
                 },
                 showForm(form) {
@@ -386,20 +482,27 @@
                     this.kode = "";
                     this.forms = [];
                 },
+                // applyFilter() {
+                //     if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
+                //         this.filteredItems = this.forms;
+                //     } else {
+                //         this.filteredItems = this.forms.filter(i =>
+                //             i.tanggal_pantau >= this.filterTanggalAwal &&
+                //             i.tanggal_pantau <= this.filterTanggalAkhir
+                //         );
+                //     }
+                // },
                 applyFilter() {
-                    if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
-                        this.filteredItems = this.forms;
-                    } else {
-                        this.filteredItems = this.forms.filter(i =>
-                            i.tanggal_pantau >= this.filterTanggalAwal &&
-                            i.tanggal_pantau <= this.filterTanggalAkhir
-                        );
-                    }
+                    this.is_filtered = true
+                    this.loadData(1)
                 },
                 resetFilter() {
-                    this.filterTanggalAwal = new Date().toISOString().slice(0, 10);
-                    this.filterTanggalAkhir = new Date().toISOString().slice(0, 10)
-                    this.loadData()
+                    this.filterTanggalAwal = ''
+                    this.filterTanggalAkhir = ''
+                    this.filterpengamatValid = ''
+                    this.filterSaluran = ''
+                    this.filteredItems = []
+                    this.is_filtered = false
 
                 },
                 syncTanggal() {
@@ -410,8 +513,30 @@
                     let data = localStorage.getItem("pengamat");
                     if (data) {
                         this.pengamat = JSON.parse(data);
-                        this.loadData()
+                        // this.loadData(1)
+                        this.loadPetugas()
                         // bisa optional: validasi token ke server
+                    }
+                },
+                async loadPetugas() {
+                    try {
+                        const pengamat = JSON.parse(localStorage.getItem("pengamat"));
+
+                        console.log(pengamat.daerah_irigasi_id);
+
+                        let res = await axios.get("/api/master/daerah-irigasi", {
+                            params: {
+                                per_page: 'all',
+                                id: pengamat.daerah_irigasi_id
+                            }
+                        });
+
+                        console.log(res.data.salurans);
+                        this.petugas_saluran = res.data.salurans
+
+
+                    } catch (e) {
+                        alert("Kode pengamat tidak valid!");
                     }
                 },
                 async hapus(id) {
