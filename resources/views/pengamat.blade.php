@@ -369,6 +369,7 @@
                     },
                     perPage: 25, // default
                     is_filtered: false,
+                    is_loading: false
                 }
             },
             methods: {
@@ -482,16 +483,6 @@
                     this.kode = "";
                     this.forms = [];
                 },
-                // applyFilter() {
-                //     if (!this.filterTanggalAwal || !this.filterTanggalAkhir) {
-                //         this.filteredItems = this.forms;
-                //     } else {
-                //         this.filteredItems = this.forms.filter(i =>
-                //             i.tanggal_pantau >= this.filterTanggalAwal &&
-                //             i.tanggal_pantau <= this.filterTanggalAkhir
-                //         );
-                //     }
-                // },
                 applyFilter() {
                     this.is_filtered = true
                     this.loadData(1)
