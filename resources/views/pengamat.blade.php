@@ -231,13 +231,13 @@
                     </div>
                     <div v-else>
                         <!-- Isi halaman rekap juru -->
-                        <h4 class="mt-2">Rekap Juru</h4>
+                        <h4 class="mt-3">Rekap Juru</h4>
                         <div class="table-responsive">
-
                             <table class="table">
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Terakhir Mengisi</th>
                                         <th>Petugas</th>
                                         <th>Luas Tanam Padi</th>
                                         <th>Luas Tanam Palawija</th>
@@ -248,6 +248,7 @@
                                 <tbody>
                                     <tr v-for="(rekap, nama, index) in rekapPerPetugas" :key="nama">
                                         <td>@{{ index + 1 }}</td>
+                                        <td>@{{ formatTanggal(rekap.terakhir_isi) }}</td>
                                         <td>@{{ nama }}</td>
                                         <td>@{{ rekap.padi.toFixed(2) }}</td>
                                         <td>@{{ rekap.palawija.toFixed(2) }}</td>
@@ -647,27 +648,43 @@
             computed: {
                 rekapPerPetugas() {
                     const rekap = {};
-                    this.rekapPetugas.forEach(i => {
-                        console.log(i);
 
-                        const nama = i.petugas.nama;
-                        if (!rekap[nama]) {
-                            rekap[nama] = {
+                    this.rekapPetugas.forEach(i => {
+                        const petugasNama = i.petugas?.nama || 'Tanpa Nama';
+                        const saluranNama = i.saluran?.nama || 'Tanpa Saluran';
+                        const key = `${petugasNama} - ${saluranNama}`;
+
+                        if (!rekap[key]) {
+                            rekap[key] = {
+                                petugas: petugasNama,
+                                saluran: saluranNama,
                                 padi: 0,
                                 palawija: 0,
                                 lainnya: 0,
                                 debit_air: 0,
-                                total: 0
+                                total: 0,
+                                terakhir_isi: i.tanggal_pantau // inisialisasi awal
                             };
                         }
-                        rekap[nama].debit_air += parseFloat(i.debit_air);
-                        rekap[nama].padi += parseFloat(i.luas_padi);
-                        rekap[nama].palawija += parseFloat(i.luas_palawija);
-                        rekap[nama].lainnya += parseFloat(i.luas_lainnya);
-                        rekap[nama].total += parseFloat(i.luas_padi) + parseFloat(i.luas_palawija) + parseFloat(
-                            i.luas_lainnya);
+
+                        rekap[key].debit_air += parseFloat(i.debit_air) || 0;
+                        rekap[key].padi += parseFloat(i.luas_padi) || 0;
+                        rekap[key].palawija += parseFloat(i.luas_palawija) || 0;
+                        rekap[key].lainnya += parseFloat(i.luas_lainnya) || 0;
+                        rekap[key].total +=
+                            (parseFloat(i.luas_padi) || 0) +
+                            (parseFloat(i.luas_palawija) || 0) +
+                            (parseFloat(i.luas_lainnya) || 0);
+
+                        // 🗓️ cek tanggal terakhir pengisian
+                        if (new Date(i.tanggal_pantau) > new Date(rekap[key].terakhir_isi)) {
+                            rekap[key].terakhir_isi = i.tanggal_pantau;
+                        }
                     });
+
                     return rekap;
+
+
                 }
             },
             mounted() {
