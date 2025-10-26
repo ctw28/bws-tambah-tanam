@@ -138,11 +138,12 @@ class FormPengisianController extends Controller
                         ->where('keterangan', '!=', '');
                 });
             })
-            ->when($request->has('pengamat_valid'), function ($q) use ($request) {
+            ->when($request->filled('pengamat_valid'), function ($q) use ($request) {
                 $q->whereHas('validasi', function ($qq) use ($request) {
-                    $qq->where('pengamat_valid', (bool) $request->pengamat_valid);
+                    $qq->where('pengamat_valid', (int) $request->pengamat_valid);
                 });
             });
+
 
         if ($user) {
             $kabupatens = $user->kabupatens()->with(['daerahIrigasis' => fn($q) => $q->withCount('upis')])->get();
