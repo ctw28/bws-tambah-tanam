@@ -632,7 +632,7 @@
                     // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
                     this.filterTanggalAkhir = this.filterTanggalAwal;
                 },
-                syncTanggal() {
+                syncTanggalRekap() {
                     // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
                     this.filterTanggalAkhirRekap = this.filterTanggalAwalRekap;
                 },
