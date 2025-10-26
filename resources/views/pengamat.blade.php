@@ -81,7 +81,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-3">Daftar Validasi Form Pengisian - Daerah Irigasi @{{ pengamat.daerah_irigasi.nama }}</h5>
+                    <h5 class="mb-3">Daerah Irigasi @{{ pengamat.daerah_irigasi.nama }}</h5>
 
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
@@ -231,7 +231,7 @@
                     </div>
                     <div v-else>
                         <!-- Isi halaman rekap juru -->
-                        <h4 class="mt-5">Rekap Juru</h4>
+                        <h4>Rekap Juru</h4>
                         <div class="table-responsive">
 
                             <table class="table">
