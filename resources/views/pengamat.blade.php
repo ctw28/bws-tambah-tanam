@@ -450,6 +450,8 @@
 
                         // this.loadData(1)
                         this.loadPetugas()
+                        this.loadRekap();
+
 
                     } catch (e) {
                         alert("Kode pengamat tidak valid!");
