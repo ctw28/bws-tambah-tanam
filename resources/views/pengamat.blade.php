@@ -248,7 +248,17 @@
                                 <tbody>
                                     <tr v-for="(rekap, nama, index) in rekapPerPetugas" :key="nama">
                                         <td>@{{ index + 1 }}</td>
-                                        <td>@{{ formatTanggal(rekap.terakhir_isi) }}</td>
+                                        <td>@{{ formatTanggal(rekap.terakhir_isi) }} <br>
+                                            <small
+                                                :class="{
+                                                    'text-danger fw-bold': rekap.status_label === 'merah',
+                                                    'text-warning fw-bold': rekap.status_label === 'kuning',
+                                                    'text-success fw-bold': rekap.status_label === 'hijau'
+                                                }">
+                                                @{{ rekap.hari_lalu }} hari yang lalu
+                                            </small>
+
+                                        </td>
                                         <td>@{{ nama }}</td>
                                         <td>@{{ rekap.padi.toFixed(2) }}</td>
                                         <td>@{{ rekap.palawija.toFixed(2) }}</td>
@@ -676,22 +686,43 @@
                             (parseFloat(i.luas_palawija) || 0) +
                             (parseFloat(i.luas_lainnya) || 0);
 
-                        // ambil tanggal terakhir isi
+                        // Ambil tanggal terakhir isi (yang paling baru)
                         if (new Date(i.tanggal_pantau) > new Date(rekap[key].terakhir_isi)) {
                             rekap[key].terakhir_isi = i.tanggal_pantau;
                         }
                     });
 
-                    // 🔹 ubah jadi array & urutkan berdasarkan nama petugas
+                    // 🔹 Ubah jadi array & urutkan berdasarkan nama petugas
                     const sorted = Object.entries(rekap)
                         .sort(([, a], [, b]) => a.petugas.localeCompare(b.petugas))
                         .reduce((obj, [key, val]) => {
-                            obj[key] = val;
+                            // Hitung berapa hari yang lalu
+                            const today = new Date();
+                            const lastDate = new Date(val.terakhir_isi);
+                            const diffDays = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+
+                            // Tentukan label warna
+                            let label = '';
+                            if (diffDays > 14) {
+                                label = 'merah'; // lebih dari 14 hari
+                            } else if (diffDays > 7) {
+                                label = 'kuning'; // lebih dari 7 hari
+                            } else {
+                                label = 'hijau'; // masih baru
+                            }
+
+                            obj[key] = {
+                                ...val,
+                                hari_lalu: diffDays,
+                                status_label: label
+                            };
+
                             return obj;
                         }, {});
 
                     return sorted;
                 }
+
             },
             mounted() {
                 this.loadPengamat();
