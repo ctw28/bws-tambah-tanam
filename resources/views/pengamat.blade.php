@@ -414,7 +414,7 @@
                         if (this.filterSaluran) url += `&saluran=${this.filterSaluran}`;
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
-                        if (this.filterpengamatValid) url += `&pengamat_valid=${this.filterpengamatValid}`;
+                        if (this.filterpengamatValid != "") url += `&pengamat_valid=${this.filterpengamatValid}`;
 
                         let res = await axios.get(url);
                         console.log(res.data);
