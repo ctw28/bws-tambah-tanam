@@ -484,7 +484,7 @@
                 async loadRekap() {
                     try {
                         const pengamat = JSON.parse(localStorage.getItem("pengamat"));
-                        let url = `/api/form-pengisian?di_id=${pengamat.daerah_irigasi_id}&pengamat_valid=1`;
+                        let url = `/api/form-pengisian?di_id=${pengamat.daerah_irigasi_id}`;
 
                         // if (this.filterSaluran) url += `&saluran=${this.filterSaluran}`;
                         // if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
