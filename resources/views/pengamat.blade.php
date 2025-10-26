@@ -165,12 +165,23 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <p v-if="filteredItems.length === 0 && is_filtered" class="text-muted text-center mt-2">Data tidak ditemukan</p>
-                        <p v-if="!is_filtered" class="text-muted text-center mt-2">Filter data terlebih dahulu</p>
+                        <!-- Loading -->
                         <div v-if="is_loading" class="alert alert-secondary text-center mt-3">
                             <div class="spinner-border spinner-border-sm me-2"></div>
                             Memuat data...
                         </div>
+
+                        <!-- Tidak loading -->
+                        <div v-else>
+                            <p v-if="!is_filtered" class="text-muted text-center mt-2">
+                                Filter data terlebih dahulu
+                            </p>
+
+                            <p v-else-if="filteredItems.length === 0" class="text-muted text-center mt-2">
+                                Data tidak ditemukan
+                            </p>
+                        </div>
+
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <!-- Pilih jumlah data per halaman -->
                             <div class="d-flex align-items-center gap-2">
