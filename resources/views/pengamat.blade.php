@@ -167,7 +167,10 @@
                         </table>
                         <p v-if="filteredItems.length === 0 && is_filtered" class="text-muted text-center mt-2">Data tidak ditemukan</p>
                         <p v-if="!is_filtered" class="text-muted text-center mt-2">Filter data terlebih dahulu</p>
-
+                        <div v-if="is_loading" class="alert alert-secondary text-center mt-3">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            Memuat data...
+                        </div>
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <!-- Pilih jumlah data per halaman -->
                             <div class="d-flex align-items-center gap-2">
