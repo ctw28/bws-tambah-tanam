@@ -232,6 +232,7 @@
             // }
             rekapPerDaerahIrigasi() {
                 const rekap = {};
+                console.log(this.filteredItems);
 
                 this.filteredItems.forEach(i => {
                     // ambil daerah irigasi
