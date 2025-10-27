@@ -122,7 +122,7 @@
                 </table>
             </div> -->
             <!-- Chart -->
-            <h4 class="mt-5">📈 Informasi Grafis Luas Tanam Daerah Irigasi : </h4>
+            <h4 class="mt-5">📈 Informasi Grafis Luas Tanam Daerah Irigasi </h4>
             <canvas id="chartDI" height="100"></canvas>
             <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
             <canvas id="chartItem" height="100"></canvas>
@@ -204,10 +204,46 @@
                 });
                 return rekap;
             },
+            // rekapPerDaerahIrigasi() {
+            //     const rekap = {};
+            //     this.filteredItems.forEach(i => {
+            //         const namaDI = i.daerah_irigasi?.nama || 'Tidak Ada DI';
+            //         if (!rekap[namaDI]) {
+            //             rekap[namaDI] = {
+            //                 baku: 0,
+            //                 potensial: 0,
+            //                 fungsional: 0,
+            //                 padi: 0,
+            //                 palawija: 0,
+            //                 lainnya: 0,
+            //                 total: 0
+            //             };
+            //         }
+            //         rekap[namaDI].baku = parseFloat(i.daerah_irigasi?.luas_baku ?? 0);
+            //         rekap[namaDI].potensial = parseFloat(i.daerah_irigasi?.luas_potensial ?? 0);
+            //         rekap[namaDI].fungsional = parseFloat(i.daerah_irigasi?.luas_fungsional ?? 0);
+            //         rekap[namaDI].padi += parseFloat(i.luas_padi);
+            //         rekap[namaDI].palawija += parseFloat(i.luas_palawija);
+            //         rekap[namaDI].lainnya += parseFloat(i.luas_lainnya);
+            //         rekap[namaDI].total += parseFloat(i.luas_padi) + parseFloat(i.luas_palawija) +
+            //             parseFloat(i.luas_lainnya);
+            //     });
+            //     return rekap;
+            // }
             rekapPerDaerahIrigasi() {
                 const rekap = {};
+
                 this.filteredItems.forEach(i => {
-                    const namaDI = i.daerah_irigasi?.nama || 'Tidak Ada DI';
+                    // ambil daerah irigasi
+                    const di = i.daerah_irigasi;
+                    if (!di) return;
+
+                    // cari DI induk (kalau ada parent, ambil parent; kalau tidak, pakai dia sendiri)
+                    const namaDI = di.parent ?
+                        di.parent.nama // jika punya induk
+                        :
+                        di.nama || 'Tidak Ada DI'; // kalau tidak punya induk
+
                     if (!rekap[namaDI]) {
                         rekap[namaDI] = {
                             baku: 0,
@@ -219,17 +255,23 @@
                             total: 0
                         };
                     }
-                    rekap[namaDI].baku = parseFloat(i.daerah_irigasi?.luas_baku ?? 0);
-                    rekap[namaDI].potensial = parseFloat(i.daerah_irigasi?.luas_potensial ?? 0);
-                    rekap[namaDI].fungsional = parseFloat(i.daerah_irigasi?.luas_fungsional ?? 0);
-                    rekap[namaDI].padi += parseFloat(i.luas_padi);
-                    rekap[namaDI].palawija += parseFloat(i.luas_palawija);
-                    rekap[namaDI].lainnya += parseFloat(i.luas_lainnya);
-                    rekap[namaDI].total += parseFloat(i.luas_padi) + parseFloat(i.luas_palawija) +
-                        parseFloat(i.luas_lainnya);
+
+                    rekap[namaDI].baku = parseFloat(di.parent?.luas_baku ?? di.luas_baku ?? 0);
+                    rekap[namaDI].potensial = parseFloat(di.parent?.luas_potensial ?? di.luas_potensial ?? 0);
+                    rekap[namaDI].fungsional = parseFloat(di.parent?.luas_fungsional ?? di.luas_fungsional ?? 0);
+
+                    rekap[namaDI].padi += parseFloat(i.luas_padi ?? 0);
+                    rekap[namaDI].palawija += parseFloat(i.luas_palawija ?? 0);
+                    rekap[namaDI].lainnya += parseFloat(i.luas_lainnya ?? 0);
+                    rekap[namaDI].total +=
+                        parseFloat(i.luas_padi ?? 0) +
+                        parseFloat(i.luas_palawija ?? 0) +
+                        parseFloat(i.luas_lainnya ?? 0);
                 });
+
                 return rekap;
             }
+
         },
         methods: {
             syncTanggal() {

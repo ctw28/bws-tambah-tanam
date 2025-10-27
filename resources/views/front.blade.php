@@ -83,23 +83,23 @@
                         <h5 class="mb-3">SILAHKAN PILIH SEBAGAI : </h5>
                         <div class="col-12">
                             <a href="{{route('form')}}" class="btn btn-lg btn-outline-dark w-100">
-                                <span class="tf-icons bx bx-form"></span>&nbsp; Juru
+                                <span class="tf-icons bx bx-form"></span>&nbsp; Juru Irigasi
                             </a>
                         </div>
                         <div class="col-12 mt-2">
                             <a href="{{route('pengamat')}}" class="btn btn-lg btn-outline-dark w-100">
-                                <span class="tf-icons bx bx-layers-alt"></span>&nbsp; Pengamat
+                                <span class="tf-icons bx bx-layers-alt"></span>&nbsp; Pengamat Irigasi
                             </a>
                         </div>
                         <div class="col-12 mt-2">
                             <a href="{{route('upi')}}" class="btn btn-lg btn-outline-dark w-100">
-                                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Unit Pengelola Irigasi
+                                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Unit Pengelola Irigasi (UPI)
                             </a>
                         </div>
 
                         <div class="col-12 mt-2">
                             <a href="{{route('login-form')}}" class="btn btn-lg btn-outline-dark w-100">
-                                <span class="tf-icons bx bx-file-report"></span>&nbsp; Sekretariat
+                                <span class="tf-icons bx bx-file-report"></span>&nbsp; Sekretariat WS
                             </a>
                         </div>
                         <div class="col-12 mt-2">
