@@ -233,24 +233,17 @@
             rekapPerDaerahIrigasi() {
                 const rekap = {};
 
-                // cache nama DI biar gampang dicari berdasarkan ID
-                const mapDI = {};
-                this.filteredItems.forEach(i => {
-                    const di = i.daerah_irigasi;
-                    if (di) mapDI[di.id] = di.nama;
-                });
-
                 this.filteredItems.forEach(i => {
                     const di = i.daerah_irigasi;
                     if (!di) return;
 
-                    // kalau ada parent_id, ambil nama induknya
-                    const parentNama = di.parent_id ?
-                        (mapDI[di.parent_id] || 'Tidak Ada DI') :
+                    // ambil nama DI induk jika ada, kalau tidak pakai nama sendiri
+                    const namaDI = di.parent_id ?
+                        (di.parent?.nama || 'Tidak Ada DI') :
                         (di.nama || 'Tidak Ada DI');
 
-                    if (!rekap[parentNama]) {
-                        rekap[parentNama] = {
+                    if (!rekap[namaDI]) {
+                        rekap[namaDI] = {
                             baku: 0,
                             potensial: 0,
                             fungsional: 0,
@@ -261,15 +254,15 @@
                         };
                     }
 
-                    // ambil luas dari DI (bisa juga nanti disesuaikan kalau mau ambil dari induknya)
-                    rekap[parentNama].baku += parseFloat(di.luas_baku ?? 0);
-                    rekap[parentNama].potensial += parseFloat(di.luas_potensial ?? 0);
-                    rekap[parentNama].fungsional += parseFloat(di.luas_fungsional ?? 0);
+                    // gunakan data luas dari DI sekarang
+                    rekap[namaDI].baku += parseFloat(di.luas_baku ?? 0);
+                    rekap[namaDI].potensial += parseFloat(di.luas_potensial ?? 0);
+                    rekap[namaDI].fungsional += parseFloat(di.luas_fungsional ?? 0);
 
-                    rekap[parentNama].padi += parseFloat(i.luas_padi ?? 0);
-                    rekap[parentNama].palawija += parseFloat(i.luas_palawija ?? 0);
-                    rekap[parentNama].lainnya += parseFloat(i.luas_lainnya ?? 0);
-                    rekap[parentNama].total +=
+                    rekap[namaDI].padi += parseFloat(i.luas_padi ?? 0);
+                    rekap[namaDI].palawija += parseFloat(i.luas_palawija ?? 0);
+                    rekap[namaDI].lainnya += parseFloat(i.luas_lainnya ?? 0);
+                    rekap[namaDI].total +=
                         parseFloat(i.luas_padi ?? 0) +
                         parseFloat(i.luas_palawija ?? 0) +
                         parseFloat(i.luas_lainnya ?? 0);
@@ -277,6 +270,7 @@
 
                 return rekap;
             }
+
 
 
         },

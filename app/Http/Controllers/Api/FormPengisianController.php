@@ -118,6 +118,7 @@ class FormPengisianController extends Controller
         $query = FormPengisian::with([
             'kabupaten',
             'daerahIrigasi.pengamat',
+            'daerahIrigasi.parent',
             'petugas',
             'saluran',
             'bangunan',
