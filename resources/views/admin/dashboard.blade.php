@@ -232,21 +232,25 @@
             // }
             rekapPerDaerahIrigasi() {
                 const rekap = {};
-                console.log(this.filteredItems);
+
+                // cache nama DI biar gampang dicari berdasarkan ID
+                const mapDI = {};
+                this.filteredItems.forEach(i => {
+                    const di = i.daerah_irigasi;
+                    if (di) mapDI[di.id] = di.nama;
+                });
 
                 this.filteredItems.forEach(i => {
-                    // ambil daerah irigasi
                     const di = i.daerah_irigasi;
                     if (!di) return;
 
-                    // cari DI induk (kalau ada parent, ambil parent; kalau tidak, pakai dia sendiri)
-                    const namaDI = di.parent ?
-                        di.parent.nama // jika punya induk
-                        :
-                        di.nama || 'Tidak Ada DI'; // kalau tidak punya induk
+                    // kalau ada parent_id, ambil nama induknya
+                    const parentNama = di.parent_id ?
+                        (mapDI[di.parent_id] || 'Tidak Ada DI') :
+                        (di.nama || 'Tidak Ada DI');
 
-                    if (!rekap[namaDI]) {
-                        rekap[namaDI] = {
+                    if (!rekap[parentNama]) {
+                        rekap[parentNama] = {
                             baku: 0,
                             potensial: 0,
                             fungsional: 0,
@@ -257,14 +261,15 @@
                         };
                     }
 
-                    rekap[namaDI].baku = parseFloat(di.parent?.luas_baku ?? di.luas_baku ?? 0);
-                    rekap[namaDI].potensial = parseFloat(di.parent?.luas_potensial ?? di.luas_potensial ?? 0);
-                    rekap[namaDI].fungsional = parseFloat(di.parent?.luas_fungsional ?? di.luas_fungsional ?? 0);
+                    // ambil luas dari DI (bisa juga nanti disesuaikan kalau mau ambil dari induknya)
+                    rekap[parentNama].baku += parseFloat(di.luas_baku ?? 0);
+                    rekap[parentNama].potensial += parseFloat(di.luas_potensial ?? 0);
+                    rekap[parentNama].fungsional += parseFloat(di.luas_fungsional ?? 0);
 
-                    rekap[namaDI].padi += parseFloat(i.luas_padi ?? 0);
-                    rekap[namaDI].palawija += parseFloat(i.luas_palawija ?? 0);
-                    rekap[namaDI].lainnya += parseFloat(i.luas_lainnya ?? 0);
-                    rekap[namaDI].total +=
+                    rekap[parentNama].padi += parseFloat(i.luas_padi ?? 0);
+                    rekap[parentNama].palawija += parseFloat(i.luas_palawija ?? 0);
+                    rekap[parentNama].lainnya += parseFloat(i.luas_lainnya ?? 0);
+                    rekap[parentNama].total +=
                         parseFloat(i.luas_padi ?? 0) +
                         parseFloat(i.luas_palawija ?? 0) +
                         parseFloat(i.luas_lainnya ?? 0);
@@ -272,6 +277,7 @@
 
                 return rekap;
             }
+
 
         },
         methods: {
