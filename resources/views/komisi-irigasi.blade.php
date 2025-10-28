@@ -266,7 +266,7 @@
                                             <a class="page-link" href="#" @click.prevent="loadPermasalahan(pagination.current - 1)">Prev</a>
                                         </li>
 
-                                        <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === paginationPermasalahan.current }">
+                                        <li v-for="page in paginationPermasalahan.last" :key="page" class="page-item" :class="{ active: page === paginationPermasalahan.current }">
                                             <a class="page-link" href="#" @click.prevent="loadPermasalahan(page)">@{{ page }}</a>
                                         </li>
 
