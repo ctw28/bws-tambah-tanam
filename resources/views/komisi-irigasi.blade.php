@@ -250,7 +250,7 @@
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <!-- Pilih jumlah data per halaman -->
                                 <div class="d-flex align-items-center gap-2">
-                                    <select v-model="perPage" @change="loadData(1)" class="form-select form-select" style="width: auto;">
+                                    <select v-model="perPage" @change="loadPermasalahan(1)" class="form-select form-select" style="width: auto;">
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                         <option value="100">100</option>
@@ -262,16 +262,16 @@
                                 <!-- Navigasi Pagination -->
                                 <nav>
                                     <ul class="pagination pagination mb-0">
-                                        <li class="page-item" :class="{ disabled: pagination.current === 1 }">
-                                            <a class="page-link" href="#" @click.prevent="loadData(pagination.current - 1)">Prev</a>
+                                        <li class="page-item" :class="{ disabled: paginationPermasalahan.current === 1 }">
+                                            <a class="page-link" href="#" @click.prevent="loadPermasalahan(pagination.current - 1)">Prev</a>
                                         </li>
 
-                                        <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
-                                            <a class="page-link" href="#" @click.prevent="loadData(page)">@{{ page }}</a>
+                                        <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === paginationPermasalahan.current }">
+                                            <a class="page-link" href="#" @click.prevent="loadPermasalahan(page)">@{{ page }}</a>
                                         </li>
 
                                         <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
-                                            <a class="page-link" href="#" @click.prevent="loadData(pagination.current + 1)">Next</a>
+                                            <a class="page-link" href="#" @click.prevent="loadPermasalahan(paginationPermasalahan.current + 1)">Next</a>
                                         </li>
                                     </ul>
                                 </nav>
