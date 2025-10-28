@@ -91,11 +91,6 @@
                             </button>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link" :class="{ active: activeTab === 'validasi' }" @click="activeTab = 'validasi'">
-                                📝 Validasi Form
-                            </button>
-                        </li>
-                        <li class="nav-item">
                             <button
                                 class="nav-link"
                                 :class="{ active: activeTab === 'permasalahan' }"
@@ -107,9 +102,6 @@
                     </ul>
                 </div>
                 <div class="card-body">
-
-
-
                     <div v-if="activeTab === 'dashboard'">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
@@ -175,138 +167,6 @@
                         <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
                         <canvas id="chartItem" height="100"></canvas>
 
-                    </div>
-                    <div v-else-if="activeTab === 'validasi'">
-                        <!-- Filter tanggal -->
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-body">
-                                <div class="row g-2 align-items-end">
-                                    <!-- Pilih DI -->
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label fw-bold">Daerah Irigasi</label>
-                                        <select class="form-select" v-model="filterDi">
-                                            <option value="">-- Pilih Daerah Irigasi --</option>
-                                            <option
-                                                v-for="s in upi.daerah_irigasis"
-                                                :key="s.id"
-                                                :value="s.id">
-                                                @{{ s.nama }}
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label fw-bold">Status Validasi</label>
-                                        <select class="form-select" v-model="filterUpiValid">
-                                            <option value="">Pilih Status</option>
-                                            <option value="0">Belum Valid</option>
-                                            <option value="1">Valid</option>
-                                        </select>
-                                    </div>
-                                    <!-- Tanggal awal -->
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label fw-bold">Tanggal Awal</label>
-                                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
-                                    </div>
-                                    <!-- Tanggal awal -->
-
-                                    <!-- Tanggal akhir -->
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label fw-bold">Tanggal Akhir</label>
-                                        <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
-                                    </div>
-
-                                    <!-- Tombol -->
-                                    <div class="col-12 col-md-3 d-flex gap-2">
-                                        <button class="btn btn-primary btn w-100" @click="applyFilter">
-                                            <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
-                                            <span v-else>Filter</span>
-                                        </button>
-                                        <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr class="text-center">
-                                        <th>No</th>
-                                        <th>Tanggal</th>
-                                        <th>Pengamat</th>
-                                        <th>Saluran</th>
-                                        <th>Status Validasi</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(f,index) in filteredItems" :key="f.id">
-                                        <td>@{{ (pagination.current - 1) * perPage + (index + 1) }}</td>
-
-                                        <td>@{{ formatTanggal(f.tanggal_pantau) }}</td>
-                                        <td>@{{ f.daerah_irigasi?.pengamat?.nama }}</td>
-                                        <td>@{{ f.saluran.nama }} / @{{ f.bangunan.nama }} / @{{ f.petak.nama }}</td>
-                                        <td class="text-center">
-                                            <span v-if="f.validasi && f.validasi.upi_valid == 1">✅ Valid</span>
-                                            <span v-else>❌ Belum</span>
-
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-warning" @click="showForm(f)">
-                                                Lihat Form / Validasi
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <!-- Loading -->
-                            <div v-if="is_loading" class="alert alert-secondary text-center mt-3">
-                                <div class="spinner-border spinner-border-sm me-2"></div>
-                                Memuat data...
-                            </div>
-
-                            <!-- Tidak loading -->
-                            <div v-else>
-                                <p v-if="!is_filtered" class="text-muted text-center mt-2">
-                                    Filter data terlebih dahulu
-                                </p>
-
-                                <p v-else-if="filteredItems.length === 0" class="text-muted text-center mt-2">
-                                    Data tidak ditemukan
-                                </p>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <!-- Pilih jumlah data per halaman -->
-                                <div class="d-flex align-items-center gap-2">
-                                    <select v-model="perPage" @change="loadData(1)" class="form-select form-select" style="width: auto;">
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                    <span>per halaman</span>
-                                </div>
-
-                                <!-- Navigasi Pagination -->
-                                <nav>
-                                    <ul class="pagination pagination mb-0">
-                                        <li class="page-item" :class="{ disabled: pagination.current === 1 }">
-                                            <a class="page-link" href="#" @click.prevent="loadData(pagination.current - 1)">Prev</a>
-                                        </li>
-
-                                        <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
-                                            <a class="page-link" href="#" @click.prevent="loadData(page)">@{{ page }}</a>
-                                        </li>
-
-                                        <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
-                                            <a class="page-link" href="#" @click.prevent="loadData(pagination.current + 1)">Next</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
                     </div>
                     <div v-else>
                         <div class="table-responsive">
@@ -577,35 +437,7 @@
             },
             methods: {
 
-                async cekUpi() {
-                    try {
-                        let res = await axios.post("/api/upi/validasi-kode", {
-                            kode: this.kode
-                        });
-                        this.upi = res.data.upi;
-                        console.log(this.upi);
-                        localStorage.setItem("upi", JSON.stringify(res.data.upi));
-                    } catch (e) {
-                        alert("Kode Upi tidak valid!");
-                    }
-                },
-                // async loadDashboard() {
-                //     try {
-                //         let url = `/api/form-pengisian?per_page=all&di_id=${this.filterDi}`;
 
-                //         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                //         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
-
-                //         let res = await axios.get(url);
-                //         console.log(res.data);
-                //         this.filteredItems = res.data.data;
-
-                //     } catch (e) {
-                //         console.error(e);
-                //     } finally {
-                //         this.is_loading = false;
-                //     }
-                // },
                 async loadPermasalahan(page = 1) {
                     try {
                         // alert('load masalah')
@@ -655,32 +487,42 @@
                         this.is_loading = false;
                     }
                 },
+                async loadDaerahIrigasi() {
+                    const res = await axios.get('/api/master/daerah-irigasi?per_page=all');
+
+                    this.daerahIrigasis = res.data;
+                },
                 async loadDashboard() {
-                    try {
-                        const diIds = this.upi.daerah_irigasis.map(di => di.id);
-                        console.log(diIds);
 
-                        let allData = [];
-                        for (let id of diIds) {
-                            let url = `/api/form-pengisian?di_id=${id}&pengamat_valid=1`;
+                    let dis = await axios.get('/api/user-dis');
 
-                            if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                            if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                    let items = [];
+                    let seen = new Set();
 
-                            let res = await axios.get(url);
-                            console.log(res);
+                    for (let di of dis.data) {
+                        let url = di.has_upi ?
+                            `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&upi_valid=1` :
+                            `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1`;
+                        if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                        if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
-                            allData = allData.concat(res.data);
+                        let res = await axios.get(url);
+                        console.log(res);
 
+                        for (let d of res.data) {
+                            if (!seen.has(d.id)) {
+                                seen.add(d.id);
+                                items.push(d);
+                            }
                         }
-                        console.log(allData);
-                        this.rekapItems = allData;
-                        this.chartPerDI();
-                        this.chartPerItem();
-
-                    } catch (e) {
-                        console.error(e);
                     }
+
+                    console.log(items);
+
+                    this.items = items;
+                    this.rekapItems = items;
+                    this.chartPerDI();
+                    this.chartPerItem();
                 },
                 showForm(form) {
                     this.item = form;
@@ -874,8 +716,7 @@
 
             },
             mounted() {
-                this.loadUpi();
-                this.loadDashboard()
+                this.loadDashboard();
             }
         }).mount("#app");
     </script>

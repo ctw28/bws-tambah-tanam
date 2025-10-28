@@ -22,7 +22,6 @@
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{asset('/')}}assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Page CSS -->
     <!-- Page -->
@@ -99,7 +98,7 @@
                             <button
                                 class="nav-link"
                                 :class="{ active: activeTab === 'permasalahan' }"
-                                @click="activeTab = 'permasalahan'">
+                                @click="activeTab = 'permasalahan'; loadPermasalahan()">
                                 📊 Permasalahan
                             </button>
 
@@ -109,75 +108,11 @@
                 <div class="card-body">
 
 
-
+                    <!-- Filter tanggal -->
                     <div v-if="activeTab === 'dashboard'">
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-body">
-                                <div class="row g-2 align-items-end">
-
-                                    <!-- Tanggal awal -->
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label fw-bold">Tanggal Awal</label>
-                                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
-                                    </div>
-                                    <!-- Tanggal awal -->
-
-                                    <!-- Tanggal akhir -->
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label fw-bold">Tanggal Akhir</label>
-                                        <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
-                                    </div>
-
-                                    <!-- Tombol -->
-                                    <div class="col-12 col-md-3 d-flex gap-2">
-                                        <button class="btn btn-primary btn w-100" @click="applyFilterDashboard">
-                                            <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
-                                            <span v-else>Filter</span>
-                                        </button>
-                                        <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Daerah Irigasi</th>
-                                        <th>Padi (ha)</th>
-                                        <th>Palawija (ha)</th>
-                                        <th>Lainnya (ha)</th>
-                                        <th>Total Luas Tanam (ha)</th>
-                                        <th>Baku</th>
-                                        <th>Potensial</th>
-                                        <th>Fungsional</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(data, namaDI,index) in rekapPerDaerahIrigasi" :key="namaDI">
-                                        <td>@{{ index + 1 }}</td>
-                                        <td>@{{ namaDI }}</td>
-                                        <td>@{{ data.padi.toFixed(2) }}</td>
-                                        <td>@{{ data.palawija.toFixed(2) }}</td>
-                                        <td>@{{ data.lainnya.toFixed(2) }}</td>
-                                        <td>@{{ data.total.toFixed(2) }}</td>
-                                        <td>@{{ data.baku.toFixed(3) }}</td>
-                                        <td>@{{ data.potensial.toFixed(3) }}</td>
-                                        <td>@{{ data.fungsional.toFixed(3) }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <h4 class="mt-5">📈 Informasi Grafis Luas Tanam Daerah Irigasi </h4>
-                        <canvas id="chartDI" height="100"></canvas>
-                        <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
-                        <canvas id="chartItem" height="100"></canvas>
-
+                        ini dashboard
                     </div>
                     <div v-else-if="activeTab === 'validasi'">
-                        <!-- Filter tanggal -->
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
                                 <div class="row g-2 align-items-end">
@@ -316,7 +251,7 @@
                                         <!-- Pilih DI -->
                                         <div class="col-6 col-md-3">
                                             <label class="form-label fw-bold">Daerah Irigasi</label>
-                                            <select class="form-select" v-model="filterDi">
+                                            <select class="form-select" v-model="filterDiPermasalahan">
                                                 <option value="">-- Pilih Daerah Irigasi --</option>
                                                 <option
                                                     v-for="s in upi.daerah_irigasis"
@@ -330,14 +265,14 @@
                                         <!-- Tanggal awal -->
                                         <div class="col-6 col-md-3">
                                             <label class="form-label fw-bold">Tanggal Awal</label>
-                                            <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
+                                            <input type="date" v-model="filterAwalPerMasalahan" @change="syncTanggalPermasalahan" class="form-control form-control" />
                                         </div>
                                         <!-- Tanggal awal -->
 
                                         <!-- Tanggal akhir -->
                                         <div class="col-6 col-md-3">
                                             <label class="form-label fw-bold">Tanggal Akhir</label>
-                                            <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                                            <input type="date" v-model="filterAkhirPermasalahan" class="form-control form-control" />
                                         </div>
 
                                         <!-- Tombol -->
@@ -346,7 +281,7 @@
                                                 <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
                                                 <span v-else>Filter</span>
                                             </button>
-                                            <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                                            <button class="btn btn-secondary btn w-100" @click="resetFilterPermasalahan">Reset</button>
                                         </div>
                                     </div>
                                 </div>
@@ -531,7 +466,6 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{asset('/')}}assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
     <script>
         const {
@@ -549,10 +483,10 @@
                     filteredItems: [],
                     permasalahans: [],
                     filterDi: '',
-                    filterDi: '',
+                    filterDiPermasalahan: '',
                     filterTanggalAwal: '',
                     filterTanggalAkhir: '',
-                    filterTanggalAwal: '',
+                    filterAwalPerMasalahan: '',
                     filterAkhirPermasalahan: '',
                     filterUpiValid: '',
                     pagination: {
@@ -569,14 +503,10 @@
                     perPagePermasalahan: 25, // default
                     is_filtered: false,
                     is_loading: false,
-                    activeTab: 'dashboard', // default tab yang aktif saat halaman dibuka,
-                    rekapItems: [],
-                    chartDI: null,
-                    chartItem: null
+                    activeTab: 'dashboard', // default tab yang aktif saat halaman dibuka
                 }
             },
             methods: {
-
                 async cekUpi() {
                     try {
                         let res = await axios.post("/api/upi/validasi-kode", {
@@ -589,31 +519,31 @@
                         alert("Kode Upi tidak valid!");
                     }
                 },
-                // async loadDashboard() {
-                //     try {
-                //         let url = `/api/form-pengisian?per_page=all&di_id=${this.filterDi}`;
+                async loadDashboard() {
+                    try {
+                        let url = `/api/form-pengisian?per_page=all&di_id=${this.filterDi}`;
 
-                //         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                //         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                        if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                        if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
-                //         let res = await axios.get(url);
-                //         console.log(res.data);
-                //         this.filteredItems = res.data.data;
+                        let res = await axios.get(url);
+                        console.log(res.data);
+                        this.filteredItems = res.data.data;
 
-                //     } catch (e) {
-                //         console.error(e);
-                //     } finally {
-                //         this.is_loading = false;
-                //     }
-                // },
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.is_loading = false;
+                    }
+                },
                 async loadPermasalahan(page = 1) {
                     try {
                         // alert('load masalah')
                         let url = `/api/form-pengisian?page=${page}&per_page=${this.perPagePermasalahan}&pengamat_valid=1&upi_valid=1&has_permasalahan=1`;
 
-                        if (this.filterDi) url += `&di_id=${this.filterDi}`;
-                        if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                        if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                        if (this.filterDiPermasalahan) url += `&di_id=${this.filterDiPermasalahan}`;
+                        if (this.filterAwalPerMasalahan) url += `&tanggal_awal=${this.filterAwalPerMasalahan}`;
+                        if (this.filterAkhirPermasalahan) url += `&tanggal_akhir=${this.filterAkhirPermasalahan}`;
 
                         let res = await axios.get(url);
                         console.log(res.data);
@@ -655,33 +585,26 @@
                         this.is_loading = false;
                     }
                 },
-                async loadDashboard() {
-                    try {
-                        const diIds = this.upi.daerah_irigasis.map(di => di.id);
-                        console.log(diIds);
+                // async loadData() {
+                //     try {
+                //         const diIds = this.upi.daerah_irigasis.map(di => di.id);
+                //         console.log(diIds);
 
-                        let allData = [];
-                        for (let id of diIds) {
-                            let url = `/api/form-pengisian?di_id=${id}&pengamat_valid=1`;
+                //         let allData = [];
+                //         for (let id of diIds) {
+                //             let res = await axios.get(`/api/form-pengisian?di_id=${id}&pengamat_valid=1`);
+                //             console.log(res);
 
-                            if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                            if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                //             allData = allData.concat(res.data);
+                //         }
+                //         console.log(allData);
 
-                            let res = await axios.get(url);
-                            console.log(res);
-
-                            allData = allData.concat(res.data);
-
-                        }
-                        console.log(allData);
-                        this.rekapItems = allData;
-                        this.chartPerDI();
-                        this.chartPerItem();
-
-                    } catch (e) {
-                        console.error(e);
-                    }
-                },
+                //         this.forms = allData;
+                //         this.filteredItems = allData;
+                //     } catch (e) {
+                //         console.error(e);
+                //     }
+                // },
                 showForm(form) {
                     this.item = form;
                     // console.log(this.item);
@@ -739,102 +662,41 @@
                 applyFilterPermasalahan() {
                     this.loadPermasalahan(1)
                 },
-                applyFilterDashboard() {
-                    this.loadDashboard()
-                },
                 resetFilter() {
-                    this.filterDi = ''
                     this.filterTanggalAwal = ''
                     this.filterTanggalAkhir = ''
-                    this.filteredItems = []
-                    this.permasalahans = []
-                    this.loadDashboard()
+                    this.loadData()
+
+                },
+                resetFilterPermasalahan() {
+                    this.filterAwalPerMasalahan = ''
+                    this.filterAkhirPermasalahan = ''
+                    this.filterDiPermasalahan = ''
+
                 },
                 syncTanggal() {
+                    // kalau user pilih tanggal awal, otomatis set tanggal akhir sama
                     this.filterTanggalAkhir = this.filterTanggalAwal;
+                },
+                syncTanggalPermasalahan() {
+                    this.filterAkhirPermasalahan = this.filterAwalPerMasalahan;
                 },
                 loadUpi() {
                     let data = localStorage.getItem("upi");
+                    // console.log('gg');
+
                     if (data) {
                         this.upi = JSON.parse(data);
+                        // this.loadData()
+                        // bisa optional: validasi token ke server
                     }
-                },
-                chartPerDI() {
-                    const labels = Object.keys(this.rekapPerDaerahIrigasi);
-                    const dataTotal = Object.values(this.rekapPerDaerahIrigasi).map(r => r.total);
-
-                    if (this.chartDI) this.chartDI.destroy();
-                    this.chartDI = new Chart(document.getElementById('chartDI'), {
-                        type: 'bar',
-                        data: {
-                            labels,
-                            datasets: [{
-                                label: 'Total Luas (ha)',
-                                data: dataTotal
-                            }]
-                        }
-                    });
-                },
-                chartPerItem() {
-                    const rekap = this.rekapPerDaerahIrigasi; // fungsi yg sudah dibuat
-                    const labels = Object.keys(rekap);
-
-                    const dataPadi = Object.values(rekap).map(r => r.padi);
-                    const dataPalawija = Object.values(rekap).map(r => r.palawija);
-                    const dataLainnya = Object.values(rekap).map(r => r.lainnya);
-
-                    if (this.chartItem) this.chartItem.destroy();
-
-                    this.chartItem = new Chart(document.getElementById('chartItem'), {
-                        type: 'bar',
-                        data: {
-                            labels,
-                            datasets: [{
-                                    label: 'Padi (ha)',
-                                    data: dataPadi,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
-                                },
-                                {
-                                    label: 'Palawija (ha)',
-                                    data: dataPalawija,
-                                    backgroundColor: 'rgba(255, 205, 86, 0.6)'
-                                },
-                                {
-                                    label: 'Lainnya (ha)',
-                                    data: dataLainnya,
-                                    backgroundColor: 'rgba(201, 90, 90, 0.6)'
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top'
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Rekap Luas Per Daerah Irigasi'
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Luas (ha)'
-                                    }
-                                }
-                            }
-                        }
-                    });
                 },
             },
             computed: {
                 rekapPerDaerahIrigasi() {
                     const rekap = {};
 
-                    this.rekapItems.forEach(i => {
+                    this.filteredItems.forEach(i => {
                         const di = i.daerah_irigasi;
                         if (!di) return;
 
@@ -874,8 +736,8 @@
 
             },
             mounted() {
+                // this.loadDashboard()
                 this.loadUpi();
-                this.loadDashboard()
             }
         }).mount("#app");
     </script>
