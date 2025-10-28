@@ -441,7 +441,7 @@
                 async loadPermasalahan(page = 1) {
                     try {
                         // alert('load masalah')
-                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPagePermasalahan}&pengamat_valid=1&upi_valid=1&has_permasalahan=1`;
+                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPagePermasalahan}&pengamat_valid=1&has_permasalahan=1`;
 
                         if (this.filterDi) url += `&di_id=${this.filterDi}`;
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
