@@ -103,7 +103,7 @@
                             </a>
                         </div>
                         <div class="col-12 mt-2">
-                            <a href="#" class="btn btn-lg btn-outline-dark w-100">
+                            <a href="{{route('komisi-irigasi')}}" class="btn btn-lg btn-outline-dark w-100">
                                 <span class="tf-icons bx bx-user"></span>&nbsp; Komisi Irigasi
                             </a>
                         </div>

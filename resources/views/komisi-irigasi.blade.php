@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Validasi Unit Pengelola Irigasi</title>
+    <title>Komisi Irigasi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link
@@ -55,7 +55,7 @@
     <div id="app" v-cloak class="container my-5">
 
         <!-- Input Kode Upi -->
-        <div v-if="!upi">
+        <!-- <div v-if="!upi">
             <div class="card shadow-lg">
                 <div class="card-body">
                     <div class="col-12 ">
@@ -63,20 +63,21 @@
                             <span class="tf-icons bx bx-arrow-left"></span>&nbsp; Kembali ke halaman depan
                         </a>
                     </div>
-                    <h5 class="card-title mt-2">Masuk Unit Pengelola Irigasi</h5>
+                    <h5 class="card-title mt-2">Masuk Komisi Irigasi</h5>
                     <div class="mb-3">
-                        <label class="form-label">Masukkan Kode Unit Pengelola Irigasi</label>
-                        <input type="text" v-model="kode" class="form-control" placeholder="Kode unik Upi">
+                        <label class="form-label">Masukkan Kode Komisi Irigasi</label>
+                        <input type="text" v-model="kode" class="form-control" placeholder="Kode unik Komisi Irigasi">
                     </div>
                     <button class="btn btn-primary" @click="cekUpi">Masuk
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Halaman Validasi -->
-        <div v-else>
+        <!-- <div v-else> -->
+        <div>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4>Halo, @{{ upi.nama }}</h4>
+                <h4>Halo, Komisi Irigasi</h4>
                 <button class="btn btn-sm btn-danger" @click="logout">Keluar</button>
             </div>
 
@@ -179,7 +180,7 @@
                                             <select class="form-select" v-model="filterDi">
                                                 <option value="">-- Pilih Daerah Irigasi --</option>
                                                 <option
-                                                    v-for="s in upi.daerah_irigasis"
+                                                    v-for="s in daerahIrigasis"
                                                     :key="s.id"
                                                     :value="s.id">
                                                     @{{ s.nama }}
@@ -406,14 +407,13 @@
                     forms: [],
                     item: {},
                     modalInstance: null,
+                    daerahIrigasis: [],
                     filteredItems: [],
                     permasalahans: [],
                     filterDi: '',
                     filterDi: '',
                     filterTanggalAwal: '',
                     filterTanggalAkhir: '',
-                    filterTanggalAwal: '',
-                    filterAkhirPermasalahan: '',
                     filterUpiValid: '',
                     pagination: {
                         current: 1,
@@ -491,32 +491,35 @@
                     const res = await axios.get('/api/master/daerah-irigasi?per_page=all');
 
                     this.daerahIrigasis = res.data;
+                    console.log(this.daerahIrigasis);
                 },
                 async loadDashboard() {
-
-                    let dis = await axios.get('/api/user-dis');
-
-                    let items = [];
+                    await this.loadDaerahIrigasi()
+                    console.log(this.daerahIrigasis);
                     let seen = new Set();
-
-                    for (let di of dis.data) {
-                        let url = di.has_upi ?
+                    const requests = this.daerahIrigasis.map(di => {
+                        let url = (Array.isArray(di.upis) && di.upis.length > 0) ?
                             `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&upi_valid=1` :
                             `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1`;
+                        console.log(url);
+
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
-                        let res = await axios.get(url);
-                        console.log(res);
+                        return axios.get(url);
+                    });
 
-                        for (let d of res.data) {
+                    const responses = await Promise.all(requests);
+                    let items = [];
+
+                    for (const res of responses) {
+                        for (const d of res.data) {
                             if (!seen.has(d.id)) {
                                 seen.add(d.id);
                                 items.push(d);
                             }
                         }
                     }
-
                     console.log(items);
 
                     this.items = items;
@@ -531,32 +534,6 @@
                     const modalEl = document.getElementById('formLTTModal');
                     this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
                     this.modalInstance.show();
-                },
-                async validasi(formId) {
-
-                    if (!confirm("Yakin validasi form ini?")) return;
-                    try {
-                        let res = await axios.post(`/api/upi/validasi/${formId}`, {
-                            upi_id: this.upi.id
-                        });
-                        // console.log(res);
-
-                        this.forms = this.forms.map(f => {
-                            if (f.id === formId) {
-                                f.validasi = {
-                                    ...f.validasi,
-                                    upi_valid: true
-                                };
-                            }
-                            return f;
-                        });
-                        if (this.modalInstance) {
-                            this.modalInstance.hide();
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        alert("Gagal validasi");
-                    }
                 },
                 formatTanggal(tgl) {
                     if (!tgl) return '-';
@@ -595,12 +572,7 @@
                 syncTanggal() {
                     this.filterTanggalAkhir = this.filterTanggalAwal;
                 },
-                loadUpi() {
-                    let data = localStorage.getItem("upi");
-                    if (data) {
-                        this.upi = JSON.parse(data);
-                    }
-                },
+
                 chartPerDI() {
                     const labels = Object.keys(this.rekapPerDaerahIrigasi);
                     const dataTotal = Object.values(this.rekapPerDaerahIrigasi).map(r => r.total);

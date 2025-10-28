@@ -19,7 +19,8 @@ class DaerahIrigasiController extends Controller
             'kabupatens:id,nama',
             'parent:id,nama',
             'children:id,nama,parent_id',
-            'salurans.petugas'
+            'salurans.petugas',
+            'upis'
         ]);
 
         // ✅ Filter berdasarkan ID jika dikirim
