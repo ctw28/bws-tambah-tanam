@@ -255,9 +255,9 @@
                     }
 
                     // gunakan data luas dari DI sekarang
-                    rekap[namaDI].baku += parseFloat(di.luas_baku ?? 0);
-                    rekap[namaDI].potensial += parseFloat(di.luas_potensial ?? 0);
-                    rekap[namaDI].fungsional += parseFloat(di.luas_fungsional ?? 0);
+                    rekap[namaDI].baku = parseFloat(di.luas_baku ?? 0);
+                    rekap[namaDI].potensial = parseFloat(di.luas_potensial ?? 0);
+                    rekap[namaDI].fungsional = parseFloat(di.luas_fungsional ?? 0);
 
                     rekap[namaDI].padi += parseFloat(i.luas_padi ?? 0);
                     rekap[namaDI].palawija += parseFloat(i.luas_palawija ?? 0);

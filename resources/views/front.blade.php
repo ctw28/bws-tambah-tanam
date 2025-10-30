@@ -107,6 +107,11 @@
                                 <span class="tf-icons bx bx-user"></span>&nbsp; Komisi Irigasi
                             </a>
                         </div>
+                        <div class="col-12 mt-2">
+                            <a href="{{route('basis-data')}}" class="btn btn-lg btn-outline-dark w-100">
+                                <span class="tf-icons bx bx-globe"></span>&nbsp; Basisdata Hasil Pemantauan
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <!-- /Register -->

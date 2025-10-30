@@ -33,6 +33,7 @@ Route::get('/admin/komir', fn() => view('admin.komir'))->name('admin.komir');
 Route::get('/pengamat', fn() => view('pengamat'))->name('pengamat');
 Route::get('/upi', fn() => view('upi'))->name('upi');
 Route::get('/komisi-irigasi', fn() => view('komisi-irigasi'))->name('komisi-irigasi');
+Route::get('/basis-data', fn() => view('basis-data'))->name('basis-data');
 Route::get('/form-preview', fn() => view('form-preview'))->name('form-preview');
 Route::get('import-form', [ImportController::class, 'showForm'])->name('master.import.form');
 Route::post('import-irigasi', [ImportController::class, 'import'])->name('import.submit');
