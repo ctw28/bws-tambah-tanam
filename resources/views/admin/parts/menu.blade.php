@@ -1,7 +1,7 @@
  <li class="menu-item">
      <a href="{{route('dashboard')}}" class="menu-link">
          <i class="menu-icon tf-icons bx bx-home-circle"></i>
-         <div data-i18n="Dashboard">Dashboard</div>
+         <div data-i18n="Dashboard">Basisdata Hasil Pemantauan</div>
      </a>
  </li>
 
