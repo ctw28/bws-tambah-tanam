@@ -577,7 +577,7 @@
                             pengamat_id: this.pengamat.id
                         });
                         console.log(res);
-
+                        alert('berhasil validasi')
                         this.forms = this.forms.map(f => {
                             if (f.id === formId) {
                                 f.validasi = {
@@ -587,6 +587,8 @@
                             }
                             return f;
                         });
+                        this.applyFilter();
+
                         if (this.modalInstance) {
                             this.modalInstance.hide();
                         }

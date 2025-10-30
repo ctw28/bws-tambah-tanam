@@ -87,7 +87,7 @@
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
                             <button class="nav-link" :class="{ active: activeTab === 'dashboard' }" @click="activeTab = 'dashboard'">
-                                📝 Dashboard
+                                📝 Basisdata Hasil Pemantauan
                             </button>
                         </li>
                         <li class="nav-item">

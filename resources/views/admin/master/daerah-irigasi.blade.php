@@ -140,7 +140,7 @@
                             <input type="number" step="0.001" v-model="form.luas_potensial" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Luas Baku</label>
+                            <label class="form-label">Luas Fungsional</label>
                             <input type="number" step="0.001" v-model="form.luas_fungsional" class="form-control" required>
                         </div>
                     </div>
