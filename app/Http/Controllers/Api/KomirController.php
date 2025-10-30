@@ -54,7 +54,7 @@ class KomirController extends Controller
             'no_hp'   => $request->no_hp,
         ]);
 
-        return response()->json($komir->load(['sesi', 'daerahIrigasis']));
+        return response()->json($komir->load(['sesi']));
     }
 
     public function destroy(Komir $komir)
