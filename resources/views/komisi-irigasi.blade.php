@@ -377,10 +377,7 @@
 
                         <div class="modal-footer">
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button v-if="item.validasi?.upi_valid==0"
-                                class="btn btn-warning" @click="validasi(item.id)">
-                                Validasi
-                            </button>
+
                         </div>
                     </div>
                 </div>
