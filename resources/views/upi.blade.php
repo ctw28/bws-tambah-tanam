@@ -691,12 +691,10 @@
                     this.modalInstance.show();
                 },
                 async validasi(formId) {
-
+                    alert(formId)
                     if (!confirm("Yakin validasi form ini?")) return;
                     try {
-                        let res = await axios.post(`/api/upi/validasi/${formId}`, {
-                            upi_id: this.upi.id
-                        });
+                        let res = await axios.post(`/api/upi/validasi/${formId}`);
                         // console.log(res);
 
                         this.forms = this.forms.map(f => {
@@ -708,6 +706,7 @@
                             }
                             return f;
                         });
+                        this.applyFilter()
                         if (this.modalInstance) {
                             this.modalInstance.hide();
                         }

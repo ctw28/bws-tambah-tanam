@@ -23,7 +23,8 @@ class FormValidasiController extends Controller
 
     public function validateByUpi($id)
     {
-        $validasi = FormValidasi::findOrFail($id);
+        $validasi = FormValidasi::where('form_pengisian_id', $id)->firstOrFail();
+
         $validasi->update([
             'upi_valid' => true,
         ]);
