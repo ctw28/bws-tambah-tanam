@@ -28,6 +28,7 @@ Route::get('/admin/juru', fn() => view('admin.juru'))->name('admin.juru');
 
 Route::get('/admin/pengamat', fn() => view('admin.pengamat'))->name('admin.pengamat');
 Route::get('/admin/upi', fn() => view('admin.upi'))->name('admin.upi');
+Route::get('/admin/komir', fn() => view('admin.komir'))->name('admin.komir');
 
 Route::get('/pengamat', fn() => view('pengamat'))->name('pengamat');
 Route::get('/upi', fn() => view('upi'))->name('upi');

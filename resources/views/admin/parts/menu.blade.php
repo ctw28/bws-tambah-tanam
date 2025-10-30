@@ -84,5 +84,10 @@
                  <div data-i18n="Upi">UPI</div>
              </a>
          </li>
+         <li class="menu-item {{ request()->routeIs('admin.komir') ? 'active' : '' }}">
+             <a href="{{ route('admin.komir') }}" class="menu-link">
+                 <div data-i18n="Upi">Komir</div>
+             </a>
+         </li>
      </ul>
  </li>

@@ -54,8 +54,8 @@
 <body class="bg-light">
     <div id="app" v-cloak class="container my-5">
 
-        <!-- Input Kode Upi -->
-        <!-- <div v-if="!upi">
+        <!-- Input Kode Komir -->
+        <div v-if="!komir">
             <div class="card shadow-lg">
                 <div class="card-body">
                     <div class="col-12 ">
@@ -68,14 +68,13 @@
                         <label class="form-label">Masukkan Kode Komisi Irigasi</label>
                         <input type="text" v-model="kode" class="form-control" placeholder="Kode unik Komisi Irigasi">
                     </div>
-                    <button class="btn btn-primary" @click="cekUpi">Masuk
+                    <button class="btn btn-primary" @click="cekKomir">Masuk
                 </div>
             </div>
-        </div> -->
+        </div>
 
         <!-- Halaman Validasi -->
-        <!-- <div v-else> -->
-        <div>
+        <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4>Halo, Komisi Irigasi</h4>
                 <button class="btn btn-sm btn-danger" @click="logout">Keluar</button>
@@ -400,7 +399,7 @@
             data() {
                 return {
                     kode: "",
-                    upi: null,
+                    komir: null,
                     forms: [],
                     item: {},
                     modalInstance: null,
@@ -411,7 +410,6 @@
                     filterDi: '',
                     filterTanggalAwal: '',
                     filterTanggalAkhir: '',
-                    filterUpiValid: '',
                     pagination: {
                         current: 1,
                         last: 1,
@@ -433,8 +431,33 @@
                 }
             },
             methods: {
+                loadKomir() {
+                    let data = localStorage.getItem("komir");
+                    console.log("Data dari localStorage:", data);
 
-
+                    if (data) {
+                        try {
+                            this.komir = JSON.parse(data);
+                        } catch (e) {
+                            console.error("Gagal parse JSON komir:", e);
+                            this.komir = null; // atau objek default
+                        }
+                    } else {
+                        this.komir = null; // default kosong
+                    }
+                },
+                async cekKomir() {
+                    try {
+                        let res = await axios.post("/api/komir/validasi-kode", {
+                            kode: this.kode
+                        });
+                        console.log(res);
+                        this.komir = res.data.komis;
+                        localStorage.setItem("komir", JSON.stringify(res.data.komis));
+                    } catch (e) {
+                        alert("Kode Komir tidak valid!");
+                    }
+                },
                 async loadPermasalahan(page = 1) {
                     try {
                         // alert('load masalah')
@@ -465,7 +488,6 @@
 
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
-                        if (this.filterUpiValid != "") url += `&upi_valid=${this.filterUpiValid}`;
 
                         let res = await axios.get(url);
                         console.log(res.data);
@@ -543,8 +565,8 @@
                     });
                 },
                 logout() {
-                    this.upi = null;
-                    localStorage.removeItem("upi");
+                    this.komir = null;
+                    localStorage.removeItem("komir");
 
                     this.kode = "";
                     this.forms = [];
@@ -640,6 +662,7 @@
                         }
                     });
                 },
+
             },
             computed: {
                 rekapPerDaerahIrigasi() {
@@ -685,6 +708,8 @@
 
             },
             mounted() {
+                this.loadKomir();
+
                 this.loadDashboard();
             }
         }).mount("#app");

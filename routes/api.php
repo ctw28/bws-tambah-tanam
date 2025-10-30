@@ -13,12 +13,14 @@ use App\Http\Controllers\Api\MasterPermasalahanController;
 use App\Http\Controllers\Api\FormPengisianController;
 use App\Http\Controllers\Api\FormPermasalahanController;
 use App\Http\Controllers\Api\FormValidasiController;
+use App\Http\Controllers\Api\KomirController;
 use App\Http\Controllers\Api\KoordinatorController;
 use App\Http\Controllers\Api\P3aController;
 use App\Http\Controllers\Api\PengamatController;
 use App\Http\Controllers\Api\SesiController;
 use App\Http\Controllers\Api\UpiController;
 use App\Http\Controllers\AuthController;
+use App\Models\Komir;
 
 Route::post('login', [AuthController::class, 'login']);
 
@@ -45,11 +47,13 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('petugas', PetugasController::class);
             Route::apiResource('pengamat', PengamatController::class);
             Route::apiResource('upi', UpiController::class);
+            Route::apiResource('komir', KomirController::class);
             Route::apiResource('p3a', P3aController::class);
         });
         Route::post('/petugas/{petugas}/send-kode', [PetugasController::class, 'sendKode']);
         Route::post('/pengamat/{pengamat}/send-kode', [PengamatController::class, 'sendKode']);
         Route::post('/upi/{upi}/send-kode', [UpiController::class, 'sendKode']);
+        Route::post('/komir/{komir}/send-kode', [KomirController::class, 'sendKode']);
     });
 });
 // Transaksi
@@ -67,6 +71,7 @@ Route::prefix('master')->group(function () {
     Route::get('petugas', [PetugasController::class, 'index']);
     Route::get('pengamat', [PengamatController::class, 'index']);
     Route::get('upi', [UpiController::class, 'index']);
+    Route::get('komir', [KomirController::class, 'index']);
     Route::get('p3a', [P3aController::class, 'index']);
 });
 
@@ -76,3 +81,4 @@ Route::post('/upi/validasi/{id}', [FormValidasiController::class, 'validateByUpi
 Route::post('petugas/validasi-kode', [PetugasController::class, 'validasiKode']);
 Route::post('pengamat/validasi-kode', [PengamatController::class, 'validasiKode']);
 Route::post('upi/validasi-kode', [UpiController::class, 'validasiKode']);
+Route::post('komir/validasi-kode', [KomirController::class, 'validasiKode']);
