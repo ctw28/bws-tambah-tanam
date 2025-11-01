@@ -4,128 +4,250 @@
 <div id="app" v-cloak class="p-4">
     <div class="card h-100">
         <div class="card-body">
-            <h2>📊 Informasi Hasil Pemantauan Luas Tanam</h2>
-            <!-- Filter tanggal -->
-            <div class="mb-3">
-                <div class="row g-2">
-                    <!-- Input tanggal awal -->
-                    <div class="col-6 col-md-3">
-                        <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control" />
-                    </div>
-                    <!-- Input tanggal akhir -->
-                    <div class="col-6 col-md-3">
-                        <input type="date" v-model="filterTanggalAkhir" class="form-control" />
-                    </div>
-                    <!-- Tombol (hanya di layar md ke atas) -->
-                    <div class="col-md-6 d-none d-md-flex gap-2">
-                        <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                        <button class="btn btn-secondary" @click="resetFilter">Reset</button>
+            <h2>Data Summary</h2>
+
+            <div class="row g-3 mb-4 text-center">
+
+                <!-- Total Laporan Juru -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-primary">
+                                        <i class="bx bx-file icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ filteredItems.length }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Laporan Juru Tervalidasi</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tombol (khusus HP, tampil di bawah input tanggal) -->
-                <div class="d-flex gap-2 mt-2 d-md-none">
-                    <button class="btn btn-primary " @click="applyFilter">Filter</button>
-                    <button class="btn btn-secondary btn-sm" @click="resetFilter">Reset</button>
-                </div>
-            </div>
-            <!-- Ringkasan umum -->
-            <div class="row text-center mb-3">
-                <div class="col">
-                    <div class="card shadow-sm p-3">
-                        <h6>Total Laporan Juru Tervalidasi</h6>
-                        <h4>@{{ filteredItems.length }}</h4>
+                <!-- Total P3A -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-success">
+                                        <i class="bx bx-community icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_p3a }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Total P3A</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="card shadow-sm p-3">
-                        <h6>Total Luas Tanam Padi</h6>
-                        <h4>@{{ totalLuas.padi }} ha</h4>
+                <!-- Total Daerah Irigasi -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-info">
+                                        <i class="bx bx-water icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_daerah_irigasi }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Total Daerah Irigasi</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="card shadow-sm p-3">
-                        <h6>Total Luas Tanam Palawija</h6>
-                        <h4>@{{ totalLuas.palawija }} ha</h4>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm p-3">
-                        <h6>Total Luas Tanam Lainnya</h6>
-                        <h4>@{{ totalLuas.lainnya }} ha</h4>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm p-3">
-                        <h6>Total Luas Tanam</h6>
-                        <h4>@{{ totalLuas.total }} ha</h4>
-                    </div>
-                </div>
-            </div>
-            <h4>Rekap Daerah Irigasi</h4>
-            <div class="table-responsive">
 
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Daerah Irigasi</th>
-                            <th>Padi (ha)</th>
-                            <th>Palawija (ha)</th>
-                            <th>Lainnya (ha)</th>
-                            <th>Total Luas Tanam (ha)</th>
-                            <th>Baku</th>
-                            <th>Potensial</th>
-                            <th>Fungsional</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(data, namaDI,index) in rekapPerDaerahIrigasi" :key="namaDI">
-                            <td>@{{ index + 1 }}</td>
-                            <td>@{{ namaDI }}</td>
-                            <td>@{{ data.padi.toFixed(2) }}</td>
-                            <td>@{{ data.palawija.toFixed(2) }}</td>
-                            <td>@{{ data.lainnya.toFixed(2) }}</td>
-                            <td>@{{ data.total.toFixed(2) }}</td>
-                            <td>@{{ data.baku.toFixed(3) }}</td>
-                            <td>@{{ data.potensial.toFixed(3) }}</td>
-                            <td>@{{ data.fungsional.toFixed(3) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- Rekap per petugas -->
-            <!-- <h4 class="mt-5">📌 Rekap per Petugas</h4>
-            <div class="table-responsive">
+                <!-- Total Saluran -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-warning">
+                                        <i class="bx bx-git-branch icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_saluran }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Total Saluran</p>
+                        </div>
+                    </div>
+                </div>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Petugas</th>
-                            <th>Debit Air</th>
-                            <th>Luas Padi</th>
-                            <th>Luas Palawija</th>
-                            <th>Luas Lainnya</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(rekap, nama) in rekapPerPetugas" :key="nama">
-                            <td>@{{ nama }}</td>
-                            <td>@{{ rekap.debit_air.toFixed(2) }}</td>
-                            <td>@{{ rekap.padi.toFixed(2) }}</td>
-                            <td>@{{ rekap.palawija.toFixed(2) }}</td>
-                            <td>@{{ rekap.lainnya.toFixed(2) }}</td>
-                            <td>@{{ rekap.total.toFixed(2) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Total Bangunan -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-secondary">
+                                        <i class="bx bx-building icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_bangunan }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Total Bangunan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Luas Tanam -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-warning">
+                                        <i class="bx bx-traffic-cone icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_petak }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Total Petak</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jumlah Juru -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-success">
+                                        <i class="bx bx-user icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_juru }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Jumlah Juru</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jumlah Pengamat -->
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="avatar me-4">
+                                    <span class="avatar-initial rounded bg-label-danger">
+                                        <i class="bx bx-bullseye icon-lg"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">@{{ rekap.total_pengamat }}</h4>
+                            </div>
+                            <p class="mb-0 text-muted fw-semibold">Jumlah Pengamat</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row mt-4">
+                <!-- 10 Laporan Terakhir Masuk -->
+                <div class="col-lg-3 col-md-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">10 Laporan Terbaru</h6>
+                            <button class="btn btn-sm btn-link text-muted p-0" @click="fetchLatestReports">
+                                <i class="bx bx-refresh"></i>
+                            </button>
+                        </div>
+
+                        <div class="card-body">
+                            <ul class="p-0 m-0">
+                                <li v-for="(laporan, index) in latestReports" :key="laporan.id"
+                                    class="d-flex align-items-start mb-4 pb-2 border-bottom">
+
+                                    <!-- Avatar kiri -->
+                                    <div class="avatar flex-shrink-0 me-3">
+                                        <span class="avatar-initial rounded bg-label-primary">
+                                            <i class="bx bx-file"></i>
+                                        </span>
+                                    </div>
+
+                                    <!-- Isi laporan -->
+                                    <div class="d-flex w-100 justify-content-between flex-wrap gap-2">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                @{{ laporan.petugas?.nama || 'Juru tidak diketahui' }} - DI @{{ laporan.daerah_irigasi?.nama || '-' }}
+                                            </h6>
+                                            <small class="text-body-secondary d-block">
+                                                Pengamat: @{{ laporan.validasi?.pengamat?.nama || '-' }}
+                                            </small>
+                                            <small class="text-muted">
+                                                @{{ formatTanggalIndo(laporan.created_at) }}
+                                            </small>
+                                        </div>
+
+                                        <!-- <span class="badge bg-label-primary mt-auto">Laporan #@{{ index + 1 }}</span> -->
+                                    </div>
+                                </li>
+
+                                <!-- Jika kosong -->
+                                <li v-if="latestReports.length === 0" class="text-center text-muted py-3">
+                                    Belum ada laporan terbaru
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 10 Permasalahan Terakhir -->
+                <div class="col-lg-9 col-md-12 mt-4 mt-lg-0">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">10 Permasalahan Terbaru</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Juru</th>
+                                        <th>Permasalahan</th>
+                                        <th>Foto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(p, index) in latestIssues" :key="p.id">
+                                        <td>@{{ index + 1 }}</td>
+                                        <td>
+                                            @{{ p.form_pengisian?.petugas?.nama || '-' }} <br>
+                                            <span class="badge bg-success">
+                                                @{{ p.form_pengisian?.daerah_irigasi?.nama ?? '-' }}
+                                            </span> <br>
+                                            @{{ p.form_pengisian?.saluran?.nama || '-' }} <br> @{{ p.form_pengisian?.bangunan?.nama || '-' }} - @{{ p.form_pengisian?.petak?.nama || '-' }}<br>
+                                            @{{ formatTanggalIndo(p.created_at) }}
+                                        </td>
+                                        <td>@{{ p.master_permasalahan?.nama || p.keterangan }}</td>
+                                        <!-- <td>@{{ p.created_at }}</td> -->
+                                        <td> <img v-if="p.foto_permasalahan" :src="`/storage/${p.foto_permasalahan}`" width="100">
+                                        </td>
+                                    </tr>
+                                    <tr v-if="latestIssues.length === 0">
+                                        <td colspan="4" class="text-center text-muted">Belum ada permasalahan</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="card mt-4 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-1">SIPemalutajir v1.0</h6>
+                    <p class="text-muted mb-0">
+                        Sistem Informasi Pemantauan Lumbung Tanaman dan Jaringan Irigasi<br>
+                        <small>Dikembangkan tahun 2025 oleh Tim BBWS/BWS</small>
+                    </p>
+                </div>
             </div> -->
-            <!-- Chart -->
-            <h4 class="mt-5">📈 Informasi Grafis Luas Tanam Daerah Irigasi </h4>
-            <canvas id="chartDI" height="100"></canvas>
-            <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
-            <canvas id="chartItem" height="100"></canvas>
+
         </div>
     </div>
 </div>
@@ -150,7 +272,10 @@
                 filterTanggalAwal: '',
                 filterTanggalAkhir: '',
                 chartDI: null,
-                chartItem: null
+                chartItem: null,
+                rekap: [],
+                latestReports: [],
+                latestIssues: []
             }
         },
         computed: {
@@ -305,6 +430,18 @@
                 // ambil ulang semua data tanpa filter
 
             },
+            formatTanggalIndo(tanggal) {
+                const options = {
+                    timeZone: "Asia/Makassar",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                };
+                return new Date(tanggal).toLocaleString("id-ID", options);
+            },
+
             chartPerDI() {
                 const labels = Object.keys(this.rekapPerDaerahIrigasi);
                 const dataTotal = Object.values(this.rekapPerDaerahIrigasi).map(r => r.total);
@@ -384,6 +521,21 @@
                 });
 
             },
+            async loadRekap() {
+                axios.get('/api/master/rekap-data').then(res => {
+                    console.log(res);
+                    this.rekap = res.data
+                });
+                axios.get('/api/latest-laporan').then(res => {
+                    console.log(res);
+                    this.latestReports = res.data
+                });
+                axios.get('/api/latest-issues').then(res => {
+                    console.log(res);
+                    this.latestIssues = res.data
+                });
+
+            },
             async loadData() {
                 let token = localStorage.getItem("token");
 
@@ -423,6 +575,7 @@
         mounted() {
             //ambil data dari API
             this.loadData()
+            this.loadRekap()
         }
     }).mount('#app');
 </script>

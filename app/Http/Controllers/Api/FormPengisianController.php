@@ -10,6 +10,7 @@ use App\Models\FormPengisianP3a;
 use App\Models\FormPermasalahan;
 use App\Models\FormValidasi;
 use App\Models\P3a;
+use App\Models\Petak;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -181,6 +182,90 @@ class FormPengisianController extends Controller
 
         return response()->json($data);
     }
+
+    public function latestLaporan(Request $request)
+    {
+        $data = FormPengisian::with([
+            'daerahIrigasi:id,nama',
+            'kabupaten:id,nama',
+            'petugas:id,nama',
+            'validasi:id,form_pengisian_id,pengamat_valid',
+            'validasi.pengamat'
+        ])
+            ->whereHas('validasi', function ($q) {
+                $q->where('pengamat_valid', 1);
+            })
+            // 🔹 Filter daerah irigasi jika dikirim
+            ->when($request->filled('di_id'), function ($q) use ($request) {
+                $q->where('daerah_irigasi_id', $request->di_id);
+            })
+            // 🔹 Filter tanggal pantau (rentang)
+            ->when($request->filled('tanggal_awal'), function ($q) use ($request) {
+                $q->whereDate('tanggal_pantau', '>=', $request->tanggal_awal);
+            })
+            ->when($request->filled('tanggal_akhir'), function ($q) use ($request) {
+                $q->whereDate('tanggal_pantau', '<=', $request->tanggal_akhir);
+            })
+            ->latest('tanggal_pantau')
+            ->take(10)
+            ->get([
+                'id',
+                'tanggal_pantau',
+                'daerah_irigasi_id',
+                'kabupaten_id',
+                'petugas_id',
+                'created_at'
+            ]);
+
+        return response()->json($data);
+    }
+
+    public function latestIssues(Request $request)
+    {
+        $issues = FormPermasalahan::with([
+            'formPengisian.petugas',
+            'formPengisian.daerahIrigasi',
+            'formPengisian.saluran',
+            'formPengisian.bangunan',
+            'formPengisian.petak',
+            'masterPermasalahan'
+        ])
+            ->where('status', 1)
+            ->whereHas('formPengisian.validasi', function ($q) {
+                $q->where('pengamat_valid', 1);
+            })
+            // 🔹 Filter daerah irigasi
+            ->when($request->filled('di_id'), function ($q) use ($request) {
+                $q->whereHas('formPengisian', function ($qq) use ($request) {
+                    $qq->where('daerah_irigasi_id', $request->di_id);
+                });
+            })
+            // 🔹 Filter tanggal pantau
+            ->when($request->filled('tanggal_awal'), function ($q) use ($request) {
+                $q->whereHas('formPengisian', function ($qq) use ($request) {
+                    $qq->whereDate('tanggal_pantau', '>=', $request->tanggal_awal);
+                });
+            })
+            ->when($request->filled('tanggal_akhir'), function ($q) use ($request) {
+                $q->whereHas('formPengisian', function ($qq) use ($request) {
+                    $qq->whereDate('tanggal_pantau', '<=', $request->tanggal_akhir);
+                });
+            })
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Format tanggal ke Indonesia
+        $issues->transform(function ($item) {
+            $item->tanggal_indo = \Carbon\Carbon::parse($item->created_at)
+                ->locale('id')
+                ->translatedFormat('d F Y H:i');
+            return $item;
+        });
+
+        return response()->json($issues);
+    }
+
 
 
     public function store(Request $request)
@@ -381,5 +466,61 @@ class FormPengisianController extends Controller
         });
         // return $dis;
         return response()->json($dis->values());
+    }
+
+    public function rekapPetak(Request $request)
+    {
+        $diId = $request->get('di_id');
+        $perPage = $request->get('per_page', 10);
+        $page = $request->get('page', 1);
+
+        $query = \App\Models\Petak::with(['bangunan.saluran', 'formPengisian.petugas'])
+            ->whereHas('bangunan.saluran', function ($q) use ($diId) {
+                if ($diId) {
+                    $q->where('daerah_irigasi_id', $diId);
+                }
+            });
+
+        $petaks = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $data = $petaks->map(function ($petak) {
+            $formPengisian = $petak->formPengisian;
+
+            $maxPadi = $formPengisian->max('luas_padi') ?? 0;
+            $maxPalawija = $formPengisian->max('luas_palawija') ?? 0;
+            $maxLainnya = $formPengisian->max('luas_lainnya') ?? 0;
+
+            $last = $formPengisian->sortByDesc('tanggal_pantau')->first();
+
+            return [
+                'saluran' => $petak->bangunan->saluran->nama ?? '-',
+                'bangunan' => $petak->bangunan->nama ?? '-',
+                'petak' => $petak->nama ?? '-',
+                'max_padi' => (float) $maxPadi,
+                'max_palawija' => (float) $maxPalawija,
+                'max_lainnya' => (float) $maxLainnya,
+                'max_luas_petak' => (float) $maxPadi + (float) $maxPalawija + (float) $maxLainnya,
+                'pengisi_terakhir' => $last->petugas->nama ?? '-',
+            ];
+        });
+
+        // total keseluruhan (hanya dari halaman saat ini)
+        $totalPadi = $data->sum('max_padi');
+        $totalPalawija = $data->sum('max_palawija');
+        $totalLainnya = $data->sum('max_lainnya');
+
+        return response()->json([
+            'data' => $data,
+            'current_page' => $petaks->currentPage(),
+            'last_page' => $petaks->lastPage(),
+            'total' => $petaks->total(),
+            'per_page' => $petaks->perPage(),
+            'total_luas' => [
+                'max_padi' => $totalPadi,
+                'max_palawija' => $totalPalawija,
+                'max_lainnya' => $totalLainnya,
+                'max_luas' => $totalPadi + $totalPalawija + $totalLainnya,
+            ],
+        ]);
     }
 }

@@ -1,7 +1,16 @@
  <li class="menu-item">
      <a href="{{route('dashboard')}}" class="menu-link">
          <i class="menu-icon tf-icons bx bx-home-circle"></i>
-         <div data-i18n="Dashboard">Basisdata Hasil Pemantauan</div>
+         <div data-i18n="Dashboard">Dashboard</div>
+     </a>
+ </li>
+ <li class="menu-header small">
+     <span class="menu-header-text" data-i18n="Apps &amp; Pages">Basis Data</span>
+ </li>
+ <li class="menu-item">
+     <a href="{{route('basisdata')}}" class="menu-link">
+         <i class="menu-icon tf-icons bx bx-chart-area"></i>
+         <div data-i18n="Dashboard">Hasil Pemantauan</div>
      </a>
  </li>
 
@@ -22,15 +31,17 @@
                  <div data-i18n="Permasalahan">Permasalahan</div>
              </a>
          </li>
-         <li class="menu-item {{ request()->routeIs('form.progres') ? 'active' : '' }}">
+         <!-- <li class="menu-item {{ request()->routeIs('form.progres') ? 'active' : '' }}">
              <a href="{{ route('form.progres') }}" class="menu-link">
                  <div data-i18n="Form Progres">Form Progres</div>
              </a>
-         </li>
+         </li> -->
 
      </ul>
  </li>
-
+ <li class="menu-header small">
+     <span class="menu-header-text" data-i18n="Apps &amp; Pages">Master Data</span>
+ </li>
  <li class="menu-item {{ request()->routeIs('master.*') ? 'open' : '' }}">
      <a href="javascript:void(0);" class="menu-link menu-toggle">
          <i class="menu-icon tf-icons bx bx-layout"></i>
@@ -53,11 +64,11 @@
                  <div data-i18n="Saluran">P3A</div>
              </a>
          </li>
-         <li class="menu-item {{ request()->routeIs('master.import.form') ? 'active' : '' }}">
+         <!-- <li class="menu-item {{ request()->routeIs('master.import.form') ? 'active' : '' }}">
              <a href="{{ route('master.import.form') }}" class="menu-link">
                  <div data-i18n="Saluran">Import</div>
              </a>
-         </li>
+         </li> -->
 
      </ul>
  </li>

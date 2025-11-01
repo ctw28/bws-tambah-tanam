@@ -18,6 +18,7 @@ Route::get('/admin/data', function () {
 });
 
 Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+Route::get('/admin/basisdata-hasil-pemantauan', fn() => view('admin.statistik'))->name('basisdata');
 Route::get('/admin/form-data', fn() => view('admin.data'))->name('form.data');
 Route::get('/admin/form-permasalahan', fn() => view('admin.permasalahan'))->name('form.permasalahan');
 Route::get('/admin/form-progres', fn() => view('admin.form-progres'))->name('form.progres');

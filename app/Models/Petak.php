@@ -12,4 +12,9 @@ class Petak extends Model
     {
         return $this->belongsTo(Bangunan::class);
     }
+
+    public function formPengisian()
+    {
+        return $this->hasMany(FormPengisian::class, 'petak_id');
+    }
 }

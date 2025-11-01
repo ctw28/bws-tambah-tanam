@@ -56,7 +56,7 @@ class DaerahIrigasiController extends Controller
         if ($perPage === 'all' || $perPage == 0) {
             $data = $query->orderBy('id', 'desc')->get();
         } else {
-            $data = $query->orderBy('id', 'desc')->paginate($perPage);
+            $data = $query->orderBy('nama', 'asc')->paginate($perPage);
         }
 
         return response()->json($data);
@@ -133,5 +133,48 @@ class DaerahIrigasiController extends Controller
         $daerahIrigasi->delete();
 
         return response()->json(['message' => 'Daerah Irigasi berhasil dihapus']);
+    }
+
+    public function rekap(Request $request)
+    {
+        $diId = $request->di_id;
+
+        // Jika user memilih DI tertentu, filter semua entitas berdasar ID tersebut
+        if ($diId) {
+            $total_saluran = \App\Models\Saluran::where('daerah_irigasi_id', $diId)->count();
+
+            $total_bangunan = \App\Models\Bangunan::whereHas('saluran', function ($q) use ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            })->count();
+
+            $total_petak = \App\Models\Petak::whereHas('bangunan.saluran', function ($q) use ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            })->count();
+
+            $total_pengamat = \App\Models\Pengamat::where('daerah_irigasi_id', $diId)->count();
+            $total_juru = \App\Models\Petugas::whereHas('salurans', function ($q) use ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            })->count();
+
+
+            return response()->json([
+                'total_saluran' => $total_saluran,
+                'total_bangunan' => $total_bangunan,
+                'total_petak' => $total_petak,
+                'total_pengamat' => $total_pengamat,
+                'total_juru' => $total_juru,
+            ]);
+        }
+
+        // Jika tidak ada filter, hitung semua data
+        return response()->json([
+            'total_daerah_irigasi' => \App\Models\DaerahIrigasi::count(),
+            'total_saluran' => \App\Models\Saluran::count(),
+            'total_bangunan' => \App\Models\Bangunan::count(),
+            'total_petak' => \App\Models\Petak::count(),
+            'total_pengamat' => \App\Models\Pengamat::count(),
+            'total_juru' => \App\Models\Petugas::count(),
+            'total_p3a' => \App\Models\P3a::count(),
+        ]);
     }
 }

@@ -17,8 +17,10 @@ class FormPermasalahan extends Model
     // Relasi: 1 kabupaten punya banyak daerah irigasi
     public function formPengisian()
     {
-        return $this->hasMany(FormPengisian::class);
+        // Karena form_permasalahans memiliki kolom form_pengisian_id
+        return $this->belongsTo(FormPengisian::class, 'form_pengisian_id');
     }
+
     public function masterPermasalahan()
     {
         return $this->belongsTo(MasterPermasalahan::class);
