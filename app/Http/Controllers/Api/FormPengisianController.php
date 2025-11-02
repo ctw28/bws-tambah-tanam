@@ -471,43 +471,54 @@ class FormPengisianController extends Controller
     public function rekapPetak(Request $request)
     {
         $diId = $request->get('di_id');
+        $tanggalAwal = $request->get('tanggal_awal');
+        $tanggalAkhir = $request->get('tanggal_akhir');
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
 
-        $query = \App\Models\Petak::with(['bangunan.saluran', 'formPengisian.petugas'])
-            ->whereHas('bangunan.saluran', function ($q) use ($diId) {
-                if ($diId) {
-                    $q->where('daerah_irigasi_id', $diId);
-                }
-            });
+        $query = \App\Models\Petak::with([
+            'bangunan.saluran',
+            'formPengisian.petugas'
+        ])->whereHas('bangunan.saluran', function ($q) use ($diId) {
+            if ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            }
+        });
 
+        // Pagination
         $petaks = $query->paginate($perPage, ['*'], 'page', $page);
 
-        $data = $petaks->map(function ($petak) {
-            $formPengisian = $petak->formPengisian;
+        $data = $petaks->getCollection()->map(function ($petak) use ($tanggalAwal, $tanggalAkhir) {
+            // ambil form pengisian terakhir (latest)
+            $formQuery = $petak->formPengisian();
 
-            $maxPadi = $formPengisian->max('luas_padi') ?? 0;
-            $maxPalawija = $formPengisian->max('luas_palawija') ?? 0;
-            $maxLainnya = $formPengisian->max('luas_lainnya') ?? 0;
+            if ($tanggalAwal && $tanggalAkhir) {
+                $formQuery->whereBetween('tanggal_pantau', [$tanggalAwal, $tanggalAkhir]);
+            } elseif ($tanggalAwal) {
+                $formQuery->whereDate('tanggal_pantau', '>=', $tanggalAwal);
+            } elseif ($tanggalAkhir) {
+                $formQuery->whereDate('tanggal_pantau', '<=', $tanggalAkhir);
+            }
 
-            $last = $formPengisian->sortByDesc('tanggal_pantau')->first();
+            $last = $formQuery->latest('tanggal_pantau')->first();
 
             return [
                 'saluran' => $petak->bangunan->saluran->nama ?? '-',
                 'bangunan' => $petak->bangunan->nama ?? '-',
                 'petak' => $petak->nama ?? '-',
-                'max_padi' => (float) $maxPadi,
-                'max_palawija' => (float) $maxPalawija,
-                'max_lainnya' => (float) $maxLainnya,
-                'max_luas_petak' => (float) $maxPadi + (float) $maxPalawija + (float) $maxLainnya,
+                'padi' => (float) ($last->luas_padi ?? 0),
+                'palawija' => (float) ($last->luas_palawija ?? 0),
+                'lainnya' => (float) ($last->luas_lainnya ?? 0),
+                'total' => (float) ($last->luas_padi ?? 0) + (float) ($last->luas_palawija ?? 0) + (float) ($last->luas_lainnya ?? 0),
+                'tanggal_update' => $last->tanggal_pantau ?? '-',
                 'pengisi_terakhir' => $last->petugas->nama ?? '-',
             ];
         });
 
-        // total keseluruhan (hanya dari halaman saat ini)
-        $totalPadi = $data->sum('max_padi');
-        $totalPalawija = $data->sum('max_palawija');
-        $totalLainnya = $data->sum('max_lainnya');
+        // Total dari semua petak pada halaman ini
+        $totalPadi = $data->sum('padi');
+        $totalPalawija = $data->sum('palawija');
+        $totalLainnya = $data->sum('lainnya');
 
         return response()->json([
             'data' => $data,
@@ -516,10 +527,10 @@ class FormPengisianController extends Controller
             'total' => $petaks->total(),
             'per_page' => $petaks->perPage(),
             'total_luas' => [
-                'max_padi' => $totalPadi,
-                'max_palawija' => $totalPalawija,
-                'max_lainnya' => $totalLainnya,
-                'max_luas' => $totalPadi + $totalPalawija + $totalLainnya,
+                'padi' => $totalPadi,
+                'palawija' => $totalPalawija,
+                'lainnya' => $totalLainnya,
+                'total' => $totalPadi + $totalPalawija + $totalLainnya,
             ],
         ]);
     }

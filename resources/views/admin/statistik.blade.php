@@ -57,7 +57,7 @@
                             <div class="row mt-4">
                                 <div class="col d-flex">
                                     <div class="me-3">
-                                        <span class="badge rounded-2 bg-label-warning p-2"><i class="icon-base bx bx-water icon-lg text-warning"></i></span>
+                                        <span class="badge rounded-2 bg-label-warning p-2"><i class="icon-base bx bx-git-branch icon-lg text-warning"></i></span>
                                     </div>
                                     <div>
                                         <h6 class="mb-0">@{{rekap.total_saluran}}</h6>
@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="col d-flex">
                                     <div class="me-3">
-                                        <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-water icon-lg text-success"></i></span>
+                                        <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-building icon-lg text-success"></i></span>
                                     </div>
                                     <div>
                                         <h6 class="mb-0">@{{rekap.total_bangunan}}</h6>
@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="col d-flex">
                                     <div class="me-3">
-                                        <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
+                                        <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-traffic-cone icon-lg text-info"></i></span>
                                     </div>
                                     <div>
                                         <h6 class="mb-0">@{{rekap.total_petak}}</h6>
@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="col d-flex">
                                     <div class="me-3">
-                                        <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
+                                        <span class="badge rounded-2 bg-label-secondary p-2"><i class="icon-base bx bx-bullseye icon-lg text-secondary"></i></span>
                                     </div>
                                     <div>
                                         <h6 class="mb-0">@{{rekap.total_pengamat}}</h6>
@@ -93,7 +93,7 @@
                                 </div>
                                 <div class="col d-flex">
                                     <div class="me-3">
-                                        <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
+                                        <span class="badge rounded-2 bg-label-dark p-2"><i class="icon-base bx bx-user icon-lg text-dark"></i></span>
                                     </div>
                                     <div>
                                         <h6 class="mb-0">@{{rekap.total_juru}}</h6>
@@ -164,6 +164,66 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="avatar me-4">
+                                        <span class="avatar-initial rounded bg-label-info">
+                                            <i class="bx bx-file icon-lg"></i>
+                                        </span>
+                                    </div>
+                                    <h4 class="mb-0">@{{ rekapLuasTotal.padi }} ha</h4>
+                                </div>
+                                <p class="mb-0 text-muted fw-semibold">Luas Tanam Padi</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="avatar me-4">
+                                        <span class="avatar-initial rounded bg-label-warning">
+                                            <i class="bx bx-file icon-lg"></i>
+                                        </span>
+                                    </div>
+                                    <h4 class="mb-0">@{{ rekapLuasTotal.palawija }} ha</h4>
+                                </div>
+                                <p class="mb-0 text-muted fw-semibold">Luas Tanam Palawija</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="avatar me-4">
+                                        <span class="avatar-initial rounded bg-label-success">
+                                            <i class="bx bx-file icon-lg"></i>
+                                        </span>
+                                    </div>
+                                    <h4 class="mb-0">@{{ rekapLuasTotal.lainnya }} ha</h4>
+                                </div>
+                                <p class="mb-0 text-muted fw-semibold">Luas Tanam Lainnya</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="avatar me-4">
+                                        <span class="avatar-initial rounded bg-label-dark">
+                                            <i class="bx bx-file icon-lg"></i>
+                                        </span>
+                                    </div>
+                                    <h4 class="mb-0">@{{ rekapLuasTotal.total }} ha</h4>
+                                </div>
+                                <p class="mb-0 text-muted fw-semibold">Luas Keseluruhan</p>
+                            </div>
+                        </div>
+                    </div>
 
 
                 </div>
@@ -174,9 +234,9 @@
                             <tr>
                                 <th>No</th>
                                 <th>Saluran</th>
-                                <th>Luas Padi</th>
-                                <th>Luas Palawija</th>
-                                <th>Luas Lainnya</th>
+                                <th>Luas Padi (ha)</th>
+                                <th>Luas Palawija (ha)</th>
+                                <th>Luas Lainnya (ha)</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
@@ -185,13 +245,14 @@
                                 <td>@{{ (pagination.current - 1) * perPage + index + 1 }}</td>
                                 <td>
                                     @{{ p.saluran}} - @{{ p.bangunan }} - @{{ p.petak }}<br>
+                                    <small>Terakhir update : @{{ p.tanggal_update!='-'? formatTanggalIndo(p.tanggal_update) : 'belum ada update'}}</small>
                                 </td>
-                                <td>@{{ p.max_padi }}</td>
-                                <td>@{{ p.max_palawija }}</td>
-                                <td>@{{ p.max_lainnya }}</td>
-                                <td>@{{ p.max_luas_petak }}</td>
+                                <td>@{{ p.padi }}</td>
+                                <td>@{{ p.palawija }}</td>
+                                <td>@{{ p.lainnya }}</td>
+                                <td>@{{ p.total }}</td>
                             </tr>
-                            <tr v-if="latestIssues.length === 0">
+                            <tr v-if="rekapLuasTanam.length === 0">
                                 <td colspan="4" class="text-center text-muted">Belum ada permasalahan</td>
                             </tr>
                         </tbody>
@@ -304,6 +365,7 @@
                     total: 0,
                 },
                 perPage: 10, // default
+                rekapLuasTotal: [],
 
             }
         },
@@ -536,9 +598,14 @@
             },
             async loadMaks(page = 1) {
                 // alert(page)
-                axios.get(`/api/rekap-petak?di_id=${this.filterDI}&page=${page}&per_page=${this.perPage}`).then(res => {
+                let url = `/api/rekap-petak?di_id=${this.filterDI}&page=${page}&per_page=${this.perPage}`
+                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                axios.get(url).then(res => {
                     console.log(res.data);
                     this.rekapLuasTanam = res.data.data
+                    this.rekapLuasTotal = res.data.total_luas
                     this.pagination = {
                         current: res.data.current_page,
                         last: res.data.last_page,
@@ -552,8 +619,8 @@
                     day: "2-digit",
                     month: "long",
                     year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit"
+                    // hour: "2-digit",
+                    // minute: "2-digit"
                 };
                 return new Date(tanggal).toLocaleString("id-ID", options);
             },
