@@ -583,12 +583,15 @@ class FormPengisianController extends Controller
         $totalPalawija = $data->sum('palawija');
         $totalLainnya = $data->sum('lainnya');
 
+        // Format hasilnya dengan 2 angka di belakang koma (dan pemisah ribuan)
+        $format = fn($v) => number_format((float) $v, 2, ',', '.');
+
         return response()->json([
             'total_luas' => [
-                'padi' => $totalPadi,
-                'palawija' => $totalPalawija,
-                'lainnya' => $totalLainnya,
-                'total' => $totalPadi + $totalPalawija + $totalLainnya,
+                'padi' => $format($totalPadi),
+                'palawija' => $format($totalPalawija),
+                'lainnya' => $format($totalLainnya),
+                'total' => $format($totalPadi + $totalPalawija + $totalLainnya),
             ],
         ]);
     }

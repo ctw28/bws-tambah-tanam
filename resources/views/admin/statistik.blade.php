@@ -2,7 +2,7 @@
 
 @section('content')
 <div id="app" v-cloak class="p-4">
-    <h2>📊 BASISDATA HASIL PEMANTAUAN LUAS TANAM</h2>
+    <h2>📊 BASISDATA HASIL PEMANTAUAN</h2>
     <!-- Filter tanggal -->
     <div class="card shadow-sm mb-3">
         <div class="card-body">
@@ -48,11 +48,6 @@
                     <div class="flex-grow-1 mt-2">
                         <div class="user-profile-info">
                             <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
-                            <!-- <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-4 mt-4">
-                                <li class="list-inline-item"><i class="icon-base bx bx-palette me-2 align-top"></i><span class="fw-medium"> Luas Baku</span></li>
-                                <li class="list-inline-item"><i class="icon-base bx bx-palette me-2 align-top"></i><span class="fw-medium">@{{ selectedDI.luas_fungsional }} ha Luas Fungsional</span></li>
-                                <li class="list-inline-item"><i class="icon-base bx bx-palette me-2 align-top"></i><span class="fw-medium">@{{ selectedDI.luas_potensial }} ha Luas Potensial</span></li>
-                            </ul> -->
 
                             <div class="row mt-4">
                                 <div class="col d-flex">
@@ -114,20 +109,20 @@
                                 </div>
                                 <div class="col d-flex">
                                     <div class="me-3">
-                                        <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-water icon-lg text-success"></i></span>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">@{{ selectedDI.luas_fungsional }} ha</h6>
-                                        <small>Luas Fungsional</small>
-                                    </div>
-                                </div>
-                                <div class="col d-flex">
-                                    <div class="me-3">
                                         <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
                                     </div>
                                     <div>
                                         <h6 class="mb-0">@{{ selectedDI.luas_potensial }} ha</h6>
                                         <small>Luas Potensial</small>
+                                    </div>
+                                </div>
+                                <div class="col d-flex">
+                                    <div class="me-3">
+                                        <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-water icon-lg text-success"></i></span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">@{{ selectedDI.luas_fungsional }} ha</h6>
+                                        <small>Luas Fungsional</small>
                                     </div>
                                 </div>
                                 <!-- <div class="col d-flex">
@@ -260,7 +255,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <!-- Pilih jumlah data per halaman -->
                         <div class="d-flex align-items-center gap-2">
-                            <select v-model="perPage" @change="loadMaks(1)" class="form-select form-select" style="width: auto;">
+                            <select v-model="perPage" @change="loadRekapPengisian(1)" class="form-select form-select" style="width: auto;">
                                 <option value="10">10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
@@ -274,15 +269,15 @@
                         <nav>
                             <ul class="pagination pagination mb-0">
                                 <li class="page-item" :class="{ disabled: pagination.current === 1 }">
-                                    <a class="page-link" href="#" @click.prevent="loadMaks(pagination.current - 1)">Prev</a>
+                                    <a class="page-link" href="#" @click.prevent="loadRekapPengisian(pagination.current - 1)">Prev</a>
                                 </li>
 
                                 <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
-                                    <a class="page-link" href="#" @click.prevent="loadMaks(page)">@{{ page }}</a>
+                                    <a class="page-link" href="#" @click.prevent="loadRekapPengisian(page)">@{{ page }}</a>
                                 </li>
 
                                 <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
-                                    <a class="page-link" href="#" @click.prevent="loadMaks(pagination.current + 1)">Next</a>
+                                    <a class="page-link" href="#" @click.prevent="loadRekapPengisian(pagination.current + 1)">Next</a>
                                 </li>
                             </ul>
                         </nav>
@@ -349,15 +344,11 @@
                 filteredItems: [], // data hasil filter
                 filterTanggalAwal: '',
                 filterTanggalAkhir: '',
-                chartDI: null,
                 chartItem: null,
-                rekap: [],
                 daerahIrigasis: [],
                 isFilter: false,
                 filterDI: '',
                 is_loading: false,
-                rekapLuasTanam: [],
-                latestIssues: [],
                 selectedDI: '',
                 pagination: {
                     current: 1,
@@ -365,87 +356,14 @@
                     total: 0,
                 },
                 perPage: 10, // default
+                rekap: [],
+                rekapLuasTanam: [],
+                latestIssues: [],
                 rekapLuasTotal: [],
 
             }
         },
         computed: {
-            // total luas semua laporan
-            totalLuas() {
-                let padi = 0,
-                    palawija = 0,
-                    lainnya = 0,
-                    debit_air = 0;
-
-                this.filteredItems.forEach(i => {
-                    padi += parseFloat(i.luas_padi) || 0;
-                    palawija += parseFloat(i.luas_palawija) || 0;
-                    lainnya += parseFloat(i.luas_lainnya) || 0;
-                    debit_air += parseFloat(i.debit_air) || 0;
-                });
-
-                const format = (n) => new Intl.NumberFormat('id-ID', {
-                    maximumFractionDigits: 2
-                }).format(n);
-
-                return {
-                    padi: format(padi),
-                    palawija: format(palawija),
-                    lainnya: format(lainnya),
-                    debit_air: format(debit_air),
-                    total: format(padi + palawija + lainnya)
-                };
-            },
-
-            // rekap per petugas
-            rekapPerPetugas() {
-                const rekap = {};
-                this.filteredItems.forEach(i => {
-                    const nama = i.petugas.nama;
-                    if (!rekap[nama]) {
-                        rekap[nama] = {
-                            padi: 0,
-                            palawija: 0,
-                            lainnya: 0,
-                            debit_air: 0,
-                            total: 0
-                        };
-                    }
-                    rekap[nama].debit_air += parseFloat(i.debit_air);
-                    rekap[nama].padi += parseFloat(i.luas_padi);
-                    rekap[nama].palawija += parseFloat(i.luas_palawija);
-                    rekap[nama].lainnya += parseFloat(i.luas_lainnya);
-                    rekap[nama].total += parseFloat(i.luas_padi) + parseFloat(i.luas_palawija) + parseFloat(
-                        i.luas_lainnya);
-                });
-                return rekap;
-            },
-            // rekapPerDaerahIrigasi() {
-            //     const rekap = {};
-            //     this.filteredItems.forEach(i => {
-            //         const namaDI = i.daerah_irigasi?.nama || 'Tidak Ada DI';
-            //         if (!rekap[namaDI]) {
-            //             rekap[namaDI] = {
-            //                 baku: 0,
-            //                 potensial: 0,
-            //                 fungsional: 0,
-            //                 padi: 0,
-            //                 palawija: 0,
-            //                 lainnya: 0,
-            //                 total: 0
-            //             };
-            //         }
-            //         rekap[namaDI].baku = parseFloat(i.daerah_irigasi?.luas_baku ?? 0);
-            //         rekap[namaDI].potensial = parseFloat(i.daerah_irigasi?.luas_potensial ?? 0);
-            //         rekap[namaDI].fungsional = parseFloat(i.daerah_irigasi?.luas_fungsional ?? 0);
-            //         rekap[namaDI].padi += parseFloat(i.luas_padi);
-            //         rekap[namaDI].palawija += parseFloat(i.luas_palawija);
-            //         rekap[namaDI].lainnya += parseFloat(i.luas_lainnya);
-            //         rekap[namaDI].total += parseFloat(i.luas_padi) + parseFloat(i.luas_palawija) +
-            //             parseFloat(i.luas_lainnya);
-            //     });
-            //     return rekap;
-            // }
             rekapPerDaerahIrigasi() {
                 const rekap = {};
 
@@ -491,6 +409,7 @@
 
         },
         methods: {
+
             async loadDI() {
                 let res = await axios.get('/api/master/daerah-irigasi?page=all');
                 console.log(res.data.data);
@@ -503,7 +422,6 @@
                 this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
                 this.loadData()
                 this.isFilter = true
-
             },
             resetFilter() {
                 // kosongkan filter tanggal
@@ -512,62 +430,36 @@
                 this.filterTanggalAkhir = ''
                 this.isFilter = false
             },
-            chartPerDI() {
-                const labels = Object.keys(this.rekapPerDaerahIrigasi);
-                const dataTotal = Object.values(this.rekapPerDaerahIrigasi).map(r => r.total);
 
-                if (this.chartDI) this.chartDI.destroy();
-                this.chartDI = new Chart(document.getElementById('chartDI'), {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Total Luas (ha)',
-                            data: dataTotal
-                        }]
-                    }
-                });
-            },
             chartPerItem() {
-                const rekap = this.rekapPerDaerahIrigasi; // fungsi yg sudah dibuat
-                const labels = Object.keys(rekap);
-
-                const dataPadi = Object.values(rekap).map(r => r.padi);
-                const dataPalawija = Object.values(rekap).map(r => r.palawija);
-                const dataLainnya = Object.values(rekap).map(r => r.lainnya);
+                const rekap = this.rekapLuasTotal; // contoh: { padi: 123, palawija: 45, lainnya: 12, total: 180 }
+                console.log(rekap);
 
                 if (this.chartItem) this.chartItem.destroy();
 
                 this.chartItem = new Chart(document.getElementById('chartItem'), {
                     type: 'bar',
                     data: {
-                        labels,
+                        labels: ['Padi', 'Palawija', 'Lainnya'], // label kategori
                         datasets: [{
-                                label: 'Padi (ha)',
-                                data: dataPadi,
-                                backgroundColor: 'rgba(75, 192, 192, 0.6)'
-                            },
-                            {
-                                label: 'Palawija (ha)',
-                                data: dataPalawija,
-                                backgroundColor: 'rgba(255, 205, 86, 0.6)'
-                            },
-                            {
-                                label: 'Lainnya (ha)',
-                                data: dataLainnya,
-                                backgroundColor: 'rgba(201, 90, 90, 0.6)'
-                            }
-                        ]
+                            label: 'Luas (ha)',
+                            data: [rekap.padi, rekap.palawija, rekap.lainnya],
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.6)',
+                                'rgba(255, 205, 86, 0.6)',
+                                'rgba(201, 90, 90, 0.6)'
+                            ]
+                        }]
                     },
                     options: {
                         responsive: true,
                         plugins: {
                             legend: {
-                                position: 'top'
+                                display: false
                             },
                             title: {
                                 display: true,
-                                text: 'Rekap Luas Per Daerah Irigasi'
+                                text: 'Rekap Luas Tanam (ha)'
                             }
                         },
                         scales: {
@@ -593,10 +485,10 @@
                     this.latestIssues = res.data
                     console.log(this.latestIssues);
                 });
-                this.loadMaks(1)
+                this.loadRekapPengisian(1)
 
             },
-            async loadMaks(page = 1) {
+            async loadRekapPengisian(page = 1) {
                 // alert(page)
                 let url = `/api/rekap-petak?di_id=${this.filterDI}&page=${page}&per_page=${this.perPage}`
                 if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
@@ -619,6 +511,8 @@
                 axios.get(url).then(res => {
                     console.log(res.data);
                     this.rekapLuasTotal = res.data.total_luas
+                    this.chartPerItem();
+
                 });
             },
             formatTanggalIndo(tanggal) {
@@ -642,7 +536,6 @@
                 this.filteredItems = res.data;
                 console.log(this.filteredItems);
                 this.loadRekap()
-                this.chartPerItem();
             }
         },
         mounted() {
