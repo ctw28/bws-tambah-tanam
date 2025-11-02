@@ -150,7 +150,7 @@
                 <div class="col-lg-3 col-md-12">
                     <div class="card shadow-sm h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">10 Laporan Terbaru</h6>
+                            <h6 class="mb-0">Laporan Terbaru</h6>
                             <button class="btn btn-sm btn-link text-muted p-0" @click="fetchLatestReports">
                                 <i class="bx bx-refresh"></i>
                             </button>
@@ -200,7 +200,7 @@
                 <div class="col-lg-9 col-md-12 mt-4 mt-lg-0">
                     <div class="card shadow-sm h-100">
                         <div class="card-header">
-                            <h6 class="mb-0">10 Permasalahan Terbaru</h6>
+                            <h6 class="mb-0">Permasalahan Terbaru</h6>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-striped mb-0">
