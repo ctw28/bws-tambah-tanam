@@ -54,7 +54,11 @@
 <body class="bg-light">
     <div id="app" v-cloak class="container my-5">
 
-
+        <div class="col-12 mb-3">
+            <a href="/">
+                <span class="tf-icons bx bx-arrow-left"></span>&nbsp; Kembali ke halaman depan
+            </a>
+        </div>
         <div class="card shadow-lg">
             <div class="card-header">
                 <h5 class="mb-3">Basis Data Hasil Pemantauan</h5>
