@@ -504,7 +504,7 @@
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <!-- Pilih jumlah data per halaman -->
                                 <div class="d-flex align-items-center gap-2">
-                                    <select v-model="perPage" @change="loadPermasalahan(1)" class="form-select form-select" style="width: auto;">
+                                    <select v-model="perPagePermasalahan" @change="loadPermasalahan(1)" class="form-select form-select" style="width: auto;">
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                         <option value="100">100</option>
