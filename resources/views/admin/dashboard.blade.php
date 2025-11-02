@@ -11,7 +11,7 @@
                 <!-- Total Laporan Juru -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-primary">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-primary">
@@ -28,7 +28,7 @@
                 <!-- Total P3A -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-warning">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-success">
@@ -44,7 +44,7 @@
                 <!-- Total Daerah Irigasi -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-info">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-info">
@@ -61,7 +61,7 @@
                 <!-- Total Saluran -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-success">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-warning">
@@ -78,7 +78,7 @@
                 <!-- Total Bangunan -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-warning">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-secondary">
@@ -95,7 +95,7 @@
                 <!-- Total Luas Tanam -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-info">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-warning">
@@ -112,7 +112,7 @@
                 <!-- Jumlah Juru -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-success">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-success">
@@ -129,7 +129,7 @@
                 <!-- Jumlah Pengamat -->
                 <div class="col-lg-3 col-sm-6">
                     <div class="card shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body border-bottom border-4 border-secondary">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-danger">

@@ -82,7 +82,7 @@
 
             <div class="card shadow-lg">
                 <div class="card-header">
-                    <h5 class="mb-3">BASISDATA HASIL PEMANTAUAN LUAS TANAM</h5>
+                    <h5>BASISDATA HASIL PEMANTAUAN LUAS TANAM</h5>
 
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
@@ -110,7 +110,7 @@
                                     <div class="col-12 col-md-3">
                                         <label class="form-label fw-bold">Daerah Irigasi</label>
                                         <select class="form-select form-select" v-model="filterDI">
-                                            <option value="">-- Pilih DI --</option>
+                                            <option value="">-- Pilih Daerah Irigasi --</option>
                                             <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
                                         </select>
                                     </div>
@@ -244,7 +244,7 @@
                                         <!-- Total Laporan Juru -->
                                         <div class="col-lg-3 col-sm-6">
                                             <div class="card shadow-sm">
-                                                <div class="card-body">
+                                                <div class="card-body border-bottom border-4 border-warning">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <div class="avatar me-4">
                                                             <span class="avatar-initial rounded bg-label-primary">
@@ -259,7 +259,7 @@
                                         </div>
                                         <div class="col-lg-3 col-sm-6">
                                             <div class="card shadow-sm">
-                                                <div class="card-body">
+                                                <div class="card-body border-bottom border-4 border-primary">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <div class="avatar me-4">
                                                             <span class="avatar-initial rounded bg-label-info">
@@ -274,7 +274,7 @@
                                         </div>
                                         <div class="col-lg-3 col-sm-6">
                                             <div class="card shadow-sm">
-                                                <div class="card-body">
+                                                <div class="card-body border-bottom border-4 border-info">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <div class="avatar me-4">
                                                             <span class="avatar-initial rounded bg-label-warning">
@@ -289,7 +289,7 @@
                                         </div>
                                         <div class="col-lg-3 col-sm-6">
                                             <div class="card shadow-sm">
-                                                <div class="card-body">
+                                                <div class="card-body border-bottom border-4 border-secondary">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <div class="avatar me-4">
                                                             <span class="avatar-initial rounded bg-label-success">
@@ -304,7 +304,7 @@
                                         </div>
                                         <div class="col-lg-3 col-sm-6">
                                             <div class="card shadow-sm">
-                                                <div class="card-body">
+                                                <div class="card-body border-bottom border-4 border-success">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <div class="avatar me-4">
                                                             <span class="avatar-initial rounded bg-label-dark">
