@@ -310,7 +310,7 @@
                                     @{{ p.form_pengisian?.saluran?.nama || '-' }} <br> @{{ p.form_pengisian?.bangunan?.nama || '-' }} - @{{ p.form_pengisian?.petak?.nama || '-' }}<br>
                                     @{{ formatTanggalIndo(p.created_at) }}
                                 </td>
-                                <td>@{{ p.master_permasalahan?.id }}. @{{ p.master_permasalahan?.nama }} : p.keterangan</td>
+                                <td>@{{ p.master_permasalahan?.id }}. @{{ p.master_permasalahan?.nama }} : @{{p.keterangan}}</td>
                                 <!-- <td>@{{ p.created_at }}</td> -->
                                 <td> <img v-if="p.foto_permasalahan" :src="`/storage/${p.foto_permasalahan}`" width="100">
                                 </td>
