@@ -416,7 +416,10 @@
                                     </div>
 
                                     <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
-                                    <canvas id="chartItem" height="100"></canvas>
+                                    <div class="col-6">
+
+                                        <canvas id="chartItem" height="100"></canvas>
+                                    </div>
                                 </div>
                             </div>
 
@@ -876,42 +879,48 @@
                 },
 
                 chartPerItem() {
-                    const rekap = this.rekapLuasTotal; // contoh: { padi: 123, palawija: 45, lainnya: 12, total: 180 }
-                    console.log(rekap);
+                    const rekap = this.rekapLuasTotal;
 
+                    if (!rekap) return;
                     if (this.chartItem) this.chartItem.destroy();
 
-                    this.chartItem = new Chart(document.getElementById('chartItem'), {
-                        type: 'bar',
+                    const ctx = document.getElementById('chartItem');
+                    if (!ctx) return;
+
+                    this.chartItem = new Chart(ctx, {
+                        type: 'doughnut',
                         data: {
-                            labels: ['Padi', 'Palawija', 'Lainnya'], // label kategori
+                            labels: ['Padi', 'Palawija', 'Lainnya'],
                             datasets: [{
                                 label: 'Luas (ha)',
                                 data: [rekap.padi, rekap.palawija, rekap.lainnya],
                                 backgroundColor: [
-                                    'rgba(75, 192, 192, 0.6)',
-                                    'rgba(255, 205, 86, 0.6)',
-                                    'rgba(201, 90, 90, 0.6)'
-                                ]
+                                    'rgba(75, 192, 192, 0.7)', // hijau kebiruan
+                                    'rgba(255, 205, 86, 0.7)', // kuning
+                                    'rgba(201, 90, 90, 0.7)' // merah muda
+                                ],
+                                borderColor: '#fff',
+                                borderWidth: 2
                             }]
                         },
                         options: {
                             responsive: true,
                             plugins: {
                                 legend: {
-                                    display: false
+                                    position: 'bottom', // tampilkan legenda di bawah
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Rekap Luas Tanam (ha)'
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Luas (ha)'
+                                    text: 'Distribusi Luas Tanam (ha)'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const value = context.parsed.toLocaleString('id-ID', {
+                                                minimumFractionDigits: 2
+                                            });
+                                            return `${context.label}: ${value} ha`;
+                                        }
                                     }
                                 }
                             }
