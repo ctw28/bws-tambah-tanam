@@ -605,12 +605,20 @@
                 axios.get(url).then(res => {
                     console.log(res.data);
                     this.rekapLuasTanam = res.data.data
-                    this.rekapLuasTotal = res.data.total_luas
                     this.pagination = {
                         current: res.data.current_page,
                         last: res.data.last_page,
                         total: res.data.total,
                     };
+                });
+
+                url = `/api/rekap-di?di_id=${this.filterDI}`
+                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                axios.get(url).then(res => {
+                    console.log(res.data);
+                    this.rekapLuasTotal = res.data.total_luas
                 });
             },
             formatTanggalIndo(tanggal) {

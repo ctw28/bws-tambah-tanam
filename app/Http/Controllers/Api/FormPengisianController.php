@@ -534,4 +534,62 @@ class FormPengisianController extends Controller
             ],
         ]);
     }
+    public function rekapLuasDI(Request $request)
+    {
+        $diId = $request->get('di_id');
+        $tanggalAwal = $request->get('tanggal_awal');
+        $tanggalAkhir = $request->get('tanggal_akhir');
+
+        $query = \App\Models\Petak::with([
+            'bangunan.saluran',
+            'formPengisian.petugas'
+        ])->whereHas('bangunan.saluran', function ($q) use ($diId) {
+            if ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            }
+        });
+
+        // Ambil semua data (tanpa pagination)
+        $petaks = $query->get();
+
+        $data = $petaks->map(function ($petak) use ($tanggalAwal, $tanggalAkhir) {
+            $formQuery = $petak->formPengisian();
+
+            if ($tanggalAwal && $tanggalAkhir) {
+                $formQuery->whereBetween('tanggal_pantau', [$tanggalAwal, $tanggalAkhir]);
+            } elseif ($tanggalAwal) {
+                $formQuery->whereDate('tanggal_pantau', '>=', $tanggalAwal);
+            } elseif ($tanggalAkhir) {
+                $formQuery->whereDate('tanggal_pantau', '<=', $tanggalAkhir);
+            }
+
+            $last = $formQuery->latest('tanggal_pantau')->first();
+
+            return [
+                'saluran' => $petak->bangunan->saluran->nama ?? '-',
+                'bangunan' => $petak->bangunan->nama ?? '-',
+                'petak' => $petak->nama ?? '-',
+                'padi' => (float) ($last->luas_padi ?? 0),
+                'palawija' => (float) ($last->luas_palawija ?? 0),
+                'lainnya' => (float) ($last->luas_lainnya ?? 0),
+                'total' => (float) ($last->luas_padi ?? 0) + (float) ($last->luas_palawija ?? 0) + (float) ($last->luas_lainnya ?? 0),
+                'tanggal_update' => $last->tanggal_pantau ?? '-',
+                'pengisi_terakhir' => $last->petugas->nama ?? '-',
+            ];
+        });
+
+        // Hitung total seluruh DI
+        $totalPadi = $data->sum('padi');
+        $totalPalawija = $data->sum('palawija');
+        $totalLainnya = $data->sum('lainnya');
+
+        return response()->json([
+            'total_luas' => [
+                'padi' => $totalPadi,
+                'palawija' => $totalPalawija,
+                'lainnya' => $totalLainnya,
+                'total' => $totalPadi + $totalPalawija + $totalLainnya,
+            ],
+        ]);
+    }
 }
