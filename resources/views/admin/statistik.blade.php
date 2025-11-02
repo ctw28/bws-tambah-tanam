@@ -378,20 +378,12 @@
 
                     if (!rekap[namaDI]) {
                         rekap[namaDI] = {
-                            baku: 0,
-                            potensial: 0,
-                            fungsional: 0,
                             padi: 0,
                             palawija: 0,
                             lainnya: 0,
                             total: 0
                         };
                     }
-
-                    // gunakan data luas dari DI sekarang
-                    rekap[namaDI].baku = parseFloat(di.luas_baku ?? 0);
-                    rekap[namaDI].potensial = parseFloat(di.luas_potensial ?? 0);
-                    rekap[namaDI].fungsional = parseFloat(di.luas_fungsional ?? 0);
 
                     rekap[namaDI].padi += parseFloat(i.luas_padi ?? 0);
                     rekap[namaDI].palawija += parseFloat(i.luas_palawija ?? 0);
@@ -509,10 +501,25 @@
                 if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
                 axios.get(url).then(res => {
-                    console.log(res.data);
-                    this.rekapLuasTotal = res.data.total_luas
-                    this.chartPerItem();
+                    const data = res.data.total_luas || {};
 
+                    // Ubah nilai ke number (hilangkan titik ribuan, ubah koma jadi titik)
+                    const parseNumber = (val) => {
+                        if (!val) return 0;
+                        return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+                    };
+
+                    this.rekapLuasTotal = {
+                        padi: parseNumber(data.padi),
+                        palawija: parseNumber(data.palawija),
+                        lainnya: parseNumber(data.lainnya),
+                        total: parseNumber(data.total),
+                    };
+
+                    console.log("Data konversi:", this.rekapLuasTotal);
+
+                    // Panggil chart setelah data siap
+                    this.chartPerItem();
                 });
             },
             formatTanggalIndo(tanggal) {
