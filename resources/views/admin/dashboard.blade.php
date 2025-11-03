@@ -151,9 +151,9 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">Laporan Terbaru</h6>
-                            <button class="btn btn-sm btn-link text-muted p-0" @click="fetchLatestReports">
+                            <!-- <button class="btn btn-sm btn-link text-muted p-0" @click="fetchLatestReports">
                                 <i class="bx bx-refresh"></i>
-                            </button>
+                            </button> -->
                         </div>
 
                         <div class="card-body">
@@ -172,11 +172,11 @@
                                     <div class="d-flex w-100 justify-content-between flex-wrap gap-2">
                                         <div>
                                             <h6 class="mb-1">
-                                                @{{ laporan.petugas?.nama || 'Juru tidak diketahui' }} - DI @{{ laporan.daerah_irigasi?.nama || '-' }}
+                                                DI @{{ laporan.daerah_irigasi?.nama || '-' }} - @{{ laporan.saluran?.nama }} - @{{ laporan.bangunan?.nama }} - @{{ laporan.petak?.nama }}
                                             </h6>
-                                            <small class="text-body-secondary d-block">
+                                            <!-- <small class="text-body-secondary d-block">
                                                 Pengamat: @{{ laporan.validasi?.pengamat?.nama || '-' }}
-                                            </small>
+                                            </small> -->
                                             <small class="text-muted">
                                                 @{{ formatTanggalIndo(laporan.created_at) }}
                                             </small>
@@ -443,85 +443,6 @@
                 return new Date(tanggal).toLocaleString("id-ID", options);
             },
 
-            chartPerDI() {
-                const labels = Object.keys(this.rekapPerDaerahIrigasi);
-                const dataTotal = Object.values(this.rekapPerDaerahIrigasi).map(r => r.total);
-
-                if (this.chartDI) this.chartDI.destroy();
-                this.chartDI = new Chart(document.getElementById('chartDI'), {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Total Luas (ha)',
-                            data: dataTotal
-                        }]
-                    }
-                });
-            },
-            chartPerItem() {
-                const rekap = this.rekapPerDaerahIrigasi; // fungsi yg sudah dibuat
-                const labels = Object.keys(rekap);
-
-                const dataPadi = Object.values(rekap).map(r => r.padi);
-                const dataPalawija = Object.values(rekap).map(r => r.palawija);
-                const dataLainnya = Object.values(rekap).map(r => r.lainnya);
-
-                if (this.chartItem) this.chartItem.destroy();
-
-                this.chartItem = new Chart(document.getElementById('chartItem'), {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                                label: 'Padi (ha)',
-                                data: dataPadi,
-                                backgroundColor: 'rgba(75, 192, 192, 0.6)'
-                            },
-                            {
-                                label: 'Palawija (ha)',
-                                data: dataPalawija,
-                                backgroundColor: 'rgba(255, 205, 86, 0.6)'
-                            },
-                            {
-                                label: 'Lainnya (ha)',
-                                data: dataLainnya,
-                                backgroundColor: 'rgba(201, 90, 90, 0.6)'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Rekap Luas Per Daerah Irigasi'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Luas (ha)'
-                                }
-                            }
-                        }
-                    }
-                });
-            },
-            async loadData2() {
-                axios.get('/api/form-pengisian?pengamat_valid=1&upi_valid=1').then(res => {
-                    this.items = res.data;
-                    this.filteredItems = res.data;
-                    this.chartPerDI();
-                    this.chartPerItem();
-                });
-
-            },
             async loadRekap() {
                 axios.get('/api/master/rekap-data').then(res => {
                     console.log(res);
@@ -567,8 +488,6 @@
 
                 this.items = items;
                 this.filteredItems = items;
-                this.chartPerDI();
-                this.chartPerItem();
             }
 
 

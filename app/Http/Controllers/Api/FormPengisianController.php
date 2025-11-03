@@ -190,7 +190,10 @@ class FormPengisianController extends Controller
             'kabupaten:id,nama',
             'petugas:id,nama',
             'validasi:id,form_pengisian_id,pengamat_valid',
-            'validasi.pengamat'
+            'validasi.pengamat',
+            'petak',
+            'bangunan',
+            'saluran',
         ])
             ->whereHas('validasi', function ($q) {
                 $q->where('pengamat_valid', 1);
@@ -208,14 +211,7 @@ class FormPengisianController extends Controller
             })
             ->latest('tanggal_pantau')
             ->take(10)
-            ->get([
-                'id',
-                'tanggal_pantau',
-                'daerah_irigasi_id',
-                'kabupaten_id',
-                'petugas_id',
-                'created_at'
-            ]);
+            ->get();
 
         return response()->json($data);
     }
