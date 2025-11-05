@@ -594,41 +594,6 @@
                 },
 
             },
-            computed: {
-                rekapPerDaerahIrigasi() {
-                    const rekap = {};
-
-                    this.filteredItems.forEach(i => {
-                        const di = i.daerah_irigasi;
-                        if (!di) return;
-
-                        // ambil nama DI induk jika ada, kalau tidak pakai nama sendiri
-                        const namaDI = di.parent_id ?
-                            (di.parent?.nama || 'Tidak Ada DI') :
-                            (di.nama || 'Tidak Ada DI');
-
-                        if (!rekap[namaDI]) {
-                            rekap[namaDI] = {
-                                padi: 0,
-                                palawija: 0,
-                                lainnya: 0,
-                                total: 0
-                            };
-                        }
-
-                        rekap[namaDI].padi += parseFloat(i.luas_padi ?? 0);
-                        rekap[namaDI].palawija += parseFloat(i.luas_palawija ?? 0);
-                        rekap[namaDI].lainnya += parseFloat(i.luas_lainnya ?? 0);
-                        rekap[namaDI].total +=
-                            parseFloat(i.luas_padi ?? 0) +
-                            parseFloat(i.luas_palawija ?? 0) +
-                            parseFloat(i.luas_lainnya ?? 0);
-                    });
-
-                    return rekap;
-                }
-
-            },
             mounted() {
                 // this.loadDashboard();
                 this.loadDI()
