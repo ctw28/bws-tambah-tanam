@@ -18,9 +18,9 @@
 
                 <!-- Pilih DI Anak -->
                 <div class="col-12 col-md-3" v-if="isChild">
-                    <label class="form-label fw-bold">Daerah Irigasi (Anak)</label>
+                    <label class="form-label fw-bold">Wilayah</label>
                     <select class="form-select" v-model="filterDIChild">
-                        <option value="">-- Pilih DI Anak --</option>
+                        <option value="">-- Pilih Wilayah --</option>
                         <option v-for="d in daerahIrigasisChild" :value="d.id">@{{ d.nama }}</option>
                     </select>
                 </div>
