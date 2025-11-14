@@ -912,7 +912,7 @@
                         alert("Pilih Daerah Irigasi terlebih dahulu")
                         return
                     }
-
+                    console.log(this.selectedDI)
                     this.loadData(diId)
                     this.isFilter = true
                 },
