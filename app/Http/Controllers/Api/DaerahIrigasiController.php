@@ -176,7 +176,7 @@ class DaerahIrigasiController extends Controller
 
         // Jika tidak ada filter, hitung semua data
         return response()->json([
-            'total_daerah_irigasi' => \App\Models\DaerahIrigasi::count(),
+            'total_daerah_irigasi' => \App\Models\DaerahIrigasi::whereNull('parent_id')->count(),
             'total_saluran' => \App\Models\Saluran::count(),
             'total_bangunan' => \App\Models\Bangunan::count(),
             'total_petak' => \App\Models\Petak::count(),
