@@ -463,7 +463,7 @@
                         this.items = res.data.data;
                         this.filteredItems = res.data;
                         console.log(this.filteredItems);
-                        this.loadRekap()
+                        this.loadRekap(diId)
 
                     } catch (e) {
                         console.error(e);
@@ -471,20 +471,21 @@
                         this.is_loading = false;
                     }
                 },
-                async loadRekap() {
-                    let url = `/api/master/rekap-data?di_id=${this.filterDI}`
+                async loadRekap(diId) {
+                    let url = `/api/master/rekap-data?di_id=${diId}`
                     axios.get(url).then(res => {
                         console.log(res);
                         this.rekap = res.data
                     });
 
 
-                    this.loadRekapPengisian(1)
+                    this.loadRekapPengisian(1, diId)
+
 
                 },
-                async loadRekapPengisian(page = 1) {
+                async loadRekapPengisian(page = 1, diId) {
                     // alert(page)
-                    let url = `/api/rekap-petak?di_id=${this.filterDI}&page=${page}&per_page=${this.perPage}`
+                    let url = `/api/rekap-petak?di_id=${diId}&page=${page}&per_page=${this.perPage}`
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
