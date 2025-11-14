@@ -82,7 +82,7 @@ class UpiController extends Controller
     {
 
 
-        $upi = Upi::with(['daerahIrigasis'])
+        $upi = Upi::with(['daerahIrigasis.children'])
             ->where('kode', $request->kode)                   // 🔹 hanya yg aktif
             ->first();
 

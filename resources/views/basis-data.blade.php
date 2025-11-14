@@ -67,12 +67,21 @@
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
                         <div class="row g-2 align-items-end">
-                            <!-- Pilih DI -->
+                            <!-- Pilih DI Induk -->
                             <div class="col-12 col-md-3">
-                                <label class="form-label fw-bold">Daerah Irigasi</label>
-                                <select class="form-select form-select" v-model="filterDI">
+                                <label class="form-label fw-bold">Daerah Irigasi (Induk)</label>
+                                <select class="form-select" v-model="filterDI" @change="checkChild">
                                     <option value="">-- Pilih Daerah Irigasi --</option>
                                     <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Pilih DI Anak -->
+                            <div class="col-12 col-md-3" v-if="isChild">
+                                <label class="form-label fw-bold">Wilayah</label>
+                                <select class="form-select" v-model="filterDIChild">
+                                    <option value="">-- Pilih Wilayah --</option>
+                                    <option v-for="d in daerahIrigasisChild" :value="d.id">@{{ d.nama }}</option>
                                 </select>
                             </div>
 
@@ -405,10 +414,45 @@
                     rekap: [],
                     rekapLuasTotal: [],
                     rekapLuasTanam: [],
+                    isChild: false,
+                    filterDIChild: '', // ✅ tambahkan ini
+
+
                 }
             },
             methods: {
+                clearData() {
+                    this.isFilter = false
+                    this.rekap = []
+                    this.rekapLuasTanam = []
+                    this.rekapLuasTotal = []
+                },
+                async checkChild() {
+                    this.clearData()
+                    this.selectedDI = ''
+                    if (!this.filterDI) {
+                        this.isChild = false
+                        this.filterDIChild = ''
+                        return
+                    }
 
+                    let res = await axios.get(`/api/master/daerah-irigasi?id=${this.filterDI}`)
+                    let di = res.data
+                    console.log(di);
+
+
+                    if (di.children && di.children.length > 0) {
+                        this.daerahIrigasisChild = di.children
+                        console.log(this.daerahIrigasisChild);
+
+                        this.isChild = true
+                        this.filterDIChild = ''
+
+                    } else {
+                        this.isChild = false
+                        this.filterDIChild = ''
+                    }
+                },
                 async loadData(page = 1) {
                     try {
                         let url = `/api/form-pengisian?page=all&di_id=${this.filterDI}`
@@ -588,7 +632,9 @@
                 },
 
                 async loadDI() {
-                    let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
+                    // let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
+                    let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9&is_induk=1');
+
                     console.log(res.data.data);
                     this.daerahIrigasis = res.data.data;
                 },
