@@ -18,7 +18,7 @@
                                         <i class="bx bx-file icon-lg"></i>
                                     </span>
                                 </div>
-                                <h4 class="mb-0">@{{ filteredItems.length }}</h4>
+                                <h4 class="mb-0">@{{ rekap.total_laporan_valid }}</h4>
                             </div>
                             <p class="mb-0 text-muted fw-semibold">Laporan Juru Tervalidasi</p>
                         </div>

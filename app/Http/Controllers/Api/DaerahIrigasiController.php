@@ -176,6 +176,9 @@ class DaerahIrigasiController extends Controller
 
         // Jika tidak ada filter, hitung semua data
         return response()->json([
+            'total_laporan_valid' => FormPengisian::whereHas('validasi', function ($q) {
+                $q->where('pengamat_valid', 1);
+            })->count(),
             'total_daerah_irigasi' => \App\Models\DaerahIrigasi::whereNull('parent_id')->count(),
             'total_saluran' => \App\Models\Saluran::count(),
             'total_bangunan' => \App\Models\Bangunan::count(),
