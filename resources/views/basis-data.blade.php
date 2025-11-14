@@ -499,7 +499,7 @@
                         };
                     });
 
-                    url = `/api/rekap-di?di_id=${this.filterDI}`
+                    url = `/api/rekap-di?di_id=${diId}`
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
