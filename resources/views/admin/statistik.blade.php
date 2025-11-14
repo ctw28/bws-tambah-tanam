@@ -7,14 +7,24 @@
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <div class="row g-2 align-items-end">
-                <!-- Pilih DI -->
+                <!-- Pilih DI Induk -->
                 <div class="col-12 col-md-3">
-                    <label class="form-label fw-bold">Daerah Irigasi</label>
-                    <select class="form-select form-select" v-model="filterDI">
+                    <label class="form-label fw-bold">Daerah Irigasi (Induk)</label>
+                    <select class="form-select" v-model="filterDI" @change="checkChild">
                         <option value="">-- Pilih Daerah Irigasi --</option>
                         <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
                     </select>
                 </div>
+
+                <!-- Pilih DI Anak -->
+                <div class="col-12 col-md-3" v-if="isChild">
+                    <label class="form-label fw-bold">Daerah Irigasi (Anak)</label>
+                    <select class="form-select" v-model="filterDIChild">
+                        <option value="">-- Pilih DI Anak --</option>
+                        <option v-for="d in daerahIrigasisChild" :value="d.id">@{{ d.nama }}</option>
+                    </select>
+                </div>
+
 
                 <!-- Tanggal awal -->
                 <div class="col-6 col-md-2">
@@ -37,9 +47,13 @@
                     <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
                 </div>
             </div>
+            <div v-if="!isFilter" class="alert alert-warning text-center mt-2">
+                <div class="text-center text-muted">
+                    Silakan filter data terlebih dahulu
+                </div>
+            </div>
         </div>
     </div>
-
     <div v-if="isFilter">
         <div class="card h-100">
             <div class="card-body">
@@ -47,7 +61,7 @@
                 <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                     <div class="flex-grow-1 mt-2">
                         <div class="user-profile-info">
-                            <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
+                            <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} -</h4>
 
                             <div class="row mt-4">
                                 <div class="col d-flex">
@@ -349,6 +363,7 @@
                 filterTanggalAkhir: '',
                 chartItem: null,
                 daerahIrigasis: [],
+                daerahIrigasisChild: [],
                 isFilter: false,
                 filterDI: '',
                 is_loading: false,
@@ -363,6 +378,9 @@
                 rekapLuasTanam: [],
                 latestIssues: [],
                 rekapLuasTotal: [],
+                isChild: false,
+                filterDIChild: '', // ✅ tambahkan ini
+
 
             }
         },
@@ -406,18 +424,82 @@
         methods: {
 
             async loadDI() {
-                let res = await axios.get('/api/master/daerah-irigasi?page=all');
+                let res = await axios.get('/api/master/daerah-irigasi?page=all&is_induk=1');
                 console.log(res.data.data);
                 this.daerahIrigasis = res.data.data;
+            },
+            clearData() {
+                this.isFilter = false
+                this.rekap = []
+                this.rekapLuasTanam = []
+                this.latestIssues = []
+                this.rekapLuasTotal = []
+            },
+            async checkChild() {
+                this.clearData()
+                this.selectedDI = ''
+                if (!this.filterDI) {
+                    this.isChild = false
+                    this.filterDIChild = ''
+                    return
+                }
+
+                let res = await axios.get(`/api/master/daerah-irigasi?id=${this.filterDI}`)
+                let di = res.data
+                console.log(di);
+
+
+                if (di.children && di.children.length > 0) {
+                    this.daerahIrigasisChild = di.children
+                    this.isChild = true
+                    this.filterDIChild = ''
+
+                } else {
+                    this.isChild = false
+                    this.filterDIChild = ''
+                }
             },
             syncTanggal() {
                 this.filterTanggalAkhir = this.filterTanggalAwal;
             },
             applyFilter() {
-                this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
-                this.loadData()
+                let diId = this.isChild ? this.filterDIChild : this.filterDI
+                // alert(diId);
+                if (this.isChild)
+                    this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
+                else
+                    this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+                if (!diId) {
+                    alert("Pilih Daerah Irigasi terlebih dahulu")
+                    return
+                }
+
+                this.loadData(diId)
                 this.isFilter = true
             },
+
+            // applyFilter() { //ini jika mau kalau tetap tampil data walau child tidak dipilih
+            //     // Default pakai ID induk
+            //     let diId = this.filterDI
+
+            //     // Kalau punya child DAN child dipilih → pakai child
+            //     if (this.isChild && this.filterDIChild) {
+            //         diId = this.filterDIChild
+            //         this.selectedDI = this.daerahIrigasisChild.find(d => d.id === diId) || null
+            //     } else {
+            //         this.selectedDI = this.daerahIrigasis.find(d => d.id === diId) || null
+            //     }
+
+            //     // Validasi
+            //     if (!diId) {
+            //         alert("Pilih Daerah Irigasi terlebih dahulu")
+            //         return
+            //     }
+
+            //     // Load data
+            //     this.loadData(diId)
+            //     this.isFilter = true
+            // },
             resetFilter() {
                 // kosongkan filter tanggal
                 this.filterDI = ''
@@ -475,23 +557,22 @@
                     }
                 });
             },
-            async loadRekap() {
-                let url = `/api/master/rekap-data?di_id=${this.filterDI}`
+            async loadRekap(diId) {
+                let url = `/api/master/rekap-data?di_id=${diId}`
                 axios.get(url).then(res => {
                     console.log(res);
                     this.rekap = res.data
                 });
 
-                axios.get(`/api/latest-issues?di_id=${this.filterDI}`).then(res => {
+                axios.get(`/api/latest-issues?di_id=${diId}`).then(res => {
                     this.latestIssues = res.data
                     console.log(this.latestIssues);
                 });
-                this.loadRekapPengisian(1)
+                this.loadRekapPengisian(1, diId)
 
             },
-            async loadRekapPengisian(page = 1) {
-                // alert(page)
-                let url = `/api/rekap-petak?di_id=${this.filterDI}&page=${page}&per_page=${this.perPage}`
+            async loadRekapPengisian(page = 1, diId) {
+                let url = `/api/rekap-petak?di_id=${diId}&page=${page}&per_page=${this.perPage}`
                 if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                 if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
@@ -505,7 +586,7 @@
                     };
                 });
 
-                url = `/api/rekap-di?di_id=${this.filterDI}`
+                url = `/api/rekap-di?di_id=${diId}`
                 if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                 if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
@@ -542,17 +623,19 @@
                 };
                 return new Date(tanggal).toLocaleString("id-ID", options);
             },
-            async loadData() {
-                let url = `/api/form-pengisian?page=all&di_id=${this.filterDI}`
+            async loadData(diId) {
+                // alert(diId)
+                let url = `/api/form-pengisian?page=all&di_id=${diId}`;
+
                 if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                 if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
                 let res = await axios.get(url);
-                this.items = res.data.data;
+                // this.items = res.data.data;
                 this.filteredItems = res.data;
-                console.log(this.filteredItems);
-                this.loadRekap()
+                this.loadRekap(diId);
             }
+
         },
         mounted() {
             //ambil data dari API

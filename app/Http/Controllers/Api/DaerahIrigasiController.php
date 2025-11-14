@@ -39,6 +39,14 @@ class DaerahIrigasiController extends Controller
                 $q->where('kabupatens.id', $request->kabupaten_id);
             });
         }
+        // Filter induk/anak via param child
+        // if ($request->has('child')) {
+        //     if ($request->child === 'no') {
+        //         $query->whereNull('parent_id');
+        //     } elseif ($request->child === 'yes') {
+        //         $query->whereNotNull('parent_id');
+        //     }
+        // }
 
         // Filter induk/anak
         if ($request->boolean('is_induk')) {
