@@ -791,9 +791,9 @@
                         this.is_loading = false;
                     }
                 },
-                async loadData(page = 1) {
+                async loadData(diId) {
                     try {
-                        let url = `/api/form-pengisian?page=all&di_id=${this.filterDI}`
+                        let url = `/api/form-pengisian?page=all&di_id=${diId}`;
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
