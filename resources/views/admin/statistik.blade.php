@@ -451,6 +451,8 @@
 
                 if (di.children && di.children.length > 0) {
                     this.daerahIrigasisChild = di.children
+                    console.log(this.daerahIrigasisChild);
+
                     this.isChild = true
                     this.filterDIChild = ''
 
