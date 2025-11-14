@@ -18,7 +18,7 @@ class DaerahIrigasiController extends Controller
         $query = DaerahIrigasi::with([
             'kabupatens:id,nama',
             'parent:id,nama',
-            'children:id,nama,parent_id',
+            'children',
             'salurans.petugas',
             'upis'
         ]);
