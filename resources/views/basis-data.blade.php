@@ -561,10 +561,19 @@
                     this.forms = [];
                 },
                 applyFilter() {
-                    this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
-                    this.loadData()
-                    this.isFilter = true
+                    let diId = this.isChild ? this.filterDIChild : this.filterDI
+                    // alert(diId);
+                    if (this.isChild)
+                        this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
+                    else
+                        this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+                    if (!diId) {
+                        alert("Pilih Daerah Irigasi terlebih dahulu")
+                        return
+                    }
 
+                    this.loadData(diId)
+                    this.isFilter = true
                 },
                 applyFilterPermasalahan() {
                     this.loadPermasalahan(1)
