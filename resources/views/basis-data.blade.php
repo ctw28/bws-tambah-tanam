@@ -115,7 +115,7 @@
                             <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                                 <div class="flex-grow-1 mt-2">
                                     <div class="user-profile-info">
-                                        <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
+                                        <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens}}</h4>
 
                                         <div class="row mt-4">
                                             <div class="col d-flex">
