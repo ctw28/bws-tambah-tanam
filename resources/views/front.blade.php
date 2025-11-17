@@ -199,7 +199,7 @@
                         <!-- Logo -->
                         <div class="mb-3">
                             <img src="{{asset('/logo-pu.jpg')}}" alt="" width="80" class="mb-2">
-                            <h2 class="mt-3">SIPEMALUTAJIR</h2>
+                            <h2 class="mt-3">SIPEMALUTTAJIR</h2>
                         </div>
                         <!-- /Logo -->
                         <!-- <h5 class="mb-3">SILAHKAN PILIH SEBAGAI : </h5> -->
@@ -236,7 +236,7 @@
                         </div>
                         <div class="text-center mt-3">
                             <a href="#" id="btnTentang">
-                                <span class="tf-icons bx bx-info"></span>&nbsp; Apa sih sipemalutajir?
+                                <span class="tf-icons bx bx-info"></span>&nbsp; Apa sih sipemaluttajir?
                             </a>
                         </div>
                     </div>

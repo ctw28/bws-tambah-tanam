@@ -78,7 +78,7 @@
                         <!-- Logo -->
                         <div class="text-center">
                             <img src="{{asset('/logo-pu.jpg')}}" alt="" width="80" class="mb-2">
-                            <h2>SIPEMALUTAJIR</h2>
+                            <h2>SIPEMALUTTAJIR</h2>
                         </div>
                         <!-- /Logo -->
                         <p class="mb-4 text-center">Login untuk masuk</p>
