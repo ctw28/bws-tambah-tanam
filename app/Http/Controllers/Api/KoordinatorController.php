@@ -10,14 +10,20 @@ use Illuminate\Support\Facades\Auth;
 
 class KoordinatorController extends Controller
 {
-    public function getDaerahIrigasiUser()
+    public function getDaerahIrigasiUser(Request $request)
     {
         $user = Auth::user();
 
-        $daerahIrigasis = DaerahIrigasi::whereHas('kabupatens', function ($q) use ($user) {
+        $query = DaerahIrigasi::whereHas('kabupatens', function ($q) use ($user) {
             $q->whereIn('kabupatens.id', $user->kabupatens->pluck('id'));
-        })->get();
+        });
 
-        return $daerahIrigasis;
+        // 🔍 Filter hanya DI Induk jika dikirim ?is_induk=1
+        if ($request->filled('is_induk') && $request->is_induk == 1) {
+            $query->whereNull('parent_id');
+        }
+
+
+        return $query->get();
     }
 }

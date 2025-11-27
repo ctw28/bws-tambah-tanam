@@ -9,6 +9,7 @@ use App\Models\FormPengisian;
 use App\Models\FormPengisianP3a;
 use App\Models\FormPermasalahan;
 use App\Models\FormValidasi;
+use App\Models\MasterPermasalahan;
 use App\Models\P3a;
 use App\Models\Petak;
 use Illuminate\Support\Facades\Auth;
@@ -125,21 +126,36 @@ class FormPengisianController extends Controller
             'bangunan',
             'petak',
             'validasi',
-            'permasalahan' => function ($q) {
+            'permasalahan' => function ($q) use ($request) {
                 $q->where('status', 1)
                     ->whereNotNull('keterangan')
                     ->where('keterangan', '!=', '');
+
+                if ($request->filled('permasalahan_id')) {
+                    $q->where('master_permasalahan_id', $request->permasalahan_id); // ⬅️ tambahkan ini
+                }
             },
+
             'permasalahan.masterPermasalahan',
             'formPengisianP3a.p3a'
         ])
-            ->when($request->has_permasalahan, function ($q) {
-                $q->whereHas('permasalahan', function ($qq) {
+            ->when($request->has('has_permasalahan') || $request->filled('permasalahan_id'), function ($q) use ($request) {
+
+                $q->whereHas('permasalahan', function ($qq) use ($request) {
+
                     $qq->where('status', 1)
                         ->whereNotNull('keterangan')
                         ->where('keterangan', '!=', '');
+
+                    // Tambahkan ini agar permasalahan yang di-load sesuai filter!
+                    if ($request->filled('permasalahan_id')) {
+                        $qq->where('master_permasalahan_id', $request->permasalahan_id);
+                    }
                 });
             })
+
+
+
             ->when($request->filled('pengamat_valid'), function ($q) use ($request) {
                 $q->whereHas('validasi', function ($qq) use ($request) {
                     $qq->where('pengamat_valid', (int) $request->pengamat_valid);
@@ -590,5 +606,54 @@ class FormPengisianController extends Controller
                 'total' => $format($totalPadi + $totalPalawija + $totalLainnya),
             ],
         ]);
+    }
+
+    public function rekapPermasalahan(Request $request)
+    {
+        $query = FormPermasalahan::query()
+            ->where('status', 1)
+            ->whereNotNull('keterangan')
+            ->where('keterangan', '!=', '')
+            ->whereHas('formPengisian.validasi', function ($q) use ($request) {
+                $q->where('pengamat_valid', 1); // 🔥 Filter pengamat valid
+            });
+
+        // Filter DI
+        if ($request->filled('di_id')) {
+            $query->whereHas('formPengisian', function ($q) use ($request) {
+                $q->where('daerah_irigasi_id', $request->di_id);
+            });
+        }
+
+        // Filter tanggal
+        if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
+            $query->whereHas('formPengisian', function ($q) use ($request) {
+                $q->whereBetween('tanggal_pantau', [
+                    $request->tanggal_awal,
+                    $request->tanggal_akhir
+                ]);
+            });
+        }
+
+        // Hitung rekap
+        $rekap = $query
+            ->select('master_permasalahan_id')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('master_permasalahan_id')
+            ->pluck('total', 'master_permasalahan_id');
+
+        // Ambil semua master
+        $masters = MasterPermasalahan::select('id', 'nama')->orderBy('id')->get();
+
+        // Merge master + hasil + default 0
+        $data = $masters->map(function ($m) use ($rekap) {
+            return [
+                'master_permasalahan_id' => $m->id,
+                'nama' => $m->nama,
+                'total' => $rekap[$m->id] ?? 0,
+            ];
+        });
+
+        return response()->json($data);
     }
 }

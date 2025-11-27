@@ -9,35 +9,49 @@
         <div class="card-body">
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="row g-2 align-items-end">
-                        <!-- Pilih DI -->
-                        <div class="col-12 col-md-3">
-                            <label class="form-label fw-bold">Daerah Irigasi</label>
-                            <select class="form-select form-select" v-model="filterDI">
-                                <option value="">-- Pilih DI --</option>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-bold">Daerah Irigasi (Induk)</label>
+                            <select class="form-select" v-model="filterDI" @change="checkChild">
+                                <option value="">-- Pilih Daerah Irigasi --</option>
                                 <option v-for="d in daerahIrigasis" :value="d.id">@{{ d.nama }}</option>
                             </select>
                         </div>
 
-                        <!-- Tanggal awal -->
-                        <div class="col-6 col-md-2">
-                            <label class="form-label fw-bold">Tanggal Awal</label>
-                            <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
+                        <div class="col-12 col-md-4" v-if="isChild">
+                            <label class="form-label fw-bold">Wilayah</label>
+                            <select class="form-select" v-model="filterDIChild">
+                                <option value="">-- Pilih Wilayah --</option>
+                                <option v-for="d in daerahIrigasisChild" :value="d.id">@{{ d.nama }}</option>
+                            </select>
                         </div>
 
-                        <!-- Tanggal akhir -->
-                        <div class="col-6 col-md-2">
-                            <label class="form-label fw-bold">Tanggal Akhir</label>
-                            <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                        <div class="col-12" :class="{'col-md-4': isChild, 'col-md-8': !isChild}">
+                            <label class="form-label fw-bold">Permasalahan</label>
+                            <select class="form-select form-select" v-model="filterPermasalahan">
+                                <option value="">-- Pilih Permasalahan --</option>
+                                <option v-for="(d,index) in masterPermasalahan" :value="d.id">@{{ index + 1 }}. @{{ d.nama }}</option>
+                            </select>
                         </div>
 
-                        <!-- Tombol -->
-                        <div class="col-12 col-md-3 d-flex gap-2">
-                            <button class="btn btn-primary btn w-100" @click="applyFilter">
-                                <span v-if="is_loading" class="spinner-border spinner-border me-1"></span>
-                                <span v-else>Filter</span>
-                            </button>
-                            <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                        <div class="col-12 d-flex flex-wrap gap-2 align-items-end">
+                            <div class="col-6 col-md-2 flex-grow-1">
+                                <label class="form-label fw-bold">Tanggal Awal</label>
+                                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
+                            </div>
+
+                            <div class="col-6 col-md-2 flex-grow-1">
+                                <label class="form-label fw-bold">Tanggal Akhir</label>
+                                <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                            </div>
+
+                            <div class="col-12 col-md-3 d-flex gap-2">
+                                <button class="btn btn-primary btn w-100" @click="applyFilter">
+                                    <span v-if="is_loading" class="spinner-border spinner-border-sm me-1"></span>
+                                    <span v-else>Filter</span>
+                                </button>
+                                <button class="btn btn-secondary btn w-100" @click="resetFilter">Reset</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -264,22 +278,75 @@
                 filteredItems: [], // data hasil filter
                 filterTanggalAwal: '',
                 filterTanggalAkhir: '',
+                masterPermasalahan: [],
+                filterPermasalahan: '',
+                isChild: false,
+                filterDIChild: '', // ✅ tambahkan ini
+                daerahIrigasisChild: [],
+                diId: ''
+
 
             };
         },
         async mounted() {
             // await this.loadData();
             this.loadDI();
+            this.loadPermasalahan()
 
         },
         methods: {
+            clearData() {
+                this.isFilter = false
+            },
             async loadDI() {
-                let res = await axios.get('/api/koordinator-di');
+                let res = await axios.get('/api/koordinator-di?is_induk=1');
                 console.log(res.data);
                 this.daerahIrigasis = res.data;
 
             },
+            async checkChild() {
+                this.clearData()
+                this.selectedDI = ''
+                if (!this.filterDI) {
+                    this.isChild = false
+                    this.filterDIChild = ''
+                    return
+                }
+
+                let res = await axios.get(`/api/master/daerah-irigasi?id=${this.filterDI}`)
+                let di = res.data
+                console.log(di);
+
+
+                if (di.children && di.children.length > 0) {
+                    this.daerahIrigasisChild = di.children
+                    console.log(this.daerahIrigasisChild);
+
+                    this.isChild = true
+                    this.filterDIChild = ''
+
+                } else {
+                    this.isChild = false
+                    this.filterDIChild = ''
+                }
+            },
+            async loadPermasalahan() {
+                let res = await axios.get('/api/master/permasalahan');
+                console.log(res.data);
+                this.masterPermasalahan = res.data;
+            },
             applyFilter() {
+                let diId = this.isChild ? this.filterDIChild : this.filterDI
+                // alert(diId);
+                if (this.isChild)
+                    this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
+                else
+                    this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+                if (!diId) {
+                    alert("Pilih Daerah Irigasi terlebih dahulu")
+                    return
+                }
+                this.diId = diId
                 this.is_filtered = true
                 this.is_loading = true;
 
@@ -287,9 +354,11 @@
             },
             async loadData(page = 1) {
                 try {
-                    let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&pengamat_valid=1&upi_valid=1&has_permasalahan=1`;
+                    // let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&pengamat_valid=1&upi_valid=1&has_permasalahan=1`;
+                    let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&pengamat_valid=1&has_permasalahan=1`;
 
-                    if (this.filterDI) url += `&di_id=${this.filterDI}`;
+                    if (this.filterPermasalahan) url += `&permasalahan_id=${this.filterPermasalahan}`;
+                    if (this.diId) url += `&di_id=${this.diId}`;
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
@@ -322,36 +391,8 @@
 
             },
 
-            async loadData1() {
-                let token = localStorage.getItem("token");
 
-                let dis = await axios.get('/api/user-dis');
-                console.log(dis.data);
 
-                let items = [];
-                let seen = new Set();
-
-                for (let di of dis.data) {
-                    let url = di.has_upi ?
-                        `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&upi_valid=1&has_permasalahan=1` :
-                        `/api/form-pengisian?di_id=${di.id}&pengamat_valid=1&has_permasalahan=1`;
-                    console.log(url);
-
-                    let res = await axios.get(url);
-
-                    for (let d of res.data.data) {
-                        if (!seen.has(d.id)) {
-                            seen.add(d.id);
-                            items.push(d);
-                        }
-                    }
-                }
-
-                console.log(items);
-
-                this.items = items;
-                this.filteredItems = items;
-            },
             showForm(form) {
                 this.item = form;
                 console.log(this.item);

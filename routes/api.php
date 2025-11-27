@@ -79,6 +79,7 @@ Route::get('/latest-laporan', [FormPengisianController::class, 'latestLaporan'])
 Route::get('/latest-issues', [FormPengisianController::class, 'latestIssues']);
 Route::get('/rekap-petak', [FormPengisianController::class, 'rekapPetak']);
 Route::get('/rekap-di', [FormPengisianController::class, 'rekapLuasDI']);
+Route::get('/rekap-permasalahan', [FormPengisianController::class, 'rekapPermasalahan']);
 
 Route::post('/pengamat/validasi/{id}', [FormValidasiController::class, 'validateByPengamat']);
 Route::post('/upi/validasi/{id}', [FormValidasiController::class, 'validateByUpi']);

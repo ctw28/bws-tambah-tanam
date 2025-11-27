@@ -351,6 +351,24 @@
                                     </nav>
                                 </div>
                             </div>
+                            <h4 class="mt-3">Rekap Total Permasalahan</h4>
+
+                            <table class="table table-bordered w-50">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Permasalahan</th>
+                                        <th class="text-center">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, i) in rekapPermasalahan" :key="i">
+                                        <td class="text-center ">@{{ i+1 }}</td>
+                                        <td class="">@{{ item.nama }}</td>
+                                        <td class="text-center font-bold">@{{ item.total }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
                             <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
                             <div class="col-6">
@@ -396,13 +414,12 @@
                         last: 1,
                         total: 0,
                     },
-                    perPage: 25, // default,
+                    perPage: 10, // default,
                     paginationPermasalahan: {
                         current: 1,
                         last: 1,
                         total: 0,
                     },
-                    perPagePermasalahan: 25, // default
                     is_filtered: false,
                     is_loading: false,
                     activeTab: 'dashboard', // default tab yang aktif saat halaman dibuka,
@@ -416,7 +433,9 @@
                     rekapLuasTanam: [],
                     isChild: false,
                     filterDIChild: '', // ✅ tambahkan ini
-
+                    rekapPermasalahan: [],
+                    diId: '',
+                    daerahIrigasisChild: []
 
                 }
             },
@@ -479,13 +498,13 @@
                     });
 
 
-                    this.loadRekapPengisian(1, diId)
+                    this.loadRekapPengisian(1)
 
 
                 },
-                async loadRekapPengisian(page = 1, diId) {
+                async loadRekapPengisian(page = 1) {
                     // alert(page)
-                    let url = `/api/rekap-petak?di_id=${diId}&page=${page}&per_page=${this.perPage}`
+                    let url = `/api/rekap-petak?di_id=${this.diId}&page=${page}&per_page=${this.perPage}`
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
@@ -499,7 +518,7 @@
                         };
                     });
 
-                    url = `/api/rekap-di?di_id=${diId}`
+                    url = `/api/rekap-di?di_id=${this.diId}`
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
@@ -572,8 +591,9 @@
                         alert("Pilih Daerah Irigasi terlebih dahulu")
                         return
                     }
-
+                    this.diId = diId
                     this.loadData(diId)
+                    this.loadRekapPermasalahan(diId)
                     this.isFilter = true
                 },
                 applyFilterPermasalahan() {
@@ -647,6 +667,17 @@
 
                     console.log(res.data.data);
                     this.daerahIrigasis = res.data.data;
+                },
+                async loadRekapPermasalahan(diId) {
+
+                    let url = `/api/rekap-permasalahan?pengamat_valid=1`;
+                    if (this.filterDI) url += `&di_id=${diId}`;
+                    if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                    if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                    let res = await axios.get(url);
+                    // console.log(res);
+                    this.rekapPermasalahan = res.data
                 },
 
             },
