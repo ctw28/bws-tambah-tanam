@@ -115,7 +115,8 @@
                             <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                                 <div class="flex-grow-1 mt-2">
                                     <div class="user-profile-info">
-                                        <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
+                                        <h4 v-if="!isChild" class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
+                                        <h4 v-if="isChild" class="mb-2">Daerah Irigasi @{{selectedIndukDI.nama}} Wilayah @{{selectedDI.nama}}</h4>
 
                                         <div class="row mt-4">
                                             <div class="col d-flex">
@@ -435,7 +436,8 @@
                     filterDIChild: '', // ✅ tambahkan ini
                     rekapPermasalahan: [],
                     diId: '',
-                    daerahIrigasisChild: []
+                    daerahIrigasisChild: [],
+                    selectedIndukDI: ''
 
                 }
             },
@@ -583,10 +585,14 @@
                 applyFilter() {
                     let diId = this.isChild ? this.filterDIChild : this.filterDI
                     // alert(diId);
-                    if (this.isChild)
+                    if (this.isChild) {
                         this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
-                    else
+                        this.selectedIndukDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+
+                    } else {
                         this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+
+                    }
                     if (!diId) {
                         alert("Pilih Daerah Irigasi terlebih dahulu")
                         return

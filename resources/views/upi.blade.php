@@ -578,7 +578,7 @@
                                         <!-- Pilih DI -->
                                         <div class="col-6 col-md-3">
                                             <label class="form-label fw-bold">Daerah Irigasi</label>
-                                            <select class="form-select" v-model="filterDi">
+                                            <select class="form-select" v-model="filterDI">
                                                 <option value="">-- Pilih Daerah Irigasi --</option>
                                                 <option
                                                     v-for="s in upi.daerah_irigasis"
@@ -586,6 +586,13 @@
                                                     :value="s.id">
                                                     @{{ s.nama }}
                                                 </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12" :class="{'col-md-4': isChild, 'col-md-8': !isChild}">
+                                            <label class="form-label fw-bold">Permasalahan</label>
+                                            <select class="form-select form-select" v-model="filterPermasalahan">
+                                                <option value="">-- Pilih Permasalahan --</option>
+                                                <option v-for="(d,index) in masterPermasalahan" :value="d.id">@{{ index + 1 }}. @{{ d.nama }}</option>
                                             </select>
                                         </div>
 
@@ -839,7 +846,11 @@
                     latestIssues: [],
                     rekapLuasTotal: [],
                     filterDI: '',
-                    selectedDI: ''
+                    selectedDI: '',
+                    masterPermasalahan: [],
+                    filterPermasalahan: '',
+                    isChild: false
+
 
                 }
             },
@@ -856,12 +867,14 @@
                         alert("Kode Upi tidak valid!");
                     }
                 },
+
                 async loadPermasalahan(page = 1) {
                     try {
                         // alert('load masalah')
-                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPagePermasalahan}&pengamat_valid=1&upi_valid=1&has_permasalahan=1`;
+                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&pengamat_valid=1&has_permasalahan=1`;
 
-                        if (this.filterDi) url += `&di_id=${this.filterDi}`;
+                        if (this.filterPermasalahan) url += `&permasalahan_id=${this.filterPermasalahan}`;
+                        if (this.filterDI) url += `&di_id=${this.filterDI}`;
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
@@ -1071,6 +1084,12 @@
                         this.upi = JSON.parse(data);
                     }
                 },
+                async loadPermasalahanMaster() {
+                    let res = await axios.get('/api/master/permasalahan');
+                    console.log(res.data);
+                    this.masterPermasalahan = res.data;
+                },
+
                 chartPerItem() {
                     const rekap = this.rekapPerDaerahIrigasi; // fungsi yg sudah dibuat
                     const labels = Object.keys(rekap);
@@ -1158,11 +1177,11 @@
                     });
 
                     return rekap;
-                }
-
+                },
             },
             mounted() {
                 this.loadUpi();
+                this.loadPermasalahanMaster();
                 // this.loadDashboard()
             }
         }).mount("#app");

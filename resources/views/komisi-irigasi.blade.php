@@ -154,7 +154,8 @@
                                     <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                                         <div class="flex-grow-1 mt-2">
                                             <div class="user-profile-info">
-                                                <h4 class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
+                                                <h4 v-if="!isChild" class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
+                                                <h4 v-if="isChild" class="mb-2">Daerah Irigasi @{{selectedIndukDI.nama}} Wilayah @{{selectedDI.nama}}</h4>
 
                                                 <div class="row mt-4">
                                                     <div class="col d-flex">
@@ -453,7 +454,13 @@
                                                 </option>
                                             </select>
                                         </div>
-
+                                        <div class="col-12" :class="{'col-md-4': isChild, 'col-md-8': !isChild}">
+                                            <label class="form-label fw-bold">Permasalahan</label>
+                                            <select class="form-select form-select" v-model="filterPermasalahan">
+                                                <option value="">-- Pilih Permasalahan --</option>
+                                                <option v-for="(d,index) in masterPermasalahan" :value="d.id">@{{ index + 1 }}. @{{ d.nama }}</option>
+                                            </select>
+                                        </div>
                                         <!-- Tanggal awal -->
                                         <div class="col-6 col-md-3">
                                             <label class="form-label fw-bold">Tanggal Awal</label>
@@ -703,6 +710,8 @@
                     filterDI: '',
                     isChild: false,
                     filterDIChild: '', // ✅ tambahkan ini
+                    masterPermasalahan: [],
+                    filterPermasalahan: ''
 
 
                 }
@@ -770,8 +779,9 @@
                 async loadPermasalahan(page = 1) {
                     try {
                         // alert('load masalah')
-                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPagePermasalahan}&pengamat_valid=1&has_permasalahan=1`;
+                        let url = `/api/form-pengisian?page=${page}&per_page=${this.perPage}&pengamat_valid=1&has_permasalahan=1`;
 
+                        if (this.filterPermasalahan) url += `&permasalahan_id=${this.filterPermasalahan}`;
                         if (this.filterDi) url += `&di_id=${this.filterDi}`;
                         if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                         if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
@@ -904,10 +914,14 @@
                 applyFilter() {
                     let diId = this.isChild ? this.filterDIChild : this.filterDI
                     // alert(diId);
-                    if (this.isChild)
+                    if (this.isChild) {
                         this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
-                    else
+                        this.selectedIndukDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+
+                    } else {
                         this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+
+                    }
                     if (!diId) {
                         alert("Pilih Daerah Irigasi terlebih dahulu")
                         return
@@ -987,6 +1001,11 @@
                     console.log(res.data.data);
                     this.daerahIrigasis = res.data.data;
                 },
+                async loadPermasalahanMaster() {
+                    let res = await axios.get('/api/master/permasalahan');
+                    console.log(res.data);
+                    this.masterPermasalahan = res.data;
+                },
 
             },
 
@@ -995,6 +1014,7 @@
 
                 // this.loadDashboard();
                 this.loadDI()
+                this.loadPermasalahanMaster()
             }
         }).mount("#app");
     </script>
