@@ -64,6 +64,16 @@
                  <div data-i18n="Saluran">P3A</div>
              </a>
          </li>
+         <li class="menu-item {{ request()->routeIs('master.irigasi-kecamatan') ? 'active' : '' }}">
+             <a href="{{ route('master.irigasi-kecamatan') }}" class="menu-link">
+                 <div data-i18n="Saluran">Kecamatan / Desa</div>
+             </a>
+         </li>
+         <li class="menu-item {{ request()->routeIs('master.masa-tanam') ? 'active' : '' }}">
+             <a href="{{ route('master.masa-tanam') }}" class="menu-link">
+                 <div data-i18n="Saluran">Masa Tanam</div>
+             </a>
+         </li>
          <!-- <li class="menu-item {{ request()->routeIs('master.import.form') ? 'active' : '' }}">
              <a href="{{ route('master.import.form') }}" class="menu-link">
                  <div data-i18n="Saluran">Import</div>

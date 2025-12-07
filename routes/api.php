@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\DaerahIrigasiController;
 use App\Http\Controllers\Api\PetugasController;
 use App\Http\Controllers\Api\SaluranController;
 use App\Http\Controllers\Api\BangunanController;
+use App\Http\Controllers\Api\DaerahIrigasiDesaController;
+use App\Http\Controllers\Api\DaerahIrigasiKecamatanController;
 use App\Http\Controllers\Api\DaerahIrigasiUpiController;
 use App\Http\Controllers\Api\PetakController;
 use App\Http\Controllers\Api\MasterPermasalahanController;
@@ -33,7 +35,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('user-dis', [FormPengisianController::class, 'getUserDis']);
 
         Route::get('koordinator-di', [KoordinatorController::class, 'getDaerahIrigasiUser']);
+        Route::apiResource('irigasi-kecamatan', DaerahIrigasiKecamatanController::class)
+            ->except(['index', 'show']);
 
+        Route::apiResource('irigasi-desa', DaerahIrigasiDesaController::class)
+            ->except(['index', 'show']);
+
+        Route::apiResource('masa-tanam', \App\Http\Controllers\Api\MasaTanamController::class);
 
         Route::prefix('master')->group(function () {
             Route::apiResource('sesis', SesiController::class);
@@ -56,11 +64,20 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/komir/{komir}/send-kode', [KomirController::class, 'sendKode']);
     });
 });
+Route::apiResource('masa-tanam', \App\Http\Controllers\Api\MasaTanamController::class)
+    ->only(['index', 'show']);
+
+Route::apiResource('irigasi-kecamatan', DaerahIrigasiKecamatanController::class)
+    ->only(['index', 'show']);
+
+Route::apiResource('irigasi-desa', DaerahIrigasiDesaController::class)
+    ->only(['index', 'show']);
 // Transaksi
 Route::apiResource('form-pengisian', FormPengisianController::class);
 Route::apiResource('form-permasalahan', FormPermasalahanController::class);
 
 Route::prefix('master')->group(function () {
+
     Route::get('sesi', [SesiController::class, 'index']);
     Route::get('kabupaten', [KabupatenController::class, 'index']);
     Route::get('daerah-irigasi', [DaerahIrigasiController::class, 'index']);
@@ -80,6 +97,7 @@ Route::get('/latest-issues', [FormPengisianController::class, 'latestIssues']);
 Route::get('/rekap-petak', [FormPengisianController::class, 'rekapPetak']);
 Route::get('/rekap-di', [FormPengisianController::class, 'rekapLuasDI']);
 Route::get('/rekap-permasalahan', [FormPengisianController::class, 'rekapPermasalahan']);
+Route::get('/rekap-masa-tanam', [DaerahIrigasiController::class, 'rekapMasaTanamDI']);
 
 Route::post('/pengamat/validasi/{id}', [FormValidasiController::class, 'validateByPengamat']);
 Route::post('/upi/validasi/{id}', [FormValidasiController::class, 'validateByUpi']);

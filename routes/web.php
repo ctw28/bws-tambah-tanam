@@ -25,6 +25,8 @@ Route::get('/admin/form-progres', fn() => view('admin.form-progres'))->name('for
 Route::get('/admin/master/daerah-irigasi', fn() => view('admin.master.daerah-irigasi'))->name('master.di');
 Route::get('/admin/master/saluran', fn() => view('admin.master.saluran'))->name('master.saluran');
 Route::get('/admin/master/p3a', fn() => view('admin.master.p3a'))->name('master.p3a');
+Route::get('/admin/master/kecamatan-desa', fn() => view('admin.master.irigasi-kecamatan'))->name('master.irigasi-kecamatan');
+Route::get('/admin/master/masa-tanam', fn() => view('admin.master.masa-tanam'))->name('master.masa-tanam');
 Route::get('/admin/juru', fn() => view('admin.juru'))->name('admin.juru');
 
 Route::get('/admin/pengamat', fn() => view('admin.pengamat'))->name('admin.pengamat');

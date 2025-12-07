@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DaerahIrigasi;
+use Illuminate\Support\Facades\DB;
 
 class DaerahIrigasiController extends Controller
 {
@@ -163,6 +164,14 @@ class DaerahIrigasiController extends Controller
             $total_juru = \App\Models\Petugas::whereHas('salurans', function ($q) use ($diId) {
                 $q->where('daerah_irigasi_id', $diId);
             })->count();
+            $total_kecamatan = \App\Models\DaerahIrigasiKecamatan::where(
+                'daerah_irigasi_id',
+                $diId
+            )->count();
+
+            $total_desa = \App\Models\DaerahIrigasiDesa::whereHas('kecamatan', function ($q) use ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            })->count();
 
 
             return response()->json([
@@ -171,6 +180,8 @@ class DaerahIrigasiController extends Controller
                 'total_petak' => $total_petak,
                 'total_pengamat' => $total_pengamat,
                 'total_juru' => $total_juru,
+                'total_kecamatan' => $total_kecamatan,
+                'total_desa'      => $total_desa,
             ]);
         }
 
@@ -187,5 +198,47 @@ class DaerahIrigasiController extends Controller
             'total_juru' => \App\Models\Petugas::count(),
             'total_p3a' => \App\Models\P3a::count(),
         ]);
+    }
+
+    public function rekapMasaTanamDI(Request $request)
+    {
+        $diId = $request->di_id;
+        $tahun = $request->tahun;
+
+        if (!$diId) {
+            return response()->json(['message' => 'DI wajib dipilih'], 422);
+        }
+
+        $masaTanams = DB::table('masa_tanams')->where('tahun', $tahun)->orderBy('nama')->get();
+        $result = [];
+
+        foreach ($masaTanams as $mt) {
+            $maxData = DB::table('form_pengisians')
+                ->selectRaw('
+                (luas_padi + luas_palawija + luas_lainnya) as total_luas,
+                luas_padi,
+                luas_palawija,
+                luas_lainnya,
+                tanggal_pantau
+            ')
+                ->where('daerah_irigasi_id', $diId)
+                ->whereYear('tanggal_pantau', $mt->tahun)
+                ->whereMonth('tanggal_pantau', '>=', $mt->bulan_mulai)
+                ->whereMonth('tanggal_pantau', '<=', $mt->bulan_selesai)
+                ->whereRaw('DAYOFWEEK(tanggal_pantau) = 1') // Minggu
+                ->orderByDesc('total_luas')
+                ->first();
+
+            $result[] = [
+                'masa_tanam'     => $mt->nama,
+                'tanggal_pantau' => $maxData->tanggal_pantau ?? null,
+                'total_luas'     => $maxData->total_luas ?? 0,
+                'padi'           => $maxData->luas_padi ?? 0,
+                'palawija'       => $maxData->luas_palawija ?? 0,
+                'lainnya'        => $maxData->luas_lainnya ?? 0,
+            ];
+        }
+
+        return response()->json($result);
     }
 }

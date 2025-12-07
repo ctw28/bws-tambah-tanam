@@ -34,4 +34,9 @@ class DaerahIrigasi extends Model
         return $this->belongsToMany(Upi::class, 'daerah_irigasi_upis')
             ->withTimestamps();
     }
+    // Relasi: 1 DI punya banyak kecamatan
+    public function kecamatans()
+    {
+        return $this->hasMany(DaerahIrigasiKecamatan::class, 'daerah_irigasi_id');
+    }
 }

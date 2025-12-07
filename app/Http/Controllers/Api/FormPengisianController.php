@@ -653,7 +653,13 @@ class FormPengisianController extends Controller
                 'total' => $rekap[$m->id] ?? 0,
             ];
         });
+        // Hitung total keseluruhan
+        $totalKeseluruhan = $rekap->sum();
 
-        return response()->json($data);
+
+        return response()->json([
+            'data' => $data,
+            'total_keseluruhan' => $totalKeseluruhan
+        ]);
     }
 }

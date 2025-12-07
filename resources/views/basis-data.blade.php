@@ -61,7 +61,7 @@
         </div>
         <div class="card shadow-lg">
             <div class="card-header">
-                <h5 class="mb-0">Basis Data Hasil Pemantauan</h5>
+                <h5 class="mb-0">Basis Data Hasil Pemantauan LTT</h5>
             </div>
             <div class="card-body">
                 <div class="card shadow-sm mb-3">
@@ -85,16 +85,14 @@
                                 </select>
                             </div>
 
-                            <!-- Tanggal awal -->
-                            <div class="col-6 col-md-2">
-                                <label class="form-label fw-bold">Tanggal Awal</label>
-                                <input type="date" v-model="filterTanggalAwal" @change="syncTanggal" class="form-control form-control" />
-                            </div>
+                            <div class="col-12 col-md-3">
 
-                            <!-- Tanggal akhir -->
-                            <div class="col-6 col-md-2">
-                                <label class="form-label fw-bold">Tanggal Akhir</label>
-                                <input type="date" v-model="filterTanggalAkhir" class="form-control form-control" />
+                                <!-- Tanggal awal -->
+                                <select v-model="filterTahun" class="form-select">
+                                    <option value="">-- Pilih Tahun --</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                </select>
                             </div>
 
                             <!-- Tombol -->
@@ -115,8 +113,40 @@
                             <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                                 <div class="flex-grow-1 mt-2">
                                     <div class="user-profile-info">
+                                        <h3>DATA TEKNIS</h3>
                                         <h4 v-if="!isChild" class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
                                         <h4 v-if="isChild" class="mb-2">Daerah Irigasi @{{selectedIndukDI.nama}} Wilayah @{{selectedDI.nama}}</h4>
+                                        <h5 class="mt-4">Luas Daerah Irigasi</h5>
+                                        <div class="row mt-4">
+                                            <div class="col d-flex">
+                                                <div class="me-3">
+                                                    <span class="badge rounded-2 bg-label-warning p-2"><i class="icon-base bx bx-water icon-lg text-warning"></i></span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">@{{ selectedDI.luas_baku }} ha</h6>
+                                                    <small>Luas Baku</small>
+                                                </div>
+                                            </div>
+                                            <div class="col d-flex">
+                                                <div class="me-3">
+                                                    <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">@{{ selectedDI.luas_potensial }} ha</h6>
+                                                    <small>Luas Potensial</small>
+                                                </div>
+                                            </div>
+                                            <div class="col d-flex">
+                                                <div class="me-3">
+                                                    <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-water icon-lg text-success"></i></span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">@{{ selectedDI.luas_fungsional }} ha</h6>
+                                                    <small>Luas Fungsional</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class="mt-4">Saluran, Juru dan Pengamat</h5>
 
                                         <div class="row mt-4">
                                             <div class="col d-flex">
@@ -146,73 +176,114 @@
                                                     <small>Petak</small>
                                                 </div>
                                             </div>
-                                            <div class="col d-flex">
+                                            <!-- Pengamat -->
+                                            <div class="col d-flex mt-3 mt-md-0">
                                                 <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-secondary p-2"><i class="icon-base bx bx-bullseye icon-lg text-secondary"></i></span>
+                                                    <span class="badge rounded-2 bg-label-secondary p-2">
+                                                        <i class="icon-base bx bx-bullseye icon-lg text-secondary"></i>
+                                                    </span>
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0">@{{rekap.total_pengamat}}</h6>
                                                     <small>Pengamat</small>
                                                 </div>
                                             </div>
-                                            <div class="col d-flex">
+
+                                            <!-- Juru -->
+                                            <div class="col d-flex mt-3 mt-md-0">
                                                 <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-dark p-2"><i class="icon-base bx bx-user icon-lg text-dark"></i></span>
+                                                    <span class="badge rounded-2 bg-label-dark p-2">
+                                                        <i class="icon-base bx bx-user icon-lg text-dark"></i>
+                                                    </span>
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0">@{{rekap.total_juru}}</h6>
                                                     <small>Juru</small>
                                                 </div>
                                             </div>
+
+
                                         </div>
-                                        <h5 class="mt-4">Informasi Luas Daerah Irigasi</h5>
+                                        <h5 class="mt-4">Kecamatan dan Desa</h5>
+
                                         <div class="row mt-4">
                                             <div class="col d-flex">
                                                 <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-warning p-2"><i class="icon-base bx bx-water icon-lg text-warning"></i></span>
+                                                    <span class="badge rounded-2 bg-label-primary p-2"><i class="icon-base bx bx-building icon-lg text-primary"></i></span>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0">@{{ selectedDI.luas_baku }} ha</h6>
-                                                    <small>Luas Baku</small>
+                                                    <h6 class="mb-0">@{{rekap.total_kecamatan}}</h6>
+                                                    <small>Kecamatan</small>
                                                 </div>
                                             </div>
                                             <div class="col d-flex">
                                                 <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
+                                                    <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-building icon-lg text-info"></i></span>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0">@{{ selectedDI.luas_potensial }} ha</h6>
-                                                    <small>Luas Potensial</small>
+                                                    <h6 class="mb-0">@{{rekap.total_desa}}</h6>
+                                                    <small>Desa</small>
                                                 </div>
                                             </div>
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-water icon-lg text-success"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{ selectedDI.luas_fungsional }} ha</h6>
-                                                    <small>Luas Fungsional</small>
-                                                </div>
-                                            </div>
-                                            <!-- <div class="col d-flex">
-                                </div>
-                                <div class="col d-flex">
-                                </div> -->
                                         </div>
+
 
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Rekap Masa Tanam</h5>
+                        </div>
+
+                        <div class="card-body table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Masa Tanam</th>
+                                        <th>Tanggal Pantau (Minggu Tertinggi)</th>
+                                        <th>Total Luas (Ha)</th>
+                                        <th>Padi</th>
+                                        <th>Palawija</th>
+                                        <th>Lainnya</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, i) in rekapMasaTanam" :key="i">
+                                        <td class="text-center">@{{ i+1 }}</td>
+                                        <td>@{{ row.masa_tanam }}</td>
+                                        <td class="text-center">
+                                            @{{ row.tanggal_pantau ? formatTanggal(row.tanggal_pantau) : '-' }}
+                                        </td>
+                                        <td class="text-end fw-bold">
+                                            @{{ formatNumber(row.total_luas) }}
+                                        </td>
+                                        <td class="text-end">@{{ formatNumber(row.padi) }}</td>
+                                        <td class="text-end">@{{ formatNumber(row.palawija) }}</td>
+                                        <td class="text-end">@{{ formatNumber(row.lainnya) }}</td>
+                                    </tr>
+
+                                    <tr v-if="rekapMasaTanam.length === 0">
+                                        <td colspan="7" class="text-center text-muted">
+                                            Tidak ada data
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- Ringkasan umum -->
                     <div class="card h-100 mt-3">
                         <div class="card-body">
 
-                            <div class="row g-3 mb-4">
+                            <!-- <div class="row g-3 mb-4">
                                 <h4 class="mt-4">Basisdata Hasil Pemantauan</h4>
-
-                                <!-- Total Laporan Juru -->
                                 <div class="col-lg-3 col-sm-6">
                                     <div class="card shadow-sm">
                                         <div class="card-body border-bottom border-4 border-warning">
@@ -239,7 +310,7 @@
                                                 </div>
                                                 <h4 class="mb-0">@{{ rekapLuasTotal.padi }} ha</h4>
                                             </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Tanam Padi</p>
+                                            <p class="mb-0 text-muted fw-semibold">Luas Tambah Tanam Padi</p>
                                         </div>
                                     </div>
                                 </div>
@@ -254,7 +325,7 @@
                                                 </div>
                                                 <h4 class="mb-0">@{{ rekapLuasTotal.palawija }} ha</h4>
                                             </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Tanam Palawija</p>
+                                            <p class="mb-0 text-muted fw-semibold">Luas Tambah Tanam Palawija</p>
                                         </div>
                                     </div>
                                 </div>
@@ -269,7 +340,7 @@
                                                 </div>
                                                 <h4 class="mb-0">@{{ rekapLuasTotal.lainnya }} ha</h4>
                                             </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Tanam Lainnya</p>
+                                            <p class="mb-0 text-muted fw-semibold">Luas Tambah Tanam Lainnya</p>
                                         </div>
                                     </div>
                                 </div>
@@ -290,8 +361,8 @@
                                 </div>
 
 
-                            </div>
-                            <h4>Rekap Pengisian Luas Tanam</h4>
+                            </div> -->
+                            <!-- <h4>Rekap Pengisian Luas Tanam</h4>
                             <div class="table-responsive">
                                 <table class="table table-striped mb-0">
                                     <thead class="table-light">
@@ -322,7 +393,6 @@
                                     </tbody>
                                 </table>
                                 <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <!-- Pilih jumlah data per halaman -->
                                     <div class="d-flex align-items-center gap-2">
                                         <select v-model="perPage" @change="loadRekapPengisian(1)" class="form-select form-select" style="width: auto;">
                                             <option value="10">10</option>
@@ -332,9 +402,6 @@
                                         </select>
                                         <span>per halaman</span>
                                     </div>
-
-
-                                    <!-- Navigasi Pagination -->
                                     <nav>
                                         <ul class="pagination pagination mb-0">
                                             <li class="page-item" :class="{ disabled: pagination.current === 1 }">
@@ -351,15 +418,15 @@
                                         </ul>
                                     </nav>
                                 </div>
-                            </div>
-                            <h4 class="mt-3">Rekap Total Permasalahan</h4>
+                            </div> -->
+                            <h4 class="mt-3">Informasi Permasalahan</h4>
 
-                            <table class="table table-bordered w-50">
+                            <table class="table table-bordered w-100">
                                 <thead>
-                                    <tr>
-                                        <th>#</th>
+                                    <tr class="text-center">
+                                        <th>No</th>
                                         <th>Permasalahan</th>
-                                        <th class="text-center">Total</th>
+                                        <th>Jumlah</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -368,11 +435,16 @@
                                         <td class="">@{{ item.nama }}</td>
                                         <td class="text-center font-bold">@{{ item.total }}</td>
                                     </tr>
+                                    <tr class="fw-bold bg-light">
+                                        <td colspan="2" class="text-center">Total</td>
+                                        <td class="text-center">@{{ totalKeseluruhan }}</td>
+                                    </tr>
+
                                 </tbody>
                             </table>
 
                             <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
-                            <div class="col-6">
+                            <div class="col-12">
 
                                 <canvas id="chartItem" height="100"></canvas>
                             </div>
@@ -437,7 +509,10 @@
                     rekapPermasalahan: [],
                     diId: '',
                     daerahIrigasisChild: [],
-                    selectedIndukDI: ''
+                    selectedIndukDI: '',
+                    rekapMasaTanam: [], // ✅ penampung data hasil API
+                    isLoadingRekap: false,
+                    filterTahun: new Date().getFullYear(), // default otomatis
 
                 }
             },
@@ -575,6 +650,12 @@
                         year: 'numeric'
                     });
                 },
+                formatNumber(val) {
+                    if (!val) return '0';
+                    return parseFloat(val).toLocaleString('id-ID', {
+                        minimumFractionDigits: 2
+                    });
+                },
                 logout() {
                     this.komir = null;
                     localStorage.removeItem("komir");
@@ -600,8 +681,34 @@
                     this.diId = diId
                     this.loadData(diId)
                     this.loadRekapPermasalahan(diId)
+                    this.loadRekapMasaTanamDi(diId)
                     this.isFilter = true
                 },
+                async loadRekapMasaTanamDi(diId) {
+                    if (!diId) return;
+
+                    this.isLoadingRekap = true;
+
+                    try {
+                        const res = await axios.get(`/api/rekap-masa-tanam`, {
+                            params: {
+                                di_id: diId,
+                                tahun: this.filterTahun
+                            }
+                        });
+
+                        this.rekapMasaTanam = res.data;
+
+                        console.log('Rekap masa tanam:', this.rekapMasaTanam);
+
+                    } catch (err) {
+                        console.error(err);
+                        alert('Gagal memuat rekap masa tanam');
+                    } finally {
+                        this.isLoadingRekap = false;
+                    }
+                },
+
                 applyFilterPermasalahan() {
                     this.loadPermasalahan(1)
                 },
@@ -618,54 +725,78 @@
                 },
 
                 chartPerItem() {
-                    const rekap = this.rekapLuasTotal;
+                    const data = this.rekapMasaTanam;
+                    if (!data || data.length === 0) return;
 
-                    if (!rekap) return;
                     if (this.chartItem) this.chartItem.destroy();
 
                     const ctx = document.getElementById('chartItem');
                     if (!ctx) return;
 
+                    // Label sumbu X
+                    const labels = data.map(item => item.masa_tanam);
+
+                    // Data per kategori
+                    const padi = data.map(item => item.padi);
+                    const palawija = data.map(item => item.palawija);
+                    const lainnya = data.map(item => item.lainnya);
+
                     this.chartItem = new Chart(ctx, {
-                        type: 'doughnut',
+                        type: 'bar',
                         data: {
-                            labels: ['Padi', 'Palawija', 'Lainnya'],
+                            labels,
                             datasets: [{
-                                label: 'Luas (ha)',
-                                data: [rekap.padi, rekap.palawija, rekap.lainnya],
-                                backgroundColor: [
-                                    'rgba(75, 192, 192, 0.7)', // hijau kebiruan
-                                    'rgba(255, 205, 86, 0.7)', // kuning
-                                    'rgba(201, 90, 90, 0.7)' // merah muda
-                                ],
-                                borderColor: '#fff',
-                                borderWidth: 2
-                            }]
+                                    label: 'Padi',
+                                    data: padi,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                                },
+                                {
+                                    label: 'Palawija',
+                                    data: palawija,
+                                    backgroundColor: 'rgba(255, 205, 86, 0.7)'
+                                },
+                                {
+                                    label: 'Lainnya',
+                                    data: lainnya,
+                                    backgroundColor: 'rgba(201, 90, 90, 0.7)'
+                                }
+                            ]
                         },
                         options: {
                             responsive: true,
                             plugins: {
                                 legend: {
-                                    position: 'bottom', // tampilkan legenda di bawah
+                                    position: 'bottom'
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Distribusi Luas Tanam (ha)'
+                                    text: 'Rekap Luas Tanam per Masa Tanam'
                                 },
                                 tooltip: {
                                     callbacks: {
-                                        label: function(context) {
-                                            const value = context.parsed.toLocaleString('id-ID', {
+                                        label(context) {
+                                            const value = context.parsed.y.toLocaleString('id-ID', {
                                                 minimumFractionDigits: 2
                                             });
-                                            return `${context.label}: ${value} ha`;
+                                            return `${context.dataset.label}: ${value} ha`;
                                         }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Luas (ha)'
                                     }
                                 }
                             }
                         }
                     });
                 },
+
+
 
                 async loadDI() {
                     // let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
@@ -675,16 +806,17 @@
                     this.daerahIrigasis = res.data.data;
                 },
                 async loadRekapPermasalahan(diId) {
-
                     let url = `/api/rekap-permasalahan?pengamat_valid=1`;
                     if (this.filterDI) url += `&di_id=${diId}`;
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
                     let res = await axios.get(url);
-                    // console.log(res);
-                    this.rekapPermasalahan = res.data
-                },
+
+                    this.rekapPermasalahan = res.data.data;
+                    this.totalKeseluruhan = res.data.total_keseluruhan;
+                }
+
 
             },
             mounted() {
