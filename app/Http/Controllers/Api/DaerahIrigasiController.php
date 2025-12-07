@@ -225,7 +225,7 @@ class DaerahIrigasiController extends Controller
                 ->whereYear('tanggal_pantau', $mt->tahun)
                 ->whereMonth('tanggal_pantau', '>=', $mt->bulan_mulai)
                 ->whereMonth('tanggal_pantau', '<=', $mt->bulan_selesai)
-                ->whereRaw('DAYOFWEEK(tanggal_pantau) = 1') // Minggu
+                ->whereRaw('DAYOFWEEK(tanggal_pantau) IN (1,6,7)')
                 ->orderByDesc('total_luas')
                 ->first();
 
