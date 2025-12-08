@@ -668,7 +668,7 @@ class FormPengisianController extends Controller
     {
         $diId = $request->di_id;
 
-        $data = FormPengisian::with(['daerahIrigasi', 'validasi'])
+        $data = FormPengisian::with(['daerahIrigasi', 'validasi', 'saluran', 'saluran', 'petak'])
             ->when($diId, function ($q) use ($diId) {
                 $q->where('daerah_irigasi_id', $diId);
             })
@@ -682,8 +682,12 @@ class FormPengisianController extends Controller
             $hari = Carbon::parse($item->tanggal_pantau)->translatedFormat('l');
 
             return [
+                'data' => $item,
                 'id' => $item->id,
                 'nama_di' => $item->daerahIrigasi->nama ?? '-',
+                'saluran' => $item->saluran->nama ?? '-',
+                'bangunan' => $item->bangunan->nama ?? '-',
+                'petak' => $item->petak->nama ?? '-',
                 'tanggal_pantau' => $item->tanggal_pantau,
                 'tanggal_baru' => $item->tanggal_pantau,
                 'hari' => $hari,
