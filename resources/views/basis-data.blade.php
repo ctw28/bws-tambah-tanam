@@ -266,7 +266,7 @@
                                     <!-- <tr v-for="(row, i) in topPerMt" :key="i"> -->
                                     <tr v-for="(row, index) in topPerMt" :key="index">
                                         <td>@{{ index + 1 }}</td>
-                                        <td>@{{ row.masa_tanam }}</td>
+                                        <td>MT @{{ row.masa_tanam }}</td>
                                         <td> @{{ bulanIndo(row.bulan_mulai) }} - @{{ bulanIndo(row.bulan_selesai) }}
                                         </td>
                                         <td>@{{ formatAngka(row.total_luas) }}</td>
