@@ -12,6 +12,7 @@ use App\Models\FormValidasi;
 use App\Models\MasterPermasalahan;
 use App\Models\P3a;
 use App\Models\Petak;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -661,5 +662,125 @@ class FormPengisianController extends Controller
             'data' => $data,
             'total_keseluruhan' => $totalKeseluruhan
         ]);
+    }
+
+    public function cekHari(Request $request)
+    {
+        $diId = $request->di_id;
+
+        $data = FormPengisian::with('daerahIrigasi')
+            ->when($diId, function ($q) use ($diId) {
+                $q->where('daerah_irigasi_id', $diId);
+            })
+            ->orderBy('tanggal_pantau', 'desc')
+            ->get();
+
+        $mapped = $data->map(function ($item) {
+            $hari = Carbon::parse($item->tanggal_pantau)->translatedFormat('l');
+
+            return [
+                'id' => $item->id,
+                'nama_di' => $item->daerahIrigasi->nama ?? '-',
+                'tanggal_pantau' => $item->tanggal_pantau,
+                'tanggal_baru' => $item->tanggal_pantau,
+                'hari' => $hari,
+                'luas_padi' => $item->luas_padi,
+                'luas_palawija' => $item->luas_palawija,
+                'luas_lainnya' => $item->luas_lainnya,
+                'is_minggu' => strtoupper($hari) === 'SUNDAY'
+            ];
+        });
+
+        return response()->json($mapped);
+    }
+
+    public function updateTanggal(Request $request, $id)
+    {
+        $request->validate([
+            'tanggal_pantau' => 'required|date'
+        ]);
+
+        $form = FormPengisian::findOrFail($id);
+        $form->tanggal_pantau = $request->tanggal_pantau;
+        $form->save();
+
+        return response()->json(['message' => 'Tanggal berhasil diupdate']);
+    }
+
+    public function rekapMingguanDI(Request $request)
+    {
+        $diId     = $request->di_id;
+        $mulai    = $request->tanggal_mulai;
+        $selesai  = $request->tanggal_selesai;
+
+        if (!$diId || !$mulai || !$selesai) {
+            return response()->json(['message' => 'Filter belum lengkap'], 422);
+        }
+        $data = DB::table('form_pengisians as f')
+            ->join('masa_tanams as mt', function ($join) {
+                $join->on('mt.tahun', '=', DB::raw('YEAR(f.tanggal_pantau)'))
+                    ->whereRaw('MONTH(f.tanggal_pantau) BETWEEN mt.bulan_mulai AND mt.bulan_selesai');
+            })
+            ->selectRaw('
+        DATE(f.tanggal_pantau) as tanggal_minggu,
+        mt.nama as masa_tanam,
+        mt.bulan_mulai,
+        mt.bulan_selesai,   
+        f.daerah_irigasi_id,   
+        SUM(f.luas_padi + f.luas_palawija + f.luas_lainnya) as total_luas,
+        SUM(f.luas_padi) as padi,
+        SUM(f.luas_palawija) as palawija,
+        SUM(f.luas_lainnya) as lainnya
+    ')
+            ->where('f.daerah_irigasi_id', $diId)
+            ->whereBetween('f.tanggal_pantau', [$mulai, $selesai])
+            ->whereRaw('DAYOFWEEK(f.tanggal_pantau) = 1')
+            ->groupBy('tanggal_minggu', 'mt.nama', 'mt.bulan_mulai', 'mt.bulan_selesai', 'f.daerah_irigasi_id')
+            ->orderBy('tanggal_minggu')
+            ->get();
+
+
+
+        // $data = DB::table('form_pengisians')
+        //     ->selectRaw('
+        //     DATE(tanggal_pantau) as tanggal_minggu,
+        //     SUM(luas_padi + luas_palawija + luas_lainnya) as total_luas,
+        //     SUM(luas_padi) as padi,
+        //     SUM(luas_palawija) as palawija,
+        //     SUM(luas_lainnya) as lainnya
+        // ')
+        //     ->where('daerah_irigasi_id', $diId)
+        //     ->whereBetween('tanggal_pantau', [$mulai, $selesai])
+        //     ->whereRaw('DAYOFWEEK(tanggal_pantau) = 1') // Minggu
+        //     ->groupBy('tanggal_minggu')
+        //     ->orderBy('tanggal_minggu')
+        //     ->get();
+
+        return response()->json($data);
+    }
+
+    public function rekapMingguanDetail(Request $request)
+    {
+        $diId   = $request->di_id;
+        $tanggal = $request->tanggal;
+
+        if (!$diId || !$tanggal) {
+            return response()->json(['message' => 'Parameter tidak lengkap'], 422);
+        }
+
+        $data = DB::table('form_pengisians')
+            ->selectRaw('
+            id,
+            tanggal_pantau,
+            luas_padi,
+            luas_palawija,
+            luas_lainnya
+        ')
+            ->where('daerah_irigasi_id', $diId)
+            ->whereDate('tanggal_pantau', $tanggal)
+            ->orderBy('id')
+            ->get();
+
+        return response()->json($data);
     }
 }

@@ -40,3 +40,6 @@ Route::get('/basis-data', fn() => view('basis-data'))->name('basis-data');
 Route::get('/form-preview', fn() => view('form-preview'))->name('form-preview');
 Route::get('import-form', [ImportController::class, 'showForm'])->name('master.import.form');
 Route::post('import-irigasi', [ImportController::class, 'import'])->name('import.submit');
+
+Route::get('/cek-hari', fn() => view('cek-hari'))->name('cek_hari');
+Route::get('/cek-minggu', fn() => view('cek-minggu'))->name('cek_minggu');

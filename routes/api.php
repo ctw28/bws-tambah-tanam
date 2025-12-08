@@ -26,6 +26,10 @@ use App\Models\Komir;
 
 Route::post('login', [AuthController::class, 'login']);
 
+Route::get('cekhari', [FormPengisianController::class, 'cekHari']);
+Route::put('form-pengisian/update-tanggal/{id}', [FormPengisianController::class, 'updateTanggal']);
+Route::get('rekap-mingguan', [FormPengisianController::class, 'rekapMingguanDI']);
+Route::get('rekap-mingguan-detail', [FormPengisianController::class, 'rekapMingguanDetail']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::middleware(['role:koordinator'])->group(function () {

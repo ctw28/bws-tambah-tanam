@@ -85,14 +85,22 @@
                                 </select>
                             </div>
 
-                            <div class="col-12 col-md-3">
+                            <!-- <div class="col-12 col-md-3">
 
-                                <!-- Tanggal awal -->
                                 <select v-model="filterTahun" class="form-select">
                                     <option value="">-- Pilih Tahun --</option>
                                     <option value="2025">2025</option>
                                     <option value="2026">2026</option>
                                 </select>
+                            </div> -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Tanggal Mulai</label>
+                                <input type="date" v-model="filterTanggalAwal" class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Tanggal Selesai</label>
+                                <input type="date" v-model="filterTanggalAkhir" class="form-control">
                             </div>
 
                             <!-- Tombol -->
@@ -235,46 +243,47 @@
                     </div>
 
 
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Rekap Masa Tanam</h5>
-                        </div>
 
+                    <div class="card mb-3 mt-3">
                         <div class="card-body table-responsive">
+
+                            <h5 class="fw-bold mb-3">Rekapitulasi Luas Tambah Tanam (LTT)</h5>
+
                             <table class="table table-bordered table-striped">
-                                <thead class="text-center">
+                                <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Masa Tanam</th>
-                                        <th>Tanggal Pantau (Minggu Tertinggi)</th>
-                                        <th>Total Luas (Ha)</th>
+                                        <th>Masa Tanam (MT)</th>
+                                        <th>Periode Waktu</th>
+                                        <th>Total Luas</th>
                                         <th>Padi</th>
                                         <th>Palawija</th>
                                         <th>Lainnya</th>
+                                        <th>Detail</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(row, i) in rekapMasaTanam" :key="i">
-                                        <td class="text-center">@{{ i+1 }}</td>
+                                    <!-- <tr v-for="(row, i) in topPerMt" :key="i"> -->
+                                    <tr v-for="(row, index) in topPerMt" :key="index">
+                                        <td>@{{ index + 1 }}</td>
                                         <td>@{{ row.masa_tanam }}</td>
-                                        <td class="text-center">
-                                            @{{ row.tanggal_pantau ? formatTanggal(row.tanggal_pantau) : '-' }}
+                                        <td> @{{ bulanIndo(row.bulan_mulai) }} - @{{ bulanIndo(row.bulan_selesai) }}
                                         </td>
-                                        <td class="text-end fw-bold">
-                                            @{{ formatNumber(row.total_luas) }}
-                                        </td>
-                                        <td class="text-end">@{{ formatNumber(row.padi) }}</td>
-                                        <td class="text-end">@{{ formatNumber(row.palawija) }}</td>
-                                        <td class="text-end">@{{ formatNumber(row.lainnya) }}</td>
+                                        <td>@{{ formatAngka(row.total_luas) }}</td>
+                                        <td>@{{ formatAngka(row.padi) }}</td>
+                                        <td>@{{ formatAngka(row.palawija) }}</td>
+                                        <td>@{{ formatAngka(row.lainnya) }}</td>
+                                        <td><button class="btn btn-primary btn-sm" @click="openDetail(row.daerah_irigasi_id, row.tanggal_minggu)">Detail</button></td>
                                     </tr>
 
-                                    <tr v-if="rekapMasaTanam.length === 0">
+                                    <tr v-if="topPerMt.length === 0">
                                         <td colspan="7" class="text-center text-muted">
-                                            Tidak ada data
+                                            Belum ada data
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
 
@@ -282,144 +291,7 @@
                     <div class="card h-100 mt-3">
                         <div class="card-body">
 
-                            <!-- <div class="row g-3 mb-4">
-                                <h4 class="mt-4">Basisdata Hasil Pemantauan</h4>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body border-bottom border-4 border-warning">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="avatar me-4">
-                                                    <span class="avatar-initial rounded bg-label-primary">
-                                                        <i class="bx bx-file icon-lg"></i>
-                                                    </span>
-                                                </div>
-                                                <h4 class="mb-0">@{{ filteredItems.length }}</h4>
-                                            </div>
-                                            <p class="mb-0 text-muted fw-semibold">Laporan Juru Tervalidasi</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body border-bottom border-4 border-primary">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="avatar me-4">
-                                                    <span class="avatar-initial rounded bg-label-info">
-                                                        <i class="bx bx-file icon-lg"></i>
-                                                    </span>
-                                                </div>
-                                                <h4 class="mb-0">@{{ rekapLuasTotal.padi }} ha</h4>
-                                            </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Tambah Tanam Padi</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body border-bottom border-4 border-info">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="avatar me-4">
-                                                    <span class="avatar-initial rounded bg-label-warning">
-                                                        <i class="bx bx-file icon-lg"></i>
-                                                    </span>
-                                                </div>
-                                                <h4 class="mb-0">@{{ rekapLuasTotal.palawija }} ha</h4>
-                                            </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Tambah Tanam Palawija</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body border-bottom border-4 border-secondary">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="avatar me-4">
-                                                    <span class="avatar-initial rounded bg-label-success">
-                                                        <i class="bx bx-file icon-lg"></i>
-                                                    </span>
-                                                </div>
-                                                <h4 class="mb-0">@{{ rekapLuasTotal.lainnya }} ha</h4>
-                                            </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Tambah Tanam Lainnya</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body border-bottom border-4 border-success">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="avatar me-4">
-                                                    <span class="avatar-initial rounded bg-label-dark">
-                                                        <i class="bx bx-file icon-lg"></i>
-                                                    </span>
-                                                </div>
-                                                <h4 class="mb-0">@{{ rekapLuasTotal.total }} ha</h4>
-                                            </div>
-                                            <p class="mb-0 text-muted fw-semibold">Luas Keseluruhan</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                            </div> -->
-                            <!-- <h4>Rekap Pengisian Luas Tanam</h4>
-                            <div class="table-responsive">
-                                <table class="table table-striped mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Saluran</th>
-                                            <th>Luas Padi (ha)</th>
-                                            <th>Luas Palawija (ha)</th>
-                                            <th>Luas Lainnya (ha)</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(p, index) in rekapLuasTanam" :key="p.id">
-                                            <td>@{{ (pagination.current - 1) * perPage + index + 1 }}</td>
-                                            <td>
-                                                @{{ p.saluran}} - @{{ p.bangunan }} - @{{ p.petak }}<br>
-                                                <small>Terakhir update : @{{ p.tanggal_update!='-'? formatTanggalIndo(p.tanggal_update) : 'belum ada update'}}</small>
-                                            </td>
-                                            <td>@{{ p.padi }}</td>
-                                            <td>@{{ p.palawija }}</td>
-                                            <td>@{{ p.lainnya }}</td>
-                                            <td>@{{ p.total }}</td>
-                                        </tr>
-                                        <tr v-if="rekapLuasTanam.length === 0">
-                                            <td colspan="4" class="text-center text-muted">Belum ada permasalahan</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <select v-model="perPage" @change="loadRekapPengisian(1)" class="form-select form-select" style="width: auto;">
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </select>
-                                        <span>per halaman</span>
-                                    </div>
-                                    <nav>
-                                        <ul class="pagination pagination mb-0">
-                                            <li class="page-item" :class="{ disabled: pagination.current === 1 }">
-                                                <a class="page-link" href="#" @click.prevent="loadRekapPengisian(pagination.current - 1)">Prev</a>
-                                            </li>
-
-                                            <li v-for="page in pagination.last" :key="page" class="page-item" :class="{ active: page === pagination.current }">
-                                                <a class="page-link" href="#" @click.prevent="loadRekapPengisian(page)">@{{ page }}</a>
-                                            </li>
-
-                                            <li class="page-item" :class="{ disabled: pagination.current === pagination.last }">
-                                                <a class="page-link" href="#" @click.prevent="loadRekapPengisian(pagination.current + 1)">Next</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div> -->
-                            <h4 class="mt-3">Informasi Permasalahan</h4>
+                            <h4>Informasi Permasalahan</h4>
 
                             <table class="table table-bordered w-100">
                                 <thead>
@@ -454,7 +326,68 @@
                 </div>
             </div>
         </div>
+        <!-- MODAL DETAIL -->
+        <div class="modal fade" id="detailModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
 
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Detail Pengisian - @{{ selectedTanggal }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body table-responsive">
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Padi</th>
+                                    <th>Palawija</th>
+                                    <th>Lainnya</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, i) in detailItems" :key="row.id">
+                                    <td>@{{ i+1 }}</td>
+                                    <td>@{{ row.tanggal_pantau }}</td>
+                                    <td>@{{ row.luas_padi }}</td>
+                                    <td>@{{ row.luas_palawija }}</td>
+                                    <td>@{{ row.luas_lainnya }}</td>
+                                    <td>
+                                        @{{ Number(row.luas_padi) + Number(row.luas_palawija) + Number(row.luas_lainnya) }}
+                                    </td>
+                                </tr>
+                                <!-- TOTAL KESELURUHAN -->
+                                <tr v-if="detailItems.length > 0" class="fw-bold table-success">
+                                    <td colspan="2" class="text-end">TOTAL</td>
+                                    <td>@{{ formatAngka(totalDetail.padi) }}</td>
+                                    <td>@{{ formatAngka(totalDetail.palawija) }}</td>
+                                    <td>@{{ formatAngka(totalDetail.lainnya) }}</td>
+                                    <td>@{{ formatAngka(totalDetail.total) }}</td>
+                                </tr>
+
+                                <tr v-if="detailItems.length === 0">
+                                    <td colspan="6" class="text-center text-muted">
+                                        Tidak ada data
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -513,6 +446,17 @@
                     rekapMasaTanam: [], // ✅ penampung data hasil API
                     isLoadingRekap: false,
                     filterTahun: new Date().getFullYear(), // default otomatis
+                    maxPerMt: {},
+                    topPerMt: [],
+                    detailItems: [],
+                    selectedTanggal: '',
+                    detailModal: null,
+                    totalDetail: {
+                        padi: 0,
+                        palawija: 0,
+                        lainnya: 0,
+                        total: 0
+                    },
 
                 }
             },
@@ -522,6 +466,9 @@
                     this.rekap = []
                     this.rekapLuasTanam = []
                     this.rekapLuasTotal = []
+                    // Reset
+                    this.maxPerMt = {};
+                    this.topPerMt = [];
                 },
                 async checkChild() {
                     this.clearData()
@@ -567,6 +514,7 @@
                         this.is_loading = false;
                     }
                 },
+
                 async loadRekap(diId) {
                     let url = `/api/master/rekap-data?di_id=${diId}`
                     axios.get(url).then(res => {
@@ -622,6 +570,15 @@
                     });
 
                 },
+                bulanIndo(angka) {
+                    const bulan = [
+                        "", "Januari", "Februari", "Maret", "April",
+                        "Mei", "Juni", "Juli", "Agustus", "September",
+                        "Oktober", "November", "Desember"
+                    ];
+                    return bulan[angka];
+                },
+
                 formatTanggalIndo(tanggal) {
                     const options = {
                         timeZone: "Asia/Makassar",
@@ -684,36 +641,92 @@
                     this.loadRekapMasaTanamDi(diId)
                     this.isFilter = true
                 },
+                // async loadRekapMasaTanamDi(diId) {
+                //     if (!diId) return;
+
+                //     this.isLoadingRekap = true;
+
+                //     try {
+                //         const res = await axios.get(`/api/rekap-masa-tanam`, {
+                //             params: {
+                //                 di_id: diId,
+                //                 tahun: this.filterTahun
+                //             }
+                //         });
+
+                //         this.rekapMasaTanam = res.data;
+
+                //         console.log('Rekap masa tanam:', this.rekapMasaTanam);
+
+                //     } catch (err) {
+                //         console.error(err);
+                //         alert('Gagal memuat rekap masa tanam');
+                //     } finally {
+                //         this.isLoadingRekap = false;
+                //     }
+                // },
                 async loadRekapMasaTanamDi(diId) {
-                    if (!diId) return;
-
-                    this.isLoadingRekap = true;
-
-                    try {
-                        const res = await axios.get(`/api/rekap-masa-tanam`, {
-                            params: {
-                                di_id: diId,
-                                tahun: this.filterTahun
-                            }
-                        });
-
-                        this.rekapMasaTanam = res.data;
-
-                        console.log('Rekap masa tanam:', this.rekapMasaTanam);
-
-                    } catch (err) {
-                        console.error(err);
-                        alert('Gagal memuat rekap masa tanam');
-                    } finally {
-                        this.isLoadingRekap = false;
+                    if (!diId || !this.filterTanggalAwal || !this.filterTanggalAkhir) {
+                        alert('Lengkapi filter dulu');
+                        return;
                     }
+
+                    let url = `/api/rekap-mingguan?di_id=${diId}&tanggal_mulai=${this.filterTanggalAwal}&tanggal_selesai=${this.filterTanggalAkhir}`;
+                    const res = await axios.get(url);
+                    this.items = res.data;
+                    console.log(res.data);
+
+                    // Reset
+                    this.maxPerMt = {};
+                    this.topPerMt = [];
+
+                    // Hitung nilai tertinggi per MT
+                    this.items.forEach(row => {
+                        const mt = row.masa_tanam;
+                        const total = Number(row.total_luas);
+
+                        if (!this.maxPerMt[mt]) {
+                            this.maxPerMt[mt] = total;
+                        } else {
+                            if (total > this.maxPerMt[mt]) {
+                                this.maxPerMt[mt] = total;
+                            }
+                        }
+                    });
+
+                    // Ambil hanya data tertinggi per MT
+                    Object.keys(this.maxPerMt).forEach(mt => {
+                        const row = this.items.find(r =>
+                            r.masa_tanam === mt &&
+                            Number(r.total_luas) === this.maxPerMt[mt]
+                        );
+
+                        if (row) {
+                            this.topPerMt.push(row);
+                        }
+                    });
+
+
+                    // hitung max per masa tanam
+                    this.items.forEach(row => {
+                        const mt = row.masa_tanam;
+
+                        if (!this.maxPerMt[mt]) {
+                            this.maxPerMt[mt] = Number(row.total_luas);
+                        } else {
+                            if (Number(row.total_luas) > this.maxPerMt[mt]) {
+                                this.maxPerMt[mt] = Number(row.total_luas);
+                            }
+                        }
+                    });
+
                 },
 
                 applyFilterPermasalahan() {
                     this.loadPermasalahan(1)
                 },
                 resetFilter() {
-                    this.filterDi = ''
+                    this.filterDI = ''
                     this.filterTanggalAwal = ''
                     this.filterTanggalAkhir = ''
                     this.filteredItems = []
@@ -725,7 +738,7 @@
                 },
 
                 chartPerItem() {
-                    const data = this.rekapMasaTanam;
+                    const data = this.topPerMt;
                     if (!data || data.length === 0) return;
 
                     if (this.chartItem) this.chartItem.destroy();
@@ -734,7 +747,7 @@
                     if (!ctx) return;
 
                     // Label sumbu X
-                    const labels = data.map(item => item.masa_tanam);
+                    const labels = data.map(item => `MT ${item.masa_tanam}`);
 
                     // Data per kategori
                     const padi = data.map(item => item.padi);
@@ -815,8 +828,46 @@
 
                     this.rekapPermasalahan = res.data.data;
                     this.totalKeseluruhan = res.data.total_keseluruhan;
-                }
+                },
+                formatAngka(val) {
+                    return Number(val).toLocaleString('id-ID', {
+                        minimumFractionDigits: 2
+                    });
+                },
+                async openDetail(diId, tanggal) {
+                    this.selectedTanggal = tanggal;
 
+                    let url = `/api/rekap-mingguan-detail?di_id=${diId}&tanggal=${tanggal}`;
+                    const res = await axios.get(url);
+
+                    this.detailItems = res.data;
+
+                    // reset total
+                    let padi = 0;
+                    let palawija = 0;
+                    let lainnya = 0;
+
+                    // hitung total
+                    this.detailItems.forEach(row => {
+                        padi += Number(row.luas_padi);
+                        palawija += Number(row.luas_palawija);
+                        lainnya += Number(row.luas_lainnya);
+                    });
+
+                    let total = padi + palawija + lainnya;
+
+                    this.totalDetail = {
+                        padi: padi,
+                        palawija: palawija,
+                        lainnya: lainnya,
+                        total: total
+                    };
+
+                    // buka modal
+                    const modalEl = document.getElementById('detailModal');
+                    this.detailModal = new bootstrap.Modal(modalEl);
+                    this.detailModal.show();
+                },
 
             },
             mounted() {
