@@ -668,9 +668,12 @@ class FormPengisianController extends Controller
     {
         $diId = $request->di_id;
 
-        $data = FormPengisian::with('daerahIrigasi')
+        $data = FormPengisian::with(['daerahIrigasi', 'validasi'])
             ->when($diId, function ($q) use ($diId) {
                 $q->where('daerah_irigasi_id', $diId);
+            })
+            ->whereHas('validasi', function ($q) {
+                $q->where('pengamat_valid', 1);
             })
             ->orderBy('tanggal_pantau', 'desc')
             ->get();
@@ -694,6 +697,7 @@ class FormPengisianController extends Controller
         return response()->json($mapped);
     }
 
+
     public function updateTanggal(Request $request, $id)
     {
         $request->validate([
@@ -712,32 +716,47 @@ class FormPengisianController extends Controller
         $diId     = $request->di_id;
         $mulai    = $request->tanggal_mulai;
         $selesai  = $request->tanggal_selesai;
+        $tahun = \Carbon\Carbon::parse($mulai)->year;
 
         if (!$diId || !$mulai || !$selesai) {
             return response()->json(['message' => 'Filter belum lengkap'], 422);
         }
-        $data = DB::table('form_pengisians as f')
-            ->join('masa_tanams as mt', function ($join) {
+        $data = DB::table('masa_tanams as mt')
+            ->leftJoin('form_pengisians as f', function ($join) use ($mulai, $selesai, $diId) {
                 $join->on('mt.tahun', '=', DB::raw('YEAR(f.tanggal_pantau)'))
-                    ->whereRaw('MONTH(f.tanggal_pantau) BETWEEN mt.bulan_mulai AND mt.bulan_selesai');
+                    ->whereRaw('MONTH(f.tanggal_pantau) BETWEEN mt.bulan_mulai AND mt.bulan_selesai')
+                    ->where('f.daerah_irigasi_id', $diId)
+                    ->whereBetween('f.tanggal_pantau', [$mulai, $selesai])
+                    ->whereRaw('DAYOFWEEK(f.tanggal_pantau) = 1');
             })
+            ->leftJoin('form_validasis as fv', function ($join) {
+                $join->on('fv.form_pengisian_id', '=', 'f.id')
+                    ->where('fv.pengamat_valid', 1); // ✅ hanya yang sudah divalidasi
+            })
+            ->where('mt.daerah_irigasi_id', $diId)
+            ->where('mt.tahun', $tahun)
             ->selectRaw('
-        DATE(f.tanggal_pantau) as tanggal_minggu,
         mt.nama as masa_tanam,
         mt.bulan_mulai,
-        mt.bulan_selesai,   
-        f.daerah_irigasi_id,   
-        SUM(f.luas_padi + f.luas_palawija + f.luas_lainnya) as total_luas,
-        SUM(f.luas_padi) as padi,
-        SUM(f.luas_palawija) as palawija,
-        SUM(f.luas_lainnya) as lainnya
+        mt.bulan_selesai,
+        f.daerah_irigasi_id,
+        DATE(f.tanggal_pantau) as tanggal_minggu,
+        COALESCE(SUM(f.luas_padi + f.luas_palawija + f.luas_lainnya), 0) as total_luas,
+        COALESCE(SUM(f.luas_padi), 0) as padi,
+        COALESCE(SUM(f.luas_palawija), 0) as palawija,
+        COALESCE(SUM(f.luas_lainnya), 0) as lainnya
     ')
-            ->where('f.daerah_irigasi_id', $diId)
-            ->whereBetween('f.tanggal_pantau', [$mulai, $selesai])
-            ->whereRaw('DAYOFWEEK(f.tanggal_pantau) = 1')
-            ->groupBy('tanggal_minggu', 'mt.nama', 'mt.bulan_mulai', 'mt.bulan_selesai', 'f.daerah_irigasi_id')
-            ->orderBy('tanggal_minggu')
+            ->groupBy(
+                'mt.id',
+                'mt.nama',
+                'mt.bulan_mulai',
+                'mt.bulan_selesai',
+                'f.tanggal_pantau',
+                'f.daerah_irigasi_id'
+            )
+            ->orderBy('mt.bulan_mulai')
             ->get();
+
 
 
 

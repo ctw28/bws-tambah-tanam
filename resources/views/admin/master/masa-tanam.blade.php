@@ -2,137 +2,168 @@
 
 @section('content')
 <div id="app" v-cloak class="container mt-4">
-    <div id="app" v-cloak class="container mt-4">
 
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Data Masa Tanam</h5>
-                <button class="btn btn-primary btn-sm" @click="openModalTambah">
-                    + Tambah Masa Tanam
-                </button>
-            </div>
+    <!-- ================= CARD FILTER ================= -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5 class="mb-0">Filter Data</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
 
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th width="60">No</th>
-                            <th>Tahun</th>
-                            <th>Nama Masa Tanam</th>
-                            <th>Bulan Mulai</th>
-                            <th>Bulan Selesai</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, index) in items" :key="item.id">
-                            <td>@{{ index + 1 }}</td>
-                            <td>@{{ item.tahun }}</td>
-                            <td>@{{ item.nama }}</td>
-                            <td>@{{ namaBulan(item.bulan_mulai) }}</td>
-                            <td>@{{ namaBulan(item.bulan_selesai) }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-2" @click="edit(item)">Edit</button>
-                                <button class="btn btn-sm btn-danger" @click="hapus(item.id)">Hapus</button>
-                            </td>
-                        </tr>
-                        <tr v-if="items.length === 0">
-                            <td colspan="6" class="text-center text-muted">Belum ada data</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Daerah Irigasi</label>
+                    <select class="form-select" v-model="filter.di" @change="resetFilter">
+                        <option value="">-- Pilih Daerah Irigasi --</option>
+                        <option v-for="d in daerahIrigasis" :value="d.id">
+                            @{{ d.nama }}
+                        </option>
+                    </select>
+                </div>
 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div>
-                        Total: @{{ pagination.total }}
-                    </div>
-                    <div class="d-flex gap-1">
-                        <button class="btn btn-sm btn-light"
-                            :disabled="pagination.current === 1"
-                            @click="loadData(pagination.current - 1)">
-                            Prev
-                        </button>
-
-                        <button v-for="page in pagination.last"
-                            :key="page"
-                            class="btn btn-sm"
-                            :class="page === pagination.current ? 'btn-primary' : 'btn-light'"
-                            @click="loadData(page)">
-                            @{{ page }}
-                        </button>
-
-                        <button class="btn btn-sm btn-light"
-                            :disabled="pagination.current === pagination.last"
-                            @click="loadData(pagination.current + 1)">
-                            Next
-                        </button>
-                    </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" @click="loadData(1)">
+                        Tampilkan
+                    </button>
                 </div>
 
             </div>
         </div>
+    </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="modalForm" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
+    <!-- ================= CARD DATA ================= -->
+    <div class="card">
 
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            @{{ form.id ? 'Edit Masa Tanam' : 'Tambah Masa Tanam' }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Data Masa Tanam</h5>
 
-                    <div class="modal-body">
-                        <div class="mb-2">
-                            <label class="form-label">Tahun</label>
-                            <input type="number" class="form-control" v-model="form.tahun">
-                        </div>
-
-                        <div class="mb-2">
-                            <label>Masa Tanam</label>
-                            <select class="form-select" v-model="form.nama">
-                                <option value="" disabled>Pilih Masa</option>
-                                <option value="I">Masa Tanam I</option>
-                                <option value="II">Masa Tanam II</option>
-                                <option value="III">Masa Tanam III</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label">Bulan Mulai</label>
-                            <select class="form-select" v-model="form.bulan_mulai">
-                                <option value="">Pilih</option>
-                                <option v-for="b in 12" :value="b">@{{ namaBulan(b) }}</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label">Bulan Selesai</label>
-                            <select class="form-select" v-model="form.bulan_selesai">
-                                <option value="">Pilih</option>
-                                <option v-for="b in 12" :value="b">@{{ namaBulan(b) }}</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button class="btn btn-primary" @click="simpan">
-                            Simpan
-                        </button>
-                    </div>
-
-                </div>
-            </div>
+            <button class="btn btn-primary btn-sm"
+                :disabled="!isFiltered"
+                @click="openModalTambah">
+                + Tambah Masa Tanam
+            </button>
         </div>
 
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="60">No</th>
+                        <th>Tahun</th>
+                        <th>Daerah Irigasi</th>
+                        <th>Nama Masa Tanam</th>
+                        <th>Bulan Mulai</th>
+                        <th>Bulan Selesai</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in items" :key="item.id">
+                        <td>@{{ index + 1 }}</td>
+                        <td>@{{ item.tahun }}</td>
+                        <td>@{{ item.daerah_irigasi.nama }}</td>
+                        <td>@{{ item.nama }}</td>
+                        <td>@{{ namaBulan(item.bulan_mulai) }}</td>
+                        <td>@{{ namaBulan(item.bulan_selesai) }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-2" @click="edit(item)">Edit</button>
+                            <button class="btn btn-sm btn-danger" @click="hapus(item.id)">Hapus</button>
+                        </td>
+                    </tr>
+
+                    <tr v-if="items.length === 0">
+                        <td colspan="7" class="text-center text-muted">Belum ada data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>Total: @{{ pagination.total }}</div>
+                <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-light"
+                        :disabled="pagination.current === 1"
+                        @click="loadData(pagination.current - 1)">
+                        Prev
+                    </button>
+
+                    <button v-for="page in pagination.last"
+                        :key="page"
+                        class="btn btn-sm"
+                        :class="page === pagination.current ? 'btn-primary' : 'btn-light'"
+                        @click="loadData(page)">
+                        @{{ page }}
+                    </button>
+
+                    <button class="btn btn-sm btn-light"
+                        :disabled="pagination.current === pagination.last"
+                        @click="loadData(pagination.current + 1)">
+                        Next
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= MODAL ================= -->
+    <div class="modal fade" id="modalForm" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @{{ form.id ? 'Edit Masa Tanam' : 'Tambah Masa Tanam' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Tahun</label>
+                        <input type="number" class="form-control" v-model="form.tahun">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Masa Tanam</label>
+                        <select class="form-select" v-model="form.nama">
+                            <option value="" disabled>Pilih Masa</option>
+                            <option value="I">Masa Tanam I</option>
+                            <option value="II">Masa Tanam II</option>
+                            <option value="III">Masa Tanam III</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Bulan Mulai</label>
+                        <select class="form-select" v-model="form.bulan_mulai">
+                            <option value="">Pilih</option>
+                            <option v-for="b in 12" :value="b">@{{ namaBulan(b) }}</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Bulan Selesai</label>
+                        <select class="form-select" v-model="form.bulan_selesai">
+                            <option value="">Pilih</option>
+                            <option v-for="b in 12" :value="b">@{{ namaBulan(b) }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button class="btn btn-primary" @click="simpan">Simpan</button>
+                </div>
+
+            </div>
+        </div>
     </div>
 
 </div>
 @endsection
+
 
 @push('scripts')
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -145,6 +176,7 @@
         data() {
             return {
                 items: [],
+                daerahIrigasis: [],
                 pagination: {
                     current: 1,
                     last: 1,
@@ -155,25 +187,56 @@
 
                 form: {
                     id: null,
+                    daerah_irigasi_id: '',
                     tahun: '',
                     nama: '',
                     bulan_mulai: '',
                     bulan_selesai: ''
                 },
 
-                modalInstance: null
+                modalInstance: null,
+                filter: {
+                    di: ''
+                },
+                isFiltered: false
+
             };
         },
 
         mounted() {
-            this.loadData();
+            this.loadDI();
+            // this.loadData();
         },
 
+
         methods: {
+            resetFilter() {
+                this.isFiltered = false
+                this.items = []
+            },
+            async loadDI() {
+                // let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
+                let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9');
+
+                console.log(res.data.data);
+                this.daerahIrigasis = res.data.data;
+            },
             async loadData(page = 1) {
+                if (!this.filter.di) {
+                    alert('Silakan pilih Daerah Irigasi dulu');
+                    return;
+                }
+
                 try {
                     this.is_loading = true;
-                    const res = await axios.get(`/api/masa-tanam?page=${page}&per_page=${this.perPage}`);
+                    this.isFiltered = true
+                    const params = new URLSearchParams({
+                        page,
+                        per_page: this.perPage,
+                        daerah_irigasi_id: this.filter.di
+                    });
+
+                    const res = await axios.get(`/api/masa-tanam?${params.toString()}`);
 
                     this.items = res.data.data;
                     this.pagination.current = res.data.current_page;
@@ -185,6 +248,8 @@
                     this.is_loading = false;
                 }
             },
+
+
 
             namaBulan(bulan) {
                 const nama = [
@@ -215,6 +280,7 @@
             resetForm() {
                 this.form = {
                     id: null,
+                    daerah_irigasi_id: '',
                     tahun: '',
                     nama: '',
                     bulan_mulai: '',
@@ -224,10 +290,18 @@
 
             async simpan() {
                 try {
-                    if (!this.form.tahun || !this.form.nama) {
+                    if (!this.filter.di) {
+                        alert('Pilih Daerah Irigasi terlebih dahulu di filter atas!');
+                        return;
+                    }
+
+                    if (!this.form.tahun || !this.form.nama || !this.form.bulan_mulai || !this.form.bulan_selesai) {
                         alert('Lengkapi data!');
                         return;
                     }
+
+                    // ✅ pakai DI dari filter, bukan dari select form
+                    this.form.daerah_irigasi_id = this.filter.di;
 
                     if (this.form.id) {
                         await axios.put(`/api/masa-tanam/${this.form.id}`, this.form);
@@ -243,6 +317,7 @@
                     alert('Gagal menyimpan data');
                 }
             },
+
 
             async hapus(id) {
                 if (!confirm('Yakin ingin menghapus data ini?')) return;

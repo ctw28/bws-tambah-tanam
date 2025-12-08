@@ -52,8 +52,10 @@
                             <th rowspan="2">Lokasi</th>
                             <th rowspan="2">Petugas</th>
                             <th rowspan="2">Saluran / Bangunan / Petak</th>
-                            <th rowspan="2">Debit Air</th>
-                            <th rowspan="2">Masa Tanam</th>
+                            <th rowspan="2">Padi</th>
+                            <th rowspan="2">Palawija</th>
+                            <th rowspan="2">Lainnya</th>
+                            <!-- <th rowspan="2">Masa Tanam</th> -->
                             <!-- <th rowspan="2">Luas</th> -->
                             <th colspan="2" class="text-center">Validasi</th>
                             <th rowspan="2">Aksi</th>
@@ -77,8 +79,10 @@
                                 @{{ item.bangunan?.nama ?? '-' }} /
                                 @{{ item.petak?.nama ?? '-' }}
                             </td>
-                            <td>@{{ item.debit_air }}</td>
-                            <td>@{{ item.masa_tanam }}</td>
+                            <td>@{{ item.luas_padi }}</td>
+                            <td>@{{ item.luas_palawija }}</td>
+                            <td>@{{ item.luas_lainnya }}</td>
+                            <!-- <td>@{{ item.masa_tanam }}</td> -->
 
                             <!-- Validasi Pengamat -->
                             <td>

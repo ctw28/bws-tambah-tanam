@@ -188,10 +188,23 @@
                                 <input type="number" step="0.01" class="form-control" v-model="form.debit_air">
                             </div> -->
                             <div class="mb-3">
-                                <label class="form-label">Tanggal Pantau <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" v-model="form.tanggal_pantau" required>
-                                <small class="text-muted">Tanggal pengambilan data, bukan tanggal saat mengisi form</small>
+                                <label class="form-label">
+                                    Tanggal Pantau <span class="text-danger">*</span>
+                                </label>
+
+                                <input type="date"
+                                    class="form-control"
+                                    v-model="form.tanggal_pantau"
+                                    @change="validasiHariMinggu"
+                                    :min="minDate"
+                                    :max="maxDate"
+                                    required>
+
+                                <small class="text-muted">
+                                    Hanya bisa memilih hari Minggu
+                                </small>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Masa Tanam (MT)<span class="text-danger">*</span></label>
                                 <select class="form-select" v-model="form.masa_tanam"
@@ -582,6 +595,26 @@
                     },
                 },
                 methods: {
+                    validasiHariMinggu() {
+                        if (!this.form.tanggal_pantau) return;
+
+                        let tgl = new Date(this.form.tanggal_pantau);
+
+                        if (tgl.getDay() !== 0) {
+                            // Simpan tanggal asli agar bisa tampil di info
+                            const tanggalAsli = this.form.tanggal_pantau;
+
+                            // Geser ke Minggu terdekat berikutnya
+                            while (tgl.getDay() !== 0) {
+                                tgl.setDate(tgl.getDate() + 1);
+                            }
+
+                            this.form.tanggal_pantau = tgl.toISOString().slice(0, 10);
+
+                            alert(`Tanggal yang Anda pilih (${tanggalAsli}) bukan hari Minggu. \nPengisian akan dialihkan ke tanggal Minggu terdekat: ${this.form.tanggal_pantau}`);
+                        }
+                    },
+
                     async searchP3A() {
                         // minimal 3 huruf
                         if (this.p3aSearch.length < 3) {

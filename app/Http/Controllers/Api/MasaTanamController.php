@@ -12,14 +12,18 @@ class MasaTanamController extends Controller
     {
         $perPage = $request->get('per_page', 10);
 
-        $query = MasaTanam::query(); // ✅ buat query dulu
+        $query = MasaTanam::with('daerahIrigasi');
 
-        // Filter tahun
+        // ✅ Filter tahun
         if ($request->tahun) {
             $query->where('tahun', $request->tahun);
         }
 
-        // Sorting
+        // ✅ Tambah filter Daerah Irigasi
+        if ($request->daerah_irigasi_id) {
+            $query->where('daerah_irigasi_id', $request->daerah_irigasi_id);
+        }
+
         $data = $query->orderBy('tahun', 'desc')
             ->orderBy('bulan_mulai')
             ->paginate($perPage);
@@ -28,9 +32,11 @@ class MasaTanamController extends Controller
     }
 
 
+
     public function store(Request $request)
     {
         $request->validate([
+            'daerah_irigasi_id' => 'required|exists:daerah_irigasis,id',
             'tahun' => 'required|integer',
             'nama' => 'required|string|max:100',
             'bulan_mulai' => 'required|integer|min:1|max:12',
@@ -38,6 +44,7 @@ class MasaTanamController extends Controller
         ]);
 
         $data = MasaTanam::create([
+            'daerah_irigasi_id' => $request->daerah_irigasi_id,
             'tahun' => $request->tahun,
             'nama' => $request->nama,
             'bulan_mulai' => $request->bulan_mulai,
@@ -55,6 +62,7 @@ class MasaTanamController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'daerah_irigasi_id' => 'required|exists:daerah_irigasis,id',
             'tahun' => 'required|integer',
             'nama' => 'required|string|max:100',
             'bulan_mulai' => 'required|integer|min:1|max:12',
@@ -63,6 +71,7 @@ class MasaTanamController extends Controller
 
         $data = MasaTanam::findOrFail($id);
         $data->update([
+            'daerah_irigasi_id' => $request->daerah_irigasi_id,
             'tahun' => $request->tahun,
             'nama' => $request->nama,
             'bulan_mulai' => $request->bulan_mulai,

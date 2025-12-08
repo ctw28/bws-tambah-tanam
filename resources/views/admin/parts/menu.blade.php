@@ -31,11 +31,11 @@
                  <div data-i18n="Permasalahan">Permasalahan</div>
              </a>
          </li>
-         <!-- <li class="menu-item {{ request()->routeIs('form.progres') ? 'active' : '' }}">
+         <li class="menu-item {{ request()->routeIs('form.progres') ? 'active' : '' }}">
              <a href="{{ route('form.progres') }}" class="menu-link">
                  <div data-i18n="Form Progres">Form Progres</div>
              </a>
-         </li> -->
+         </li>
 
      </ul>
  </li>

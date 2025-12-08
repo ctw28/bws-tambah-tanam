@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('masa_tanams', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('daerah_irigasi_id')
+                ->constrained('daerah_irigasis')
+                ->cascadeOnDelete();
+
             $table->integer('tahun');                     // contoh: 2025
             $table->string('nama');                       // contoh: Masa Tanam I
             $table->unsignedTinyInteger('bulan_mulai');   // 1–12
