@@ -314,7 +314,7 @@
                                 </tbody>
                             </table>
 
-                            <h4 class="mt-5">📈 Informasi Grafis Jenis Tanaman</h4>
+                            <h4 class="mt-5">📈 Informasi Grafis</h4>
                             <div class="col-12">
 
                                 <canvas id="chartItem" height="100"></canvas>
@@ -782,7 +782,7 @@
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Rekap Luas Tanam per Masa Tanam'
+                                    text: 'Luas Tanam per Masa Tanam'
                                 },
                                 tooltip: {
                                     callbacks: {
