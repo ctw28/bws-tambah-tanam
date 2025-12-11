@@ -53,9 +53,9 @@
                     <div class="card p-2">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div><strong>SK Masa tanam :</strong> DI @{{ selectedDINama }} @{{ filter.tahun ? ' - ' + filter.tahun : '' }}</div>
+                                <div><strong>SK Masa Tanam :</strong> DI @{{ selectedDINama }} @{{ filter.tahun ? ' - ' + filter.tahun : '' }}</div>
                                 <div v-if="skData">
-                                    No. @{{ skData.no_sk }} tahun @{{ skData.tahun_sk }} — Tanggal: @{{ formatTanggal(skData.tanggal_terbit_sk) }}
+                                    @{{ skData.nama_sk }}
                                 </div>
                                 <div v-else class="text-muted">Belum ada SK .</div>
                             </div>
@@ -123,13 +123,8 @@
 
                 <div class="modal-body">
                     <div class="mb-2">
-                        <label class="form-label fw-bold">Nomor SK</label>
-                        <input type="text" class="form-control" v-model="skForm.no_sk">
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label fw-bold">Tanggal Terbit SK</label>
-                        <input type="date" class="form-control" v-model="skForm.tanggal_terbit_sk">
+                        <label class="form-label fw-bold">Nama SK</label>
+                        <input type="text" class="form-control" v-model="skForm.nama_sk">
                     </div>
                 </div>
 
@@ -221,9 +216,8 @@
                 skData: null,
                 skForm: {
                     id: '',
-                    no_sk: '',
+                    nama_sk: '',
                     tahun_sk: '',
-                    tanggal_terbit_sk: ''
                 },
 
                 modalInstance: null,
@@ -279,12 +273,10 @@
 
                 if (res.data) {
                     this.skForm.id = res.data.id;
-                    this.skForm.no_sk = res.data.no_sk;
-                    this.skForm.tanggal_terbit_sk = res.data.tanggal_terbit_sk;
+                    this.skForm.nama_sk = res.data.nama_sk;
                 } else {
                     this.skForm.id = null;
-                    this.skForm.no_sk = '';
-                    this.skForm.tanggal_terbit_sk = '';
+                    this.skForm.nama_sk = '';
                 }
             },
 
@@ -299,15 +291,13 @@
                     this.skForm = {
                         id: this.skData.id,
                         tahun_sk: this.filter.tahun || '',
-                        no_sk: this.skData.no_sk || '',
-                        tanggal_terbit_sk: this.skData.tanggal_terbit_sk || ''
+                        nama_sk: this.skData.nama_sk || '',
                     };
                 } else {
                     this.skForm = {
                         id: null,
                         tahun_sk: this.filter.tahun || '',
-                        no_sk: '',
-                        tanggal_terbit_sk: ''
+                        nama_sk: '',
                     };
                 }
 
@@ -326,10 +316,8 @@
 
                     const payload = {
                         daerah_irigasi_id: this.filter.di,
-                        tahun: this.filter.tahun,
-                        no_sk: this.skForm.no_sk,
+                        nama_sk: this.skForm.nama_sk,
                         tahun_sk: this.filter.tahun, // kalau memang ini yg Anda pakai
-                        tanggal_terbit_sk: this.skForm.tanggal_terbit_sk
                     };
                     // Jika sudah ada ID → Update
                     if (this.skForm.id) {
