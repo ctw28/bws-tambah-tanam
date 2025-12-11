@@ -248,7 +248,7 @@
                         <div class="card-body table-responsive">
 
                             <h5 class="fw-bold mb-3">Rekapitulasi Luas Tambah Tanam (LTT)</h5>
-
+                            <p v-if="skMasaTanam">SK Masa Tanam :@{{skMasaTanam.nama_sk}}</p>
                             <table class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
@@ -456,6 +456,7 @@
                         lainnya: 0,
                         total: 0
                     },
+                    skMasaTanam: ''
 
                 }
             },
@@ -672,9 +673,9 @@
 
                     let url = `/api/rekap-mingguan?di_id=${diId}&tanggal_mulai=${this.filterTanggalAwal}&tanggal_selesai=${this.filterTanggalAkhir}`;
                     const res = await axios.get(url);
-                    this.items = res.data;
+                    this.items = res.data.rekap;
                     console.log(res.data);
-
+                    this.skMasaTanam = res.data.masaTanamSk
                     // Reset
                     this.maxPerMt = {};
                     this.topPerMt = [];

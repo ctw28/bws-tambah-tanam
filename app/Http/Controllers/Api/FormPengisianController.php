@@ -9,6 +9,7 @@ use App\Models\FormPengisian;
 use App\Models\FormPengisianP3a;
 use App\Models\FormPermasalahan;
 use App\Models\FormValidasi;
+use App\Models\MasaTanamSk;
 use App\Models\MasterPermasalahan;
 use App\Models\P3a;
 use App\Models\Petak;
@@ -720,12 +721,19 @@ class FormPengisianController extends Controller
         $diId     = $request->di_id;
         $mulai    = $request->tanggal_mulai;
         $selesai  = $request->tanggal_selesai;
-        $tahun = \Carbon\Carbon::parse($mulai)->year;
+        $tahun    = \Carbon\Carbon::parse($mulai)->year;
+
+        // Ambil SK
+        $masaTanamSk = MasaTanamSk::where('daerah_irigasi_id', $diId)
+            ->where('tahun_sk', $tahun)
+            ->first();
 
         if (!$diId || !$mulai || !$selesai) {
             return response()->json(['message' => 'Filter belum lengkap'], 422);
         }
-        $data = DB::table('masa_tanams as mt')
+
+        // Ambil rekap mingguan
+        $rekap = DB::table('masa_tanams as mt')
             ->leftJoin('form_pengisians as f', function ($join) use ($mulai, $selesai, $diId) {
                 $join->on('mt.tahun', '=', DB::raw('YEAR(f.tanggal_pantau)'))
                     ->whereRaw('MONTH(f.tanggal_pantau) BETWEEN mt.bulan_mulai AND mt.bulan_selesai')
@@ -735,21 +743,21 @@ class FormPengisianController extends Controller
             })
             ->leftJoin('form_validasis as fv', function ($join) {
                 $join->on('fv.form_pengisian_id', '=', 'f.id')
-                    ->where('fv.pengamat_valid', 1); // ✅ hanya yang sudah divalidasi
+                    ->where('fv.pengamat_valid', 1);
             })
             ->where('mt.daerah_irigasi_id', $diId)
             ->where('mt.tahun', $tahun)
             ->selectRaw('
-        mt.nama as masa_tanam,
-        mt.bulan_mulai,
-        mt.bulan_selesai,
-        f.daerah_irigasi_id,
-        DATE(f.tanggal_pantau) as tanggal_minggu,
-        COALESCE(SUM(f.luas_padi + f.luas_palawija + f.luas_lainnya), 0) as total_luas,
-        COALESCE(SUM(f.luas_padi), 0) as padi,
-        COALESCE(SUM(f.luas_palawija), 0) as palawija,
-        COALESCE(SUM(f.luas_lainnya), 0) as lainnya
-    ')
+            mt.nama as masa_tanam,
+            mt.bulan_mulai,
+            mt.bulan_selesai,
+            f.daerah_irigasi_id,
+            DATE(f.tanggal_pantau) as tanggal_minggu,
+            COALESCE(SUM(f.luas_padi + f.luas_palawija + f.luas_lainnya), 0) as total_luas,
+            COALESCE(SUM(f.luas_padi), 0) as padi,
+            COALESCE(SUM(f.luas_palawija), 0) as palawija,
+            COALESCE(SUM(f.luas_lainnya), 0) as lainnya
+        ')
             ->groupBy(
                 'mt.id',
                 'mt.nama',
@@ -761,26 +769,13 @@ class FormPengisianController extends Controller
             ->orderBy('mt.bulan_mulai')
             ->get();
 
-
-
-
-        // $data = DB::table('form_pengisians')
-        //     ->selectRaw('
-        //     DATE(tanggal_pantau) as tanggal_minggu,
-        //     SUM(luas_padi + luas_palawija + luas_lainnya) as total_luas,
-        //     SUM(luas_padi) as padi,
-        //     SUM(luas_palawija) as palawija,
-        //     SUM(luas_lainnya) as lainnya
-        // ')
-        //     ->where('daerah_irigasi_id', $diId)
-        //     ->whereBetween('tanggal_pantau', [$mulai, $selesai])
-        //     ->whereRaw('DAYOFWEEK(tanggal_pantau) = 1') // Minggu
-        //     ->groupBy('tanggal_minggu')
-        //     ->orderBy('tanggal_minggu')
-        //     ->get();
-
-        return response()->json($data);
+        // Return JSON lengkap
+        return response()->json([
+            'masaTanamSk' => $masaTanamSk,
+            'rekap'       => $rekap
+        ]);
     }
+
 
     public function rekapMingguanDetail(Request $request)
     {
