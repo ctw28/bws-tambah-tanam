@@ -10,8 +10,6 @@ class MasaTanamController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->get('per_page', 10);
-
         $query = MasaTanam::with('daerahIrigasi');
 
         // ✅ Filter tahun
@@ -26,7 +24,7 @@ class MasaTanamController extends Controller
 
         $data = $query->orderBy('tahun', 'desc')
             ->orderBy('bulan_mulai')
-            ->paginate($perPage);
+            ->get();
 
         return response()->json($data);
     }

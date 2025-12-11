@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\PengamatController;
 use App\Http\Controllers\Api\SesiController;
 use App\Http\Controllers\Api\UpiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\MasaTanamSkController;
 use App\Models\Komir;
 
 Route::post('login', [AuthController::class, 'login']);
@@ -45,6 +46,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::apiResource('irigasi-desa', DaerahIrigasiDesaController::class)
             ->except(['index', 'show']);
 
+        Route::apiResource('masa-tanam-sk', MasaTanamSkController::class);
         Route::apiResource('masa-tanam', \App\Http\Controllers\Api\MasaTanamController::class);
 
         Route::prefix('master')->group(function () {
@@ -69,6 +71,8 @@ Route::middleware(['auth:api'])->group(function () {
     });
 });
 Route::apiResource('masa-tanam', \App\Http\Controllers\Api\MasaTanamController::class)
+    ->only(['index', 'show']);
+Route::apiResource('masa-tanam-sk', \App\Http\Controllers\Api\MasaTanamSKController::class)
     ->only(['index', 'show']);
 
 Route::apiResource('irigasi-kecamatan', DaerahIrigasiKecamatanController::class)

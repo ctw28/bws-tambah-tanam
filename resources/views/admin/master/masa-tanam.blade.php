@@ -11,9 +11,9 @@
         <div class="card-body">
             <div class="row g-3 align-items-end">
 
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <label class="form-label fw-bold">Daerah Irigasi</label>
-                    <select class="form-select" v-model="filter.di" @change="resetFilter">
+                    <select class="form-select" v-model="filter.di" @change="hideFilter">
                         <option value="">-- Pilih Daerah Irigasi --</option>
                         <option v-for="d in daerahIrigasis" :value="d.id">
                             @{{ d.nama }}
@@ -21,89 +21,123 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100" @click="loadData(1)">
-                        Tampilkan
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tahun</label>
+                    <select class="form-control" v-model="filter.tahun" @change="hideFilter">
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <button class="btn btn-primary" @click="loadData()">
+                        Filter
                     </button>
                 </div>
+
+
 
             </div>
         </div>
     </div>
 
+
     <!-- ================= CARD DATA ================= -->
-    <div class="card">
+    <!-- Area SK singkat (menampilkan SK untuk DI+Tahun, bisa diubah) -->
+    <div v-if="isFiltered">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Data Masa Tanam</h5>
+        <div class="card">
+            <div class="card-body">
 
-            <button class="btn btn-primary btn-sm"
-                :disabled="!isFiltered"
-                @click="openModalTambah">
-                + Tambah Masa Tanam
-            </button>
-        </div>
-
-        <div class="card-body table-responsive">
-
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th width="60">No</th>
-                        <th>Tahun</th>
-                        <th>Daerah Irigasi</th>
-                        <th>Nama Masa Tanam</th>
-                        <th>Bulan Mulai</th>
-                        <th>Bulan Selesai</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, index) in items" :key="item.id">
-                        <td>@{{ index + 1 }}</td>
-                        <td>@{{ item.tahun }}</td>
-                        <td>@{{ item.daerah_irigasi.nama }}</td>
-                        <td>@{{ item.nama }}</td>
-                        <td>@{{ namaBulan(item.bulan_mulai) }}</td>
-                        <td>@{{ namaBulan(item.bulan_selesai) }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning me-2" @click="edit(item)">Edit</button>
-                            <button class="btn btn-sm btn-danger" @click="hapus(item.id)">Hapus</button>
-                        </td>
-                    </tr>
-
-                    <tr v-if="items.length === 0">
-                        <td colspan="7" class="text-center text-muted">Belum ada data</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>Total: @{{ pagination.total }}</div>
-                <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-light"
-                        :disabled="pagination.current === 1"
-                        @click="loadData(pagination.current - 1)">
-                        Prev
-                    </button>
-
-                    <button v-for="page in pagination.last"
-                        :key="page"
-                        class="btn btn-sm"
-                        :class="page === pagination.current ? 'btn-primary' : 'btn-light'"
-                        @click="loadData(page)">
-                        @{{ page }}
-                    </button>
-
-                    <button class="btn btn-sm btn-light"
-                        :disabled="pagination.current === pagination.last"
-                        @click="loadData(pagination.current + 1)">
-                        Next
-                    </button>
+                <div class="col-12 mt-3">
+                    <div class="card p-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div><strong>SK Masa tanam :</strong> DI @{{ selectedDINama }} @{{ filter.tahun ? ' - ' + filter.tahun : '' }}</div>
+                                <div v-if="skData">
+                                    No. @{{ skData.no_sk }} tahun @{{ skData.tahun_sk }} — Tanggal: @{{ formatTanggal(skData.tanggal_terbit_sk) }}
+                                </div>
+                                <div v-else class="text-muted">Belum ada SK .</div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-2" :disabled="!isFiltered" @click="openSKModal">Edit SK</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="card">
 
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Data Masa Tanam</h5>
+
+                <button class="btn btn-primary btn-sm"
+                    :disabled="!isFiltered"
+                    @click="openModalTambah">
+                    + Tambah Masa Tanam
+                </button>
+            </div>
+
+            <div class="card-body table-responsive">
+
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr class="text-center align-middle">
+                            <th width="60">No</th>
+                            <th>Nama <br> Masa Tanam</th>
+                            <th>Bulan Mulai - Selesai</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in items" :key="item.id">
+                            <td>@{{ index + 1 }}</td>
+                            <td>@{{ item.nama }}</td>
+                            <td>@{{ namaBulan(item.bulan_mulai) }} - @{{ namaBulan(item.bulan_selesai) }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-2" @click="edit(item)">Edit</button>
+                                <button class="btn btn-sm btn-danger" @click="hapus(item.id)">Hapus</button>
+                            </td>
+                        </tr>
+
+                        <tr v-if="items.length === 0">
+                            <td colspan="7" class="text-center text-muted">Belum ada data</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SK -->
+    <div class="modal fade" id="modalSK" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">SK untuk @{{ selectedDINama }} @{{ filter.tahun }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Nomor SK</label>
+                        <input type="text" class="form-control" v-model="skForm.no_sk">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Tanggal Terbit SK</label>
+                        <input type="date" class="form-control" v-model="skForm.tanggal_terbit_sk">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button class="btn btn-primary" @click="saveSK">Simpan SK</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -120,10 +154,6 @@
                 </div>
 
                 <div class="modal-body">
-                    <div class="mb-2">
-                        <label class="form-label">Tahun</label>
-                        <input type="number" class="form-control" v-model="form.tahun">
-                    </div>
 
                     <div class="mb-2">
                         <label>Masa Tanam</label>
@@ -143,7 +173,7 @@
                         </select>
                     </div>
 
-                    <div class="mb-2">
+                    <div class="mb-3">
                         <label class="form-label">Bulan Selesai</label>
                         <select class="form-select" v-model="form.bulan_selesai">
                             <option value="">Pilih</option>
@@ -151,7 +181,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button class="btn btn-primary" @click="simpan">Simpan</button>
@@ -177,79 +206,176 @@
             return {
                 items: [],
                 daerahIrigasis: [],
-                pagination: {
-                    current: 1,
-                    last: 1,
-                    total: 0
-                },
-                perPage: 10,
                 is_loading: false,
-
                 form: {
                     id: null,
                     daerah_irigasi_id: '',
                     tahun: '',
                     nama: '',
                     bulan_mulai: '',
-                    bulan_selesai: ''
+                    bulan_selesai: '',
+                    // HAPUS field SK dari form masa tanam — SK disimpan terpisah
+                },
+
+                // SK data per DI+Tahun
+                skData: null,
+                skForm: {
+                    id: '',
+                    no_sk: '',
+                    tahun_sk: '',
+                    tanggal_terbit_sk: ''
                 },
 
                 modalInstance: null,
+                modalSKInstance: null,
+
                 filter: {
-                    di: ''
+                    di: '',
+                    tahun: '2025'
                 },
                 isFiltered: false
-
             };
         },
 
         mounted() {
             this.loadDI();
-            // this.loadData();
         },
 
+        computed: {
+            selectedDINama() {
+                const d = this.daerahIrigasis.find(x => x.id === this.filter.di);
+                return d ? d.nama : '';
+            }
+        },
 
         methods: {
-            resetFilter() {
-                this.isFiltered = false
-                this.items = []
-            },
-            async loadDI() {
-                // let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
-                let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9');
+            hideFilter() {
 
-                console.log(res.data.data);
+                this.isFiltered = false;
+                this.items = [];
+                this.skData = null;
+            },
+            resetFilter() {
+                this.isFiltered = false;
+                this.items = [];
+                this.skData = null;
+            },
+
+            async loadDI() {
+                let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9');
                 this.daerahIrigasis = res.data.data;
             },
-            async loadData(page = 1) {
-                if (!this.filter.di) {
-                    alert('Silakan pilih Daerah Irigasi dulu');
+            async loadSK() {
+                if (!this.filter.di || !this.filter.tahun) return;
+
+                const res = await axios.get('/api/masa-tanam-sk', {
+                    params: {
+                        daerah_irigasi_id: this.filter.di,
+                        tahun_sk: this.filter.tahun
+                    }
+                });
+                console.log(res.data);
+                this.skData = res.data
+
+                if (res.data) {
+                    this.skForm.id = res.data.id;
+                    this.skForm.no_sk = res.data.no_sk;
+                    this.skForm.tanggal_terbit_sk = res.data.tanggal_terbit_sk;
+                } else {
+                    this.skForm.id = null;
+                    this.skForm.no_sk = '';
+                    this.skForm.tanggal_terbit_sk = '';
+                }
+            },
+
+            openSKModal() {
+                if (!this.filter.di || !this.filter.tahun) {
+                    alert('Pilih Daerah Irigasi dan Tahun terlebih dahulu.');
+                    return;
+                }
+
+                // isi skForm dari skData kalau ada
+                if (this.skData) {
+                    this.skForm = {
+                        id: this.skData.id,
+                        tahun_sk: this.filter.tahun || '',
+                        no_sk: this.skData.no_sk || '',
+                        tanggal_terbit_sk: this.skData.tanggal_terbit_sk || ''
+                    };
+                } else {
+                    this.skForm = {
+                        id: null,
+                        tahun_sk: this.filter.tahun || '',
+                        no_sk: '',
+                        tanggal_terbit_sk: ''
+                    };
+                }
+
+
+                const modal = document.getElementById('modalSK');
+                this.modalSKInstance = new bootstrap.Modal(modal);
+                this.modalSKInstance.show();
+            },
+
+            async saveSK() {
+                try {
+                    if (!this.filter.di || !this.filter.tahun) {
+                        alert('Pilih DI dan Tahun dulu.');
+                        return;
+                    }
+
+                    const payload = {
+                        daerah_irigasi_id: this.filter.di,
+                        tahun: this.filter.tahun,
+                        no_sk: this.skForm.no_sk,
+                        tahun_sk: this.filter.tahun, // kalau memang ini yg Anda pakai
+                        tanggal_terbit_sk: this.skForm.tanggal_terbit_sk
+                    };
+                    // Jika sudah ada ID → Update
+                    if (this.skForm.id) {
+                        await axios.put(`/api/masa-tanam-sk/${this.skForm.id}`, payload);
+                    } else {
+                        // Jika belum ada ID → Create
+                        await axios.post('/api/masa-tanam-sk', payload);
+                    }
+
+                    this.modalSKInstance.hide();
+                    await this.loadSK();
+                    alert('SK tersimpan.');
+                } catch (err) {
+                    console.error(err);
+                    alert('Gagal menyimpan SK.');
+                }
+            },
+
+            async loadData() {
+                if (!this.filter.di || !this.filter.tahun) {
+                    alert('Silakan pilih Daerah Irigasi dan Tahun dulu');
                     return;
                 }
 
                 try {
                     this.is_loading = true;
-                    this.isFiltered = true
+                    this.isFiltered = true;
+                    // pastikan juga load SK
+                    await this.loadSK();
+
                     const params = new URLSearchParams({
-                        page,
-                        per_page: this.perPage,
-                        daerah_irigasi_id: this.filter.di
+                        daerah_irigasi_id: this.filter.di,
+                        tahun: this.filter.tahun
                     });
 
                     const res = await axios.get(`/api/masa-tanam?${params.toString()}`);
 
-                    this.items = res.data.data;
-                    this.pagination.current = res.data.current_page;
-                    this.pagination.last = res.data.last_page;
-                    this.pagination.total = res.data.total;
+                    this.items = res.data;
+                    console.log(this.items);
+
                 } catch (err) {
                     console.error(err);
                 } finally {
                     this.is_loading = false;
                 }
             },
-
-
 
             namaBulan(bulan) {
                 const nama = [
@@ -260,13 +386,26 @@
             },
 
             openModalTambah() {
+                if (!this.filter.di || !this.filter.tahun) {
+                    alert('Pilih Daerah Irigasi dan Tahun di filter dulu!');
+                    return;
+                }
                 this.resetForm();
+                // pastikan form.tahun diisi dari filter (SK per tahun)
+                this.form.tahun = this.filter.tahun;
+                this.form.daerah_irigasi_id = this.filter.di;
                 this.showModal();
             },
 
             edit(item) {
+                // form tetap tidak mengandung SK fields
                 this.form = {
-                    ...item
+                    id: item.id,
+                    daerah_irigasi_id: item.daerah_irigasi_id,
+                    tahun: item.tahun,
+                    nama: item.nama,
+                    bulan_mulai: item.bulan_mulai,
+                    bulan_selesai: item.bulan_selesai
                 };
                 this.showModal();
             },
@@ -290,18 +429,19 @@
 
             async simpan() {
                 try {
-                    if (!this.filter.di) {
-                        alert('Pilih Daerah Irigasi terlebih dahulu di filter atas!');
+                    if (!this.filter.di || !this.filter.tahun) {
+                        alert('Pilih Daerah Irigasi dan Tahun terlebih dahulu di filter atas!');
                         return;
                     }
 
-                    if (!this.form.tahun || !this.form.nama || !this.form.bulan_mulai || !this.form.bulan_selesai) {
+                    if (!this.form.nama || !this.form.bulan_mulai || !this.form.bulan_selesai) {
                         alert('Lengkapi data!');
                         return;
                     }
 
-                    // ✅ pakai DI dari filter, bukan dari select form
+                    // pastikan gunakan DI dan Tahun dari filter (prevent mismatch)
                     this.form.daerah_irigasi_id = this.filter.di;
+                    this.form.tahun = this.filter.tahun;
 
                     if (this.form.id) {
                         await axios.put(`/api/masa-tanam/${this.form.id}`, this.form);
@@ -310,7 +450,7 @@
                     }
 
                     this.modalInstance.hide();
-                    this.loadData(this.pagination.current);
+                    this.loadData();
 
                 } catch (err) {
                     console.error(err);
@@ -318,18 +458,26 @@
                 }
             },
 
-
             async hapus(id) {
                 if (!confirm('Yakin ingin menghapus data ini?')) return;
 
                 try {
                     await axios.delete(`/api/masa-tanam/${id}`);
-                    this.loadData(this.pagination.current);
+                    this.loadData();
                 } catch (err) {
                     console.error(err);
                     alert('Gagal menghapus data');
                 }
-            }
+            },
+
+            formatTanggal(tgl) {
+                if (!tgl) return '-';
+                return new Date(tgl).toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            },
         }
     }).mount('#app');
 </script>
