@@ -117,7 +117,7 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">SK untuk @{{ selectedDINama }} @{{ filter.tahun }}</h5>
+                    <h5 class="modal-title">SK Masa Tanam DI @{{ selectedDINama }} @{{ filter.tahun }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
@@ -152,7 +152,7 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        @{{ form.id ? 'Edit Masa Tanam' : 'Tambah Masa Tanam' }}
+                        @{{ form.id ? 'Edit Masa Tanam' : 'Tambah Masa Tanam' }} DI @{{ selectedDINama }} Tahun @{{ filter.tahun }}
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -162,7 +162,7 @@
                     <div class="mb-2">
                         <label>Masa Tanam</label>
                         <select class="form-select" v-model="form.nama">
-                            <option value="" disabled>Pilih Masa</option>
+                            <option value="" disabled>Pilih Masa Tanam</option>
                             <option value="I">Masa Tanam I</option>
                             <option value="II">Masa Tanam II</option>
                             <option value="III">Masa Tanam III</option>
