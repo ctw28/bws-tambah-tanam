@@ -72,7 +72,7 @@ Route::middleware(['auth:api'])->group(function () {
 });
 Route::apiResource('masa-tanam', \App\Http\Controllers\Api\MasaTanamController::class)
     ->only(['index', 'show']);
-Route::apiResource('masa-tanam-sk', \App\Http\Controllers\Api\MasaTanamSKController::class)
+Route::apiResource('masa-tanam-sk', \App\Http\Controllers\Api\MasaTanamSkController::class)
     ->only(['index', 'show']);
 
 Route::apiResource('irigasi-kecamatan', DaerahIrigasiKecamatanController::class)
