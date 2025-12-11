@@ -10,8 +10,10 @@ class MasaTanamSk extends Model
 
     protected $fillable = [
         'daerah_irigasi_id',
-        'nama_sk',
+        'sk_dari',
+        'no_sk',
         'tahun_sk',
+        'tanggal_terbit_sk',
     ];
 
     public function daerahIrigasi()

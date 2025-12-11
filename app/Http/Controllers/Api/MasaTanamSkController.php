@@ -38,8 +38,10 @@ class MasaTanamSkController extends Controller
     {
         $validated = $request->validate([
             'daerah_irigasi_id' => 'required|integer|exists:daerah_irigasis,id',
-            'nama_sk'             => 'nullable|string',
+            'sk_dari'             => 'nullable|string',
+            'no_sk'             => 'nullable|string',
             'tahun_sk'          => 'nullable|string|max:4',
+            'tanggal_terbit_sk' => 'nullable|date',
         ]);
 
         $data = MasaTanamSk::create($validated);
@@ -65,8 +67,10 @@ class MasaTanamSkController extends Controller
     {
         $validated = $request->validate([
             'daerah_irigasi_id' => 'required|integer|exists:daerah_irigasis,id',
-            'nama_sk'             => 'nullable|string',
+            'sk_dari'             => 'nullable|string',
+            'no_sk'             => 'nullable|string',
             'tahun_sk'          => 'nullable|string|max:4',
+            'tanggal_terbit_sk' => 'nullable|date',
         ]);
 
         $data = MasaTanamSk::findOrFail($id);

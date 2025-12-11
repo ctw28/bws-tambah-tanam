@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('masa_tanam_sks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('daerah_irigasi_id');
-            $table->string('nama_sk');
+            $table->string('sk_dari');
+            $table->string('no_sk');
             $table->string('tahun_sk', 4);
+            $table->date('tanggal_terbit_sk');
             $table->timestamps();
 
             // Jika ingin foreign key
