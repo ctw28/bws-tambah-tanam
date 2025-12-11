@@ -53,7 +53,7 @@
                     <div class="card p-2">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div><strong>SK Masa tanam :</strong> DI @{{ selectedDINama }} @{{ filter.tahun ? ' - ' + filter.tahun : '' }}</div>
+                                <div><strong>SK Masa Tanam </strong> DI @{{ selectedDINama }} @{{ filter.tahun ? ' Tahun ' + filter.tahun : '' }}</div>
                                 <div v-if="skData">
                                     SK @{{ skData.sk_dari }} No @{{ skData.no_sk }} tahun @{{ skData.tahun_sk }} — Tanggal: @{{ formatTanggal(skData.tanggal_terbit_sk) }}
                                 </div>
