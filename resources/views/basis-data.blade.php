@@ -276,7 +276,7 @@
                                     </tr>
 
                                     <tr v-if="topPerMt.length === 0">
-                                        <td colspan="7" class="text-center text-muted">
+                                        <td colspan="8" class="text-center text-muted">
                                             Belum ada data
                                         </td>
                                     </tr>
