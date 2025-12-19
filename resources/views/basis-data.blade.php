@@ -250,7 +250,7 @@
                             <h5 class="fw-bold mb-3">Rekapitulasi Luas Tambah Tanam (LTT)</h5>
                             <p v-if="skMasaTanam">
                                 SK Masa Tanam :
-                                SK @{{ skMasaTanam.sk_dari }} No @{{ skMasaTanam.no_sk }} tahun @{{ skMasaTanam.tahun_sk }} — Tanggal: @{{ formatTanggal(skMasaTanam.tanggal_terbit_sk) }}
+                                SK @{{ skMasaTanam.sk_dari }} No @{{ skMasaTanam.no_sk }} tahun @{{ tahunTerbitSK }} — Tanggal: @{{ formatTanggal(skMasaTanam.tanggal_terbit_sk) }}
 
                             </p>
                             <table class="table table-bordered table-striped">
@@ -462,6 +462,12 @@
                     },
                     skMasaTanam: ''
 
+                }
+            },
+            computed: {
+                tahunTerbitSK() {
+                    if (!this.skMasaTanam || !this.skMasaTanam.tanggal_terbit_sk) return '';
+                    return new Date(this.skMasaTanam.tanggal_terbit_sk).getFullYear();
                 }
             },
             methods: {

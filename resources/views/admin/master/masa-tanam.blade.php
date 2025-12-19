@@ -55,7 +55,7 @@
                             <div>
                                 <div><strong>SK Masa Tanam </strong> DI @{{ selectedDINama }} @{{ filter.tahun ? ' Tahun ' + filter.tahun : '' }}</div>
                                 <div v-if="skData">
-                                    SK @{{ skData.sk_dari }} No @{{ skData.no_sk }} tahun @{{ skData.tahun_sk }} — Tanggal: @{{ formatTanggal(skData.tanggal_terbit_sk) }}
+                                    SK @{{ skData.sk_dari }} No @{{ skData.no_sk }} tahun @{{ tahunTerbitSK }} — Tanggal: @{{ formatTanggal(skData.tanggal_terbit_sk) }}
                                 </div>
                                 <div v-else class="text-muted">Belum ada SK .</div>
                             </div>
@@ -122,6 +122,10 @@
                 </div>
 
                 <div class="modal-body">
+                    <!-- <div class="mb-2">
+                        <label class="form-label fw-bold">Tahun SK</label>
+                        <input type="text" disabled class="form-control" v-model="skForm.tahun_sk">
+                    </div> -->
                     <div class="mb-2">
                         <label class="form-label fw-bold">SK Dari</label>
                         <input type="text" class="form-control" v-model="skForm.sk_dari">
@@ -250,6 +254,10 @@
             selectedDINama() {
                 const d = this.daerahIrigasis.find(x => x.id === this.filter.di);
                 return d ? d.nama : '';
+            },
+            tahunTerbitSK() {
+                if (!this.skData || !this.skData.tanggal_terbit_sk) return '';
+                return new Date(this.skData.tanggal_terbit_sk).getFullYear();
             }
         },
 
