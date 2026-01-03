@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('nama');
             $table->text('keterangan')->nullable();
+            $table->foreignId('daerah_irigasi_id')->nullable()->constrained()->nullOnDelete();
 
             $table->timestamps();
         });

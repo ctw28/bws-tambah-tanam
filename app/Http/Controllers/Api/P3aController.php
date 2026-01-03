@@ -10,26 +10,37 @@ class P3aController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->query('search');
-        $perPage = $request->query('per_page', 25);
+        $search   = $request->query('search');
+        $perPage  = $request->query('per_page', 25);
+        $diId     = $request->query('daerah_irigasi_id');
 
-        $query = P3a::query();
+        $query = P3a::query()->with('daerahIrigasi');
 
-        if ($search) {
+        if (!empty($search)) {
             $query->where('nama', 'like', "%{$search}%");
         }
 
-        // ✅ jika per_page = "all", ambil semua data tanpa pagination
-        if ($perPage === 'all' || $perPage == 0) {
-            $data = $query->orderBy('id', 'desc')->get();
-        } else {
-            // pastikan perPage berupa integer
-            $perPage = (int) $perPage;
-            $data = $query->orderBy('id', 'desc')->paginate($perPage);
+        if (!empty($diId)) {
+            $query->where('daerah_irigasi_id', $diId);
         }
 
-        return response()->json($data);
+        $query->orderBy('id', 'desc');
+
+        // 👉 ambil semua (tanpa pagination)
+        if ($perPage === 'all') {
+            return response()->json([
+                'data' => $query->get()
+            ]);
+        }
+
+        // 👉 pagination normal
+        $perPage = max((int) $perPage, 1);
+
+        return response()->json(
+            $query->paginate($perPage)
+        );
     }
+
 
 
     public function store(Request $request)
@@ -37,7 +48,9 @@ class P3aController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
+            'daerah_irigasi_id' => 'required|exists:daerah_irigasis,id',
         ]);
+
 
         $p3a = P3a::create($validated);
         return response()->json($p3a);
@@ -50,14 +63,28 @@ class P3aController extends Controller
 
     public function update(Request $request, P3a $p3a)
     {
-        $validated = $request->validate([
+        $rules = [
             'nama' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
-        ]);
+        ];
+
+        // Jika data lama (DI masih kosong)
+        if (is_null($p3a->daerah_irigasi_id)) {
+            $rules['daerah_irigasi_id'] = 'required|exists:daerah_irigasis,id';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Kalau sudah ada DI → jangan diubah
+        if (!is_null($p3a->daerah_irigasi_id)) {
+            unset($validated['daerah_irigasi_id']);
+        }
 
         $p3a->update($validated);
-        return response()->json($p3a);
+
+        return response()->json($p3a->load('daerahIrigasi'));
     }
+
 
     public function destroy(P3a $p3a)
     {

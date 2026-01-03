@@ -9,6 +9,17 @@
             <button class="btn btn-primary" @click="openForm()">+ Tambah P3A</button>
         </div>
         <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Daerah Irigasi</label>
+                    <select class="form-select" v-model="selectedDI" @change="fetchP3A(1)">
+                        <option value="">-- Pilih Daerah Irigasi --</option>
+                        <option v-for="di in daftarDI" :value="di.id">
+                            @{{ di.nama }}
+                        </option>
+                    </select>
+                </div>
+            </div>
 
             <!-- Filter dan per-page -->
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -28,6 +39,7 @@
                     <thead>
                         <tr>
                             <th width="50">No</th>
+                            <th>DI</th>
                             <th>Nama P3A</th>
                             <th>Keterangan</th>
                             <th width="150">Aksi</th>
@@ -36,8 +48,17 @@
                     <tbody>
                         <tr v-for="(p, index) in p3as.data" :key="p.id">
                             <td>@{{ (p3as.from || 0) + index }}</td>
+                            <td>
+                                <span v-if="!p.daerah_irigasi_id" class="badge bg-danger">
+                                    Belum ada DI
+                                </span>
+                                <span v-else class="badge bg-success">
+                                    @{{ p.daerah_irigasi.nama }}
+                                </span>
+                            </td>
                             <td>@{{ p.nama }}</td>
                             <td>@{{ p.keterangan || '-' }}</td>
+
                             <td class="text-nowrap text-md-wrap">
                                 <button class="btn btn-sm btn-warning me-2" @click="editP3A(p)">Edit</button>
                                 <button class="btn btn-sm btn-danger" @click="deleteP3A(p.id)">Hapus</button>
@@ -95,6 +116,36 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
+                        <!-- MODE TAMBAH → readonly -->
+                        <div class="mb-3" v-if="formMode === 'create'">
+                            <label class="form-label">Daerah Irigasi</label>
+                            <input type="text" class="form-control" :value="selectedDINama" readonly>
+                        </div>
+
+                        <!-- MODE EDIT & DI KOSONG -->
+                        <div class="mb-3" v-else-if="isDIEmpty">
+                            <label class="form-label">Daerah Irigasi <span class="text-danger">*</span></label>
+                            <select class="form-select" v-model="form.daerah_irigasi_id" required>
+                                <option value="">-- Pilih Daerah Irigasi --</option>
+                                <option v-for="di in daftarDI" :value="di.id">
+                                    @{{ di.nama }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- MODE EDIT & DI SUDAH ADA -->
+                        <div class="mb-3" v-else>
+                            <label class="form-label">Daerah Irigasi</label>
+                            <input type="text" class="form-control" :value="selectedDINama" readonly>
+                        </div>
+
+
+                        <!-- Jika DI SUDAH ADA → readonly -->
+                        <div class="mb-3" v-else>
+                            <label class="form-label">Daerah Irigasi</label>
+                            <input type="text" class="form-control" :value="selectedDINama" readonly>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Nama P3A <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" v-model="form.nama" required>
@@ -127,19 +178,26 @@
     createApp({
         data() {
             return {
-                token: localStorage.getItem("token"),
                 p3as: {
                     data: []
                 },
+                daftarDI: [],
+                selectedDI: '',
+                isDIEmpty: false,
+
                 search: '',
                 perPage: 25,
                 form: {
                     id: null,
                     nama: '',
-                    keterangan: ''
-                }
+                    keterangan: '',
+                    daerah_irigasi_id: null,
+                },
+                formMode: 'create', // create | edit
+
             };
         },
+
         methods: {
             async fetchP3A(page = 1) {
                 try {
@@ -151,21 +209,38 @@
                 }
             },
             openForm() {
+                if (!this.selectedDI) {
+                    alert('Pilih Daerah Irigasi terlebih dahulu');
+                    return;
+                }
+
+                this.formMode = 'create';
+                this.isDIEmpty = false;
+
                 this.form = {
                     id: null,
                     nama: '',
-                    keterangan: ''
+                    keterangan: '',
+                    daerah_irigasi_id: this.selectedDI, // 🔒 DIKUNCI dari filter
                 };
+
                 new bootstrap.Modal(document.getElementById('p3aModal')).show();
             },
             editP3A(p) {
+                this.formMode = 'edit';
+
                 this.form = {
                     id: p.id,
                     nama: p.nama,
-                    keterangan: p.keterangan
+                    keterangan: p.keterangan,
+                    daerah_irigasi_id: p.daerah_irigasi_id,
                 };
+
+                this.isDIEmpty = !p.daerah_irigasi_id;
+
                 new bootstrap.Modal(document.getElementById('p3aModal')).show();
             },
+
             async saveP3A() {
                 try {
                     if (this.form.id) {
@@ -190,9 +265,37 @@
                         alert("Gagal menghapus data");
                     }
                 }
-            }
+            },
+            async fetchDI() {
+                // let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9');
+                let res = await axios.get('/api/master/daerah-irigasi?page=all&is_child=1');
+
+                this.daftarDI = res.data.data;
+            },
+            async fetchP3A(page = 1) {
+                const res = await axios.get('/api/master/p3a', {
+                    params: {
+                        page,
+                        per_page: this.perPage,
+                        search: this.search,
+                        daerah_irigasi_id: this.selectedDI,
+                    }
+                });
+                this.p3as = res.data;
+            },
+
         },
         computed: {
+            selectedDINama() {
+                if (!Array.isArray(this.daftarDI)) return '-';
+
+                const id = this.formMode === 'create' ?
+                    this.selectedDI :
+                    this.form.daerah_irigasi_id;
+
+                const di = this.daftarDI.find(d => d.id == id);
+                return di ? di.nama : '-';
+            },
             pagesToShow() {
                 const total = this.p3as.last_page;
                 const current = this.p3as.current_page;
@@ -219,6 +322,7 @@
         },
 
         mounted() {
+            this.fetchDI();
             this.fetchP3A();
         }
     }).mount("#app");

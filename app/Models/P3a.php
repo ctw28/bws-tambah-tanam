@@ -11,6 +11,7 @@ class P3a extends Model
     protected $fillable = [
         'nama',
         'keterangan',
+        'daerah_irigasi_id',
     ];
 
     /**
@@ -19,5 +20,9 @@ class P3a extends Model
     public function formPengisianP3as()
     {
         return $this->hasMany(FormPengisianP3a::class, 'p3a_id');
+    }
+    public function daerahIrigasi()
+    {
+        return $this->belongsTo(DaerahIrigasi::class);
     }
 }
