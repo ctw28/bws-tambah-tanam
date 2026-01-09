@@ -280,13 +280,17 @@ createApp({
                 id: p.id,
                 nama: p.nama,
                 keterangan: p.keterangan,
-                daerah_irigasi_id: p.daerah_irigasi_id,
+                daerah_irigasi_id: p.daerah_irigasi_id ??
+                    p.daerah_irigasi?.id ??
+                    this.activeDI // 🔥 isi dari filter
             };
 
-            this.isDIEmpty = !p.daerah_irigasi_id;
+            this.isDIEmpty = !this.form.daerah_irigasi_id;
 
             new bootstrap.Modal(document.getElementById('p3aModal')).show();
         },
+
+
 
         async saveP3A() {
             try {
@@ -399,13 +403,30 @@ createApp({
     },
     computed: {
         selectedDINama() {
-            if (!Array.isArray(this.daerahIrigasis)) return '-';
+            if (
+                !Array.isArray(this.daerahIrigasis) &&
+                !Array.isArray(this.daerahIrigasisChild)
+            ) return '-';
 
-            const id = this.formMode === 'create' ?
-                this.selectedDI :
-                this.form.daerah_irigasi_id;
+            let id = null;
 
-            const di = this.daerahIrigasis.find(d => d.id == id);
+            if (this.formMode === 'create') {
+                id = this.selectedDI;
+            } else {
+                id = this.form.daerah_irigasi_id ??
+                    this.form.daerah_irigasi?.id ??
+                    this.activeDI ??
+                    this.selectedDI;
+            }
+
+            if (!id) return '-';
+
+            // 🔥 tentukan sumber array
+            const source = this.isChild ?
+                this.daerahIrigasisChild :
+                this.daerahIrigasis;
+
+            const di = source.find(d => d.id == id);
             return di ? di.nama : '-';
         },
         pagesToShow() {
