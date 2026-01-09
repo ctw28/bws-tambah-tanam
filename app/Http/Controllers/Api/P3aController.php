@@ -14,7 +14,9 @@ class P3aController extends Controller
         $perPage  = $request->query('per_page', 25);
         $diId     = $request->query('daerah_irigasi_id');
 
-        $query = P3a::query()->with('daerahIrigasi');
+        $query = P3a::query()
+            ->with('daerahIrigasi')
+            ->whereNotNull('daerah_irigasi_id'); // 👈 hanya yang punya DI
 
         if (!empty($search)) {
             $query->where('nama', 'like', "%{$search}%");
@@ -26,20 +28,20 @@ class P3aController extends Controller
 
         $query->orderBy('id', 'desc');
 
-        // 👉 ambil semua (tanpa pagination)
+        // ambil semua
         if ($perPage === 'all') {
             return response()->json([
                 'data' => $query->get()
             ]);
         }
 
-        // 👉 pagination normal
         $perPage = max((int) $perPage, 1);
 
         return response()->json(
             $query->paginate($perPage)
         );
     }
+
 
 
 

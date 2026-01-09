@@ -108,18 +108,11 @@ class PengamatController extends Controller
             'kode' => 'required|string',
         ]);
 
-        $pengamat = Pengamat::with('daerahIrigasi')
+        $pengamat = Pengamat::with('daerahIrigasi.parent')
             ->where('kode', $request->kode)
             ->whereNotNull('kode')
             ->first();
 
-        // $found = null;
-        // foreach ($pengamat as $p) {
-        //     if (Hash::check($request->kode, $p->kode)) {
-        //         $found = $p;
-        //         break;
-        //     }
-        // }
 
         if (!$pengamat) {
             return response()->json(['message' => 'Kode salah'], 401);
