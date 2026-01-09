@@ -118,122 +118,110 @@
                     <div class="card h-100">
                         <div class="card-body">
 
-                            <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
+                            <div
+                                class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                                 <div class="flex-grow-1 mt-2">
                                     <div class="user-profile-info">
                                         <h3>DATA TEKNIS</h3>
-                                        <h4 v-if="!isChild" class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab. @{{selectedDI.kabupatens[0].nama}}</h4>
-                                        <h4 v-if="isChild" class="mb-2">Daerah Irigasi @{{selectedIndukDI.nama}} Wilayah @{{selectedDI.nama}}</h4>
-                                        <h5 class="mt-4">Luas Daerah Irigasi</h5>
-                                        <div class="row mt-4">
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-warning p-2"><i class="icon-base bx bx-water icon-lg text-warning"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{ selectedDI.luas_baku }} ha</h6>
-                                                    <small>Luas Baku</small>
-                                                </div>
-                                            </div>
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-water icon-lg text-info"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{ selectedDI.luas_potensial }} ha</h6>
-                                                    <small>Luas Potensial</small>
-                                                </div>
-                                            </div>
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-water icon-lg text-success"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{ selectedDI.luas_fungsional }} ha</h6>
-                                                    <small>Luas Fungsional</small>
-                                                </div>
-                                            </div>
+                                        <h4 v-if="!isChild" class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab.
+                                            @{{selectedDI.kabupatens[0].nama}}</h4>
+                                        <h4 v-if="isChild" class="mb-2">Daerah Irigasi @{{selectedIndukDI.nama}} Wilayah
+                                            @{{selectedDI.nama}}</h4>
+                                        <h5 class="mt-4">Rekap Data Teknis</h5>
+                                        <div class="table-responsive mt-3">
+                                            <table class="table table-bordered align-middle">
+                                                <thead class="table-dark text-center">
+                                                    <tr>
+                                                        <th width="60" class="text-white">No</th>
+                                                        <th class="text-white">Item</th>
+                                                        <th class="text-white">Satuan</th>
+                                                        <th class="text-white">Jumlah</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr class="table-primary">
+                                                        <td class="text-center">1</td>
+                                                        <td>Luas Baku</td>
+                                                        <td>Ha</td>
+                                                        <td>@{{ selectedDI.luas_baku }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-success">
+                                                        <td class="text-center">2</td>
+                                                        <td>Luas Potensial</td>
+                                                        <td>Ha</td>
+                                                        <td>@{{ selectedDI.luas_potensial }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-info">
+                                                        <td class="text-center">3</td>
+                                                        <td>Luas Fungsional</td>
+                                                        <td>Ha</td>
+                                                        <td>@{{ selectedDI.luas_fungsional }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-warning">
+                                                        <td class="text-center">4</td>
+                                                        <td>Saluran</td>
+                                                        <td>Unit</td>
+                                                        <td>@{{ rekap.total_saluran }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-secondary">
+                                                        <td class="text-center">5</td>
+                                                        <td>Bangunan</td>
+                                                        <td>Unit</td>
+                                                        <td>@{{ rekap.total_bangunan }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-light">
+                                                        <td class="text-center">6</td>
+                                                        <td>Petak</td>
+                                                        <td>Unit</td>
+                                                        <td>@{{ rekap.total_petak }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-danger">
+                                                        <td class="text-center">7</td>
+                                                        <td>Pengamat</td>
+                                                        <td>Orang</td>
+                                                        <td>@{{ rekap.total_pengamat }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-secondary">
+                                                        <td class="text-center">8</td>
+                                                        <td>Juru</td>
+                                                        <td>Orang</td>
+                                                        <td>@{{ rekap.total_juru }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-primary">
+                                                        <td class="text-center">9</td>
+                                                        <td>Kecamatan</td>
+                                                        <td>Wilayah</td>
+                                                        <td>@{{ rekap.total_kecamatan }}</td>
+                                                    </tr>
+
+                                                    <tr class="table-success">
+                                                        <td class="text-center">10</td>
+                                                        <td>Desa</td>
+                                                        <td>Wilayah</td>
+                                                        <td>@{{ rekap.total_desa }}</td>
+                                                    </tr>
+
+                                                    <!-- BARIS BARU P3A -->
+                                                    <tr class="table-warning">
+                                                        <td class="text-center">11</td>
+                                                        <td>P3A</td>
+                                                        <td>Kelompok</td>
+                                                        <td>@{{ rekap.total_p3a }}</td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <h5 class="mt-4">Saluran, Juru dan Pengamat</h5>
 
-                                        <div class="row mt-4">
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-warning p-2"><i class="icon-base bx bx-git-branch icon-lg text-warning"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_saluran}}</h6>
-                                                    <small>Saluran</small>
-                                                </div>
-                                            </div>
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-success p-2"><i class="icon-base bx bx-building icon-lg text-success"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_bangunan}}</h6>
-                                                    <small>Bangunan</small>
-                                                </div>
-                                            </div>
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-traffic-cone icon-lg text-info"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_petak}}</h6>
-                                                    <small>Petak</small>
-                                                </div>
-                                            </div>
-                                            <!-- Pengamat -->
-                                            <div class="col d-flex mt-3 mt-md-0">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-secondary p-2">
-                                                        <i class="icon-base bx bx-bullseye icon-lg text-secondary"></i>
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_pengamat}}</h6>
-                                                    <small>Pengamat</small>
-                                                </div>
-                                            </div>
-
-                                            <!-- Juru -->
-                                            <div class="col d-flex mt-3 mt-md-0">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-dark p-2">
-                                                        <i class="icon-base bx bx-user icon-lg text-dark"></i>
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_juru}}</h6>
-                                                    <small>Juru</small>
-                                                </div>
-                                            </div>
-
-
-                                        </div>
-                                        <h5 class="mt-4">Kecamatan dan Desa</h5>
-
-                                        <div class="row mt-4">
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-primary p-2"><i class="icon-base bx bx-building icon-lg text-primary"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_kecamatan}}</h6>
-                                                    <small>Kecamatan</small>
-                                                </div>
-                                            </div>
-                                            <div class="col d-flex">
-                                                <div class="me-3">
-                                                    <span class="badge rounded-2 bg-label-info p-2"><i class="icon-base bx bx-building icon-lg text-info"></i></span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@{{rekap.total_desa}}</h6>
-                                                    <small>Desa</small>
-                                                </div>
-                                            </div>
-                                        </div>
 
 
                                     </div>
@@ -250,7 +238,8 @@
                             <h5 class="fw-bold mb-3">Rekapitulasi Luas Tambah Tanam (LTT)</h5>
                             <p v-if="skMasaTanam">
                                 SK Masa Tanam :
-                                SK @{{ skMasaTanam.sk_dari }} No @{{ skMasaTanam.no_sk }} tahun @{{ tahunTerbitSK }} — Tanggal: @{{ formatTanggal(skMasaTanam.tanggal_terbit_sk) }}
+                                SK @{{ skMasaTanam.sk_dari }} No @{{ skMasaTanam.no_sk }} tahun @{{ tahunTerbitSK }} —
+                                Tanggal: @{{ formatTanggal(skMasaTanam.tanggal_terbit_sk) }}
 
                             </p>
                             <table class="table table-bordered table-striped">
@@ -271,12 +260,15 @@
                                     <tr v-for="(row, index) in topPerMt" :key="index">
                                         <td>@{{ index + 1 }}</td>
                                         <td>MT @{{ row.masa_tanam }}</td>
-                                        <td> @{{ bulanIndo(row.bulan_mulai) }} - @{{ bulanIndo(row.bulan_selesai) }}</td>
+                                        <td> @{{ bulanIndo(row.bulan_mulai) }} - @{{ bulanIndo(row.bulan_selesai) }}
+                                        </td>
                                         <td>@{{ formatAngka(row.total_luas) }}</td>
                                         <td>@{{ formatAngka(row.padi) }}</td>
                                         <td>@{{ formatAngka(row.palawija) }}</td>
                                         <td>@{{ formatAngka(row.lainnya) }}</td>
-                                        <td><button class="btn btn-primary btn-sm" @click="openDetail(row.daerah_irigasi_id, row.tanggal_minggu)">Detail</button></td>
+                                        <td><button class="btn btn-primary btn-sm"
+                                                @click="openDetail(row.daerah_irigasi_id, row.tanggal_minggu)">Detail</button>
+                                        </td>
                                     </tr>
 
                                     <tr v-if="topPerMt.length === 0">
@@ -681,7 +673,8 @@
                         return;
                     }
 
-                    let url = `/api/rekap-mingguan?di_id=${diId}&tanggal_mulai=${this.filterTanggalAwal}&tanggal_selesai=${this.filterTanggalAkhir}`;
+                    let url =
+                        `/api/rekap-mingguan?di_id=${diId}&tanggal_mulai=${this.filterTanggalAwal}&tanggal_selesai=${this.filterTanggalAkhir}`;
                     const res = await axios.get(url);
                     this.items = res.data.rekap;
                     console.log(res.data);

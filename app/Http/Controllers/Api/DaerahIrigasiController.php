@@ -151,6 +151,7 @@ class DaerahIrigasiController extends Controller
         // Jika user memilih DI tertentu, filter semua entitas berdasar ID tersebut
         if ($diId) {
             $total_saluran = \App\Models\Saluran::where('daerah_irigasi_id', $diId)->count();
+            $total_p3a = \App\Models\P3a::where('daerah_irigasi_id', $diId)->count();
 
             $total_bangunan = \App\Models\Bangunan::whereHas('saluran', function ($q) use ($diId) {
                 $q->where('daerah_irigasi_id', $diId);
@@ -182,6 +183,7 @@ class DaerahIrigasiController extends Controller
                 'total_juru' => $total_juru,
                 'total_kecamatan' => $total_kecamatan,
                 'total_desa'      => $total_desa,
+                'total_p3a'      => $total_p3a,
             ]);
         }
 
