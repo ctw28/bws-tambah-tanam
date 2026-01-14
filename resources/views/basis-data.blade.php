@@ -36,18 +36,18 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-    .form-line {
-        margin-bottom: 8px;
-    }
+        .form-line {
+            margin-bottom: 8px;
+        }
 
-    .form-line span {
-        display: inline-block;
-        min-width: 250px;
-    }
+        .form-line span {
+            display: inline-block;
+            min-width: 250px;
+        }
 
-    [v-cloak] {
-        display: none;
-    }
+        [v-cloak] {
+            display: none;
+        }
     </style>
 </head>
 
@@ -122,18 +122,18 @@
                                 class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
                                 <div class="flex-grow-1 mt-2">
                                     <div class="user-profile-info">
-                                        <h3>DATA TEKNIS</h3>
+                                        <!-- <h3>DATA TEKNIS</h3> -->
                                         <h4 v-if="!isChild" class="mb-2">Daerah Irigasi @{{selectedDI.nama}} - Kab.
                                             @{{selectedDI.kabupatens[0].nama}}</h4>
                                         <h4 v-if="isChild" class="mb-2">Daerah Irigasi @{{selectedIndukDI.nama}} Wilayah
                                             @{{selectedDI.nama}}</h4>
-                                        <h5 class="mt-4">Rekap Data Teknis</h5>
+                                        <h5 class="mt-4">Data Teknis</h5>
                                         <div class="table-responsive mt-3">
                                             <table class="table table-bordered align-middle">
                                                 <thead class="table-dark text-center">
                                                     <tr>
                                                         <th width="60" class="text-white">No</th>
-                                                        <th class="text-white">Item</th>
+                                                        <th class="text-white">Uraian</th>
                                                         <th class="text-white">Satuan</th>
                                                         <th class="text-white">Jumlah</th>
                                                     </tr>
@@ -164,21 +164,21 @@
                                                     <tr class="table-warning">
                                                         <td class="text-center">4</td>
                                                         <td>Saluran</td>
-                                                        <td>Unit</td>
+                                                        <td>Ruas</td>
                                                         <td>@{{ rekap.total_saluran }}</td>
                                                     </tr>
 
                                                     <tr class="table-secondary">
                                                         <td class="text-center">5</td>
                                                         <td>Bangunan</td>
-                                                        <td>Unit</td>
+                                                        <td>Buah</td>
                                                         <td>@{{ rekap.total_bangunan }}</td>
                                                     </tr>
 
                                                     <tr class="table-light">
                                                         <td class="text-center">6</td>
+                                                        <td>Petak Layanan</td>
                                                         <td>Petak</td>
-                                                        <td>Unit</td>
                                                         <td>@{{ rekap.total_petak }}</td>
                                                     </tr>
 
@@ -391,494 +391,494 @@
     <script src="{{asset('/')}}assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
     <script>
-    const {
-        createApp
-    } = Vue;
+        const {
+            createApp
+        } = Vue;
 
-    createApp({
-        data() {
-            return {
-                kode: "",
-                komir: null,
-                forms: [],
-                item: {},
-                modalInstance: null,
-                daerahIrigasis: [],
-                filteredItems: [],
-                permasalahans: [],
-                filterDi: '',
-                filterDi: '',
-                filterTanggalAwal: '',
-                filterTanggalAkhir: '',
-                pagination: {
-                    current: 1,
-                    last: 1,
-                    total: 0,
-                },
-                perPage: 10, // default,
-                paginationPermasalahan: {
-                    current: 1,
-                    last: 1,
-                    total: 0,
-                },
-                is_filtered: false,
-                is_loading: false,
-                activeTab: 'dashboard', // default tab yang aktif saat halaman dibuka,
-                rekapItems: [],
-                chartDI: null,
-                chartItem: null,
-                filterDI: '',
-                isFilter: false,
-                rekap: [],
-                rekapLuasTotal: [],
-                rekapLuasTanam: [],
-                isChild: false,
-                filterDIChild: '', // ✅ tambahkan ini
-                rekapPermasalahan: [],
-                diId: '',
-                daerahIrigasisChild: [],
-                selectedIndukDI: '',
-                rekapMasaTanam: [], // ✅ penampung data hasil API
-                isLoadingRekap: false,
-                filterTahun: new Date().getFullYear(), // default otomatis
-                maxPerMt: {},
-                topPerMt: [],
-                detailItems: [],
-                selectedTanggal: '',
-                detailModal: null,
-                totalDetail: {
-                    padi: 0,
-                    palawija: 0,
-                    lainnya: 0,
-                    total: 0
-                },
-                skMasaTanam: ''
+        createApp({
+            data() {
+                return {
+                    kode: "",
+                    komir: null,
+                    forms: [],
+                    item: {},
+                    modalInstance: null,
+                    daerahIrigasis: [],
+                    filteredItems: [],
+                    permasalahans: [],
+                    filterDi: '',
+                    filterDi: '',
+                    filterTanggalAwal: '',
+                    filterTanggalAkhir: '',
+                    pagination: {
+                        current: 1,
+                        last: 1,
+                        total: 0,
+                    },
+                    perPage: 10, // default,
+                    paginationPermasalahan: {
+                        current: 1,
+                        last: 1,
+                        total: 0,
+                    },
+                    is_filtered: false,
+                    is_loading: false,
+                    activeTab: 'dashboard', // default tab yang aktif saat halaman dibuka,
+                    rekapItems: [],
+                    chartDI: null,
+                    chartItem: null,
+                    filterDI: '',
+                    isFilter: false,
+                    rekap: [],
+                    rekapLuasTotal: [],
+                    rekapLuasTanam: [],
+                    isChild: false,
+                    filterDIChild: '', // ✅ tambahkan ini
+                    rekapPermasalahan: [],
+                    diId: '',
+                    daerahIrigasisChild: [],
+                    selectedIndukDI: '',
+                    rekapMasaTanam: [], // ✅ penampung data hasil API
+                    isLoadingRekap: false,
+                    filterTahun: new Date().getFullYear(), // default otomatis
+                    maxPerMt: {},
+                    topPerMt: [],
+                    detailItems: [],
+                    selectedTanggal: '',
+                    detailModal: null,
+                    totalDetail: {
+                        padi: 0,
+                        palawija: 0,
+                        lainnya: 0,
+                        total: 0
+                    },
+                    skMasaTanam: ''
 
-            }
-        },
-        computed: {
-            tahunTerbitSK() {
-                if (!this.skMasaTanam || !this.skMasaTanam.tanggal_terbit_sk) return '';
-                return new Date(this.skMasaTanam.tanggal_terbit_sk).getFullYear();
-            }
-        },
-        methods: {
-            clearData() {
-                this.isFilter = false
-                this.rekap = []
-                this.rekapLuasTanam = []
-                this.rekapLuasTotal = []
-                // Reset
-                this.maxPerMt = {};
-                this.topPerMt = [];
-            },
-            async checkChild() {
-                this.clearData()
-                this.selectedDI = ''
-                if (!this.filterDI) {
-                    this.isChild = false
-                    this.filterDIChild = ''
-                    return
-                }
-
-                let res = await axios.get(`/api/master/daerah-irigasi?id=${this.filterDI}`)
-                let di = res.data
-                console.log(di);
-
-
-                if (di.children && di.children.length > 0) {
-                    this.daerahIrigasisChild = di.children
-                    console.log(this.daerahIrigasisChild);
-
-                    this.isChild = true
-                    this.filterDIChild = ''
-
-                } else {
-                    this.isChild = false
-                    this.filterDIChild = ''
                 }
             },
-            async loadData(diId) {
-                try {
-                    let url = `/api/form-pengisian?page=all&di_id=${diId}`;
+            computed: {
+                tahunTerbitSK() {
+                    if (!this.skMasaTanam || !this.skMasaTanam.tanggal_terbit_sk) return '';
+                    return new Date(this.skMasaTanam.tanggal_terbit_sk).getFullYear();
+                }
+            },
+            methods: {
+                clearData() {
+                    this.isFilter = false
+                    this.rekap = []
+                    this.rekapLuasTanam = []
+                    this.rekapLuasTotal = []
+                    // Reset
+                    this.maxPerMt = {};
+                    this.topPerMt = [];
+                },
+                async checkChild() {
+                    this.clearData()
+                    this.selectedDI = ''
+                    if (!this.filterDI) {
+                        this.isChild = false
+                        this.filterDIChild = ''
+                        return
+                    }
+
+                    let res = await axios.get(`/api/master/daerah-irigasi?id=${this.filterDI}`)
+                    let di = res.data
+                    console.log(di);
+
+
+                    if (di.children && di.children.length > 0) {
+                        this.daerahIrigasisChild = di.children
+                        console.log(this.daerahIrigasisChild);
+
+                        this.isChild = true
+                        this.filterDIChild = ''
+
+                    } else {
+                        this.isChild = false
+                        this.filterDIChild = ''
+                    }
+                },
+                async loadData(diId) {
+                    try {
+                        let url = `/api/form-pengisian?page=all&di_id=${diId}`;
+                        if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                        if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                        let res = await axios.get(url);
+                        this.items = res.data.data;
+                        this.filteredItems = res.data;
+                        console.log(this.filteredItems);
+                        this.loadRekap(diId)
+
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.is_loading = false;
+                    }
+                },
+
+                async loadRekap(diId) {
+                    let url = `/api/master/rekap-data?di_id=${diId}`
+                    axios.get(url).then(res => {
+                        console.log(res);
+                        this.rekap = res.data
+                    });
+
+
+                    this.loadRekapPengisian(1)
+
+
+                },
+                async loadRekapPengisian(page = 1) {
+                    // alert(page)
+                    let url = `/api/rekap-petak?di_id=${this.diId}&page=${page}&per_page=${this.perPage}`
+                    if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                    if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                    axios.get(url).then(res => {
+                        console.log(res.data);
+                        this.rekapLuasTanam = res.data.data
+                        this.pagination = {
+                            current: res.data.current_page,
+                            last: res.data.last_page,
+                            total: res.data.total,
+                        };
+                    });
+
+                    url = `/api/rekap-di?di_id=${this.diId}`
+                    if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
+                    if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+
+                    axios.get(url).then(res => {
+                        const data = res.data.total_luas || {};
+
+                        // Ubah nilai ke number (hilangkan titik ribuan, ubah koma jadi titik)
+                        const parseNumber = (val) => {
+                            if (!val) return 0;
+                            return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+                        };
+
+                        this.rekapLuasTotal = {
+                            padi: parseNumber(data.padi),
+                            palawija: parseNumber(data.palawija),
+                            lainnya: parseNumber(data.lainnya),
+                            total: parseNumber(data.total),
+                        };
+
+                        console.log("Data konversi:", this.rekapLuasTotal);
+
+                        // Panggil chart setelah data siap
+                        this.chartPerItem();
+                    });
+
+                },
+                bulanIndo(angka) {
+                    const bulan = [
+                        "", "Januari", "Februari", "Maret", "April",
+                        "Mei", "Juni", "Juli", "Agustus", "September",
+                        "Oktober", "November", "Desember"
+                    ];
+                    return bulan[angka];
+                },
+
+                formatTanggalIndo(tanggal) {
+                    const options = {
+                        timeZone: "Asia/Makassar",
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                    };
+                    return new Date(tanggal).toLocaleString("id-ID", options);
+                },
+
+                showForm(form) {
+                    this.item = form;
+                    // console.log(this.item);
+
+                    const modalEl = document.getElementById('formLTTModal');
+                    this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    this.modalInstance.show();
+                },
+                formatTanggal(tgl) {
+                    if (!tgl) return '-';
+
+                    // Format ke 17 September 2025
+                    return new Date(tgl).toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                },
+                formatNumber(val) {
+                    if (!val) return '0';
+                    return parseFloat(val).toLocaleString('id-ID', {
+                        minimumFractionDigits: 2
+                    });
+                },
+                logout() {
+                    this.komir = null;
+                    localStorage.removeItem("komir");
+
+                    this.kode = "";
+                    this.forms = [];
+                },
+                applyFilter() {
+                    let diId = this.isChild ? this.filterDIChild : this.filterDI
+                    // alert(diId);
+                    if (this.isChild) {
+                        this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
+                        this.selectedIndukDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+
+                    } else {
+                        this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
+
+                    }
+                    if (!diId) {
+                        alert("Pilih Daerah Irigasi terlebih dahulu")
+                        return
+                    }
+                    this.diId = diId
+                    this.loadData(diId)
+                    this.loadRekapPermasalahan(diId)
+                    this.loadRekapMasaTanamDi(diId)
+                    this.isFilter = true
+                },
+                // async loadRekapMasaTanamDi(diId) {
+                //     if (!diId) return;
+
+                //     this.isLoadingRekap = true;
+
+                //     try {
+                //         const res = await axios.get(`/api/rekap-masa-tanam`, {
+                //             params: {
+                //                 di_id: diId,
+                //                 tahun: this.filterTahun
+                //             }
+                //         });
+
+                //         this.rekapMasaTanam = res.data;
+
+                //         console.log('Rekap masa tanam:', this.rekapMasaTanam);
+
+                //     } catch (err) {
+                //         console.error(err);
+                //         alert('Gagal memuat rekap masa tanam');
+                //     } finally {
+                //         this.isLoadingRekap = false;
+                //     }
+                // },
+                async loadRekapMasaTanamDi(diId) {
+                    if (!diId || !this.filterTanggalAwal || !this.filterTanggalAkhir) {
+                        alert('Lengkapi filter dulu');
+                        return;
+                    }
+
+                    let url =
+                        `/api/rekap-mingguan?di_id=${diId}&tanggal_mulai=${this.filterTanggalAwal}&tanggal_selesai=${this.filterTanggalAkhir}`;
+                    const res = await axios.get(url);
+                    this.items = res.data.rekap;
+                    console.log(res.data);
+                    this.skMasaTanam = res.data.masaTanamSk
+                    // Reset
+                    this.maxPerMt = {};
+                    this.topPerMt = [];
+
+                    // Hitung nilai tertinggi per MT
+                    this.items.forEach(row => {
+                        const mt = row.masa_tanam;
+                        const total = Number(row.total_luas);
+
+                        if (!this.maxPerMt[mt]) {
+                            this.maxPerMt[mt] = total;
+                        } else {
+                            if (total > this.maxPerMt[mt]) {
+                                this.maxPerMt[mt] = total;
+                            }
+                        }
+                    });
+
+                    // Ambil hanya data tertinggi per MT
+                    Object.keys(this.maxPerMt).forEach(mt => {
+                        const row = this.items.find(r =>
+                            r.masa_tanam === mt &&
+                            Number(r.total_luas) === this.maxPerMt[mt]
+                        );
+
+                        if (row) {
+                            this.topPerMt.push(row);
+                        }
+                    });
+
+
+                    // hitung max per masa tanam
+                    this.items.forEach(row => {
+                        const mt = row.masa_tanam;
+
+                        if (!this.maxPerMt[mt]) {
+                            this.maxPerMt[mt] = Number(row.total_luas);
+                        } else {
+                            if (Number(row.total_luas) > this.maxPerMt[mt]) {
+                                this.maxPerMt[mt] = Number(row.total_luas);
+                            }
+                        }
+                    });
+
+                },
+
+                applyFilterPermasalahan() {
+                    this.loadPermasalahan(1)
+                },
+                resetFilter() {
+                    this.filterDI = ''
+                    this.filterTanggalAwal = ''
+                    this.filterTanggalAkhir = ''
+                    this.filteredItems = []
+                    this.permasalahans = []
+                    this.loadDashboard()
+                },
+                syncTanggal() {
+                    this.filterTanggalAkhir = this.filterTanggalAwal;
+                },
+
+                chartPerItem() {
+                    const data = this.topPerMt;
+                    if (!data || data.length === 0) return;
+
+                    if (this.chartItem) this.chartItem.destroy();
+
+                    const ctx = document.getElementById('chartItem');
+                    if (!ctx) return;
+
+                    // Label sumbu X
+                    const labels = data.map(item => `MT ${item.masa_tanam}`);
+
+                    // Data per kategori
+                    const padi = data.map(item => item.padi);
+                    const palawija = data.map(item => item.palawija);
+                    const lainnya = data.map(item => item.lainnya);
+
+                    this.chartItem = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                    label: 'Padi',
+                                    data: padi,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                                },
+                                {
+                                    label: 'Palawija',
+                                    data: palawija,
+                                    backgroundColor: 'rgba(255, 205, 86, 0.7)'
+                                },
+                                {
+                                    label: 'Lainnya',
+                                    data: lainnya,
+                                    backgroundColor: 'rgba(201, 90, 90, 0.7)'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Luas Tanam per Masa Tanam'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label(context) {
+                                            const value = context.parsed.y.toLocaleString('id-ID', {
+                                                minimumFractionDigits: 2
+                                            });
+                                            return `${context.dataset.label}: ${value} ha`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Luas (ha)'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+
+
+
+                async loadDI() {
+                    // let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
+                    let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9&is_induk=1');
+
+                    console.log(res.data.data);
+                    this.daerahIrigasis = res.data.data;
+                },
+                async loadRekapPermasalahan(diId) {
+                    let url = `/api/rekap-permasalahan?pengamat_valid=1`;
+                    if (this.filterDI) url += `&di_id=${diId}`;
                     if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
                     if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
 
                     let res = await axios.get(url);
-                    this.items = res.data.data;
-                    this.filteredItems = res.data;
-                    console.log(this.filteredItems);
-                    this.loadRekap(diId)
 
-                } catch (e) {
-                    console.error(e);
-                } finally {
-                    this.is_loading = false;
-                }
-            },
+                    this.rekapPermasalahan = res.data.data;
+                    this.totalKeseluruhan = res.data.total_keseluruhan;
+                },
+                formatAngka(val) {
+                    return Number(val).toLocaleString('id-ID', {
+                        minimumFractionDigits: 2
+                    });
+                },
+                async openDetail(diId, tanggal) {
+                    this.selectedTanggal = tanggal;
 
-            async loadRekap(diId) {
-                let url = `/api/master/rekap-data?di_id=${diId}`
-                axios.get(url).then(res => {
-                    console.log(res);
-                    this.rekap = res.data
-                });
+                    let url = `/api/rekap-mingguan-detail?di_id=${diId}&tanggal=${tanggal}`;
+                    const res = await axios.get(url);
 
+                    this.detailItems = res.data;
 
-                this.loadRekapPengisian(1)
+                    // reset total
+                    let padi = 0;
+                    let palawija = 0;
+                    let lainnya = 0;
 
+                    // hitung total
+                    this.detailItems.forEach(row => {
+                        padi += Number(row.luas_padi);
+                        palawija += Number(row.luas_palawija);
+                        lainnya += Number(row.luas_lainnya);
+                    });
 
-            },
-            async loadRekapPengisian(page = 1) {
-                // alert(page)
-                let url = `/api/rekap-petak?di_id=${this.diId}&page=${page}&per_page=${this.perPage}`
-                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
+                    let total = padi + palawija + lainnya;
 
-                axios.get(url).then(res => {
-                    console.log(res.data);
-                    this.rekapLuasTanam = res.data.data
-                    this.pagination = {
-                        current: res.data.current_page,
-                        last: res.data.last_page,
-                        total: res.data.total,
-                    };
-                });
-
-                url = `/api/rekap-di?di_id=${this.diId}`
-                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
-
-                axios.get(url).then(res => {
-                    const data = res.data.total_luas || {};
-
-                    // Ubah nilai ke number (hilangkan titik ribuan, ubah koma jadi titik)
-                    const parseNumber = (val) => {
-                        if (!val) return 0;
-                        return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+                    this.totalDetail = {
+                        padi: padi,
+                        palawija: palawija,
+                        lainnya: lainnya,
+                        total: total
                     };
 
-                    this.rekapLuasTotal = {
-                        padi: parseNumber(data.padi),
-                        palawija: parseNumber(data.palawija),
-                        lainnya: parseNumber(data.lainnya),
-                        total: parseNumber(data.total),
-                    };
-
-                    console.log("Data konversi:", this.rekapLuasTotal);
-
-                    // Panggil chart setelah data siap
-                    this.chartPerItem();
-                });
+                    // buka modal
+                    const modalEl = document.getElementById('detailModal');
+                    this.detailModal = new bootstrap.Modal(modalEl);
+                    this.detailModal.show();
+                },
 
             },
-            bulanIndo(angka) {
-                const bulan = [
-                    "", "Januari", "Februari", "Maret", "April",
-                    "Mei", "Juni", "Juli", "Agustus", "September",
-                    "Oktober", "November", "Desember"
-                ];
-                return bulan[angka];
-            },
+            mounted() {
+                // this.loadDashboard();
+                this.loadDI()
 
-            formatTanggalIndo(tanggal) {
-                const options = {
-                    timeZone: "Asia/Makassar",
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                };
-                return new Date(tanggal).toLocaleString("id-ID", options);
-            },
-
-            showForm(form) {
-                this.item = form;
-                // console.log(this.item);
-
-                const modalEl = document.getElementById('formLTTModal');
-                this.modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-                this.modalInstance.show();
-            },
-            formatTanggal(tgl) {
-                if (!tgl) return '-';
-
-                // Format ke 17 September 2025
-                return new Date(tgl).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                });
-            },
-            formatNumber(val) {
-                if (!val) return '0';
-                return parseFloat(val).toLocaleString('id-ID', {
-                    minimumFractionDigits: 2
-                });
-            },
-            logout() {
-                this.komir = null;
-                localStorage.removeItem("komir");
-
-                this.kode = "";
-                this.forms = [];
-            },
-            applyFilter() {
-                let diId = this.isChild ? this.filterDIChild : this.filterDI
-                // alert(diId);
-                if (this.isChild) {
-                    this.selectedDI = this.daerahIrigasisChild.find(d => d.id === this.filterDIChild) || null;
-                    this.selectedIndukDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
-
-                } else {
-                    this.selectedDI = this.daerahIrigasis.find(d => d.id === this.filterDI) || null;
-
-                }
-                if (!diId) {
-                    alert("Pilih Daerah Irigasi terlebih dahulu")
-                    return
-                }
-                this.diId = diId
-                this.loadData(diId)
-                this.loadRekapPermasalahan(diId)
-                this.loadRekapMasaTanamDi(diId)
-                this.isFilter = true
-            },
-            // async loadRekapMasaTanamDi(diId) {
-            //     if (!diId) return;
-
-            //     this.isLoadingRekap = true;
-
-            //     try {
-            //         const res = await axios.get(`/api/rekap-masa-tanam`, {
-            //             params: {
-            //                 di_id: diId,
-            //                 tahun: this.filterTahun
-            //             }
-            //         });
-
-            //         this.rekapMasaTanam = res.data;
-
-            //         console.log('Rekap masa tanam:', this.rekapMasaTanam);
-
-            //     } catch (err) {
-            //         console.error(err);
-            //         alert('Gagal memuat rekap masa tanam');
-            //     } finally {
-            //         this.isLoadingRekap = false;
-            //     }
-            // },
-            async loadRekapMasaTanamDi(diId) {
-                if (!diId || !this.filterTanggalAwal || !this.filterTanggalAkhir) {
-                    alert('Lengkapi filter dulu');
-                    return;
-                }
-
-                let url =
-                    `/api/rekap-mingguan?di_id=${diId}&tanggal_mulai=${this.filterTanggalAwal}&tanggal_selesai=${this.filterTanggalAkhir}`;
-                const res = await axios.get(url);
-                this.items = res.data.rekap;
-                console.log(res.data);
-                this.skMasaTanam = res.data.masaTanamSk
-                // Reset
-                this.maxPerMt = {};
-                this.topPerMt = [];
-
-                // Hitung nilai tertinggi per MT
-                this.items.forEach(row => {
-                    const mt = row.masa_tanam;
-                    const total = Number(row.total_luas);
-
-                    if (!this.maxPerMt[mt]) {
-                        this.maxPerMt[mt] = total;
-                    } else {
-                        if (total > this.maxPerMt[mt]) {
-                            this.maxPerMt[mt] = total;
-                        }
-                    }
-                });
-
-                // Ambil hanya data tertinggi per MT
-                Object.keys(this.maxPerMt).forEach(mt => {
-                    const row = this.items.find(r =>
-                        r.masa_tanam === mt &&
-                        Number(r.total_luas) === this.maxPerMt[mt]
-                    );
-
-                    if (row) {
-                        this.topPerMt.push(row);
-                    }
-                });
-
-
-                // hitung max per masa tanam
-                this.items.forEach(row => {
-                    const mt = row.masa_tanam;
-
-                    if (!this.maxPerMt[mt]) {
-                        this.maxPerMt[mt] = Number(row.total_luas);
-                    } else {
-                        if (Number(row.total_luas) > this.maxPerMt[mt]) {
-                            this.maxPerMt[mt] = Number(row.total_luas);
-                        }
-                    }
-                });
-
-            },
-
-            applyFilterPermasalahan() {
-                this.loadPermasalahan(1)
-            },
-            resetFilter() {
-                this.filterDI = ''
-                this.filterTanggalAwal = ''
-                this.filterTanggalAkhir = ''
-                this.filteredItems = []
-                this.permasalahans = []
-                this.loadDashboard()
-            },
-            syncTanggal() {
-                this.filterTanggalAkhir = this.filterTanggalAwal;
-            },
-
-            chartPerItem() {
-                const data = this.topPerMt;
-                if (!data || data.length === 0) return;
-
-                if (this.chartItem) this.chartItem.destroy();
-
-                const ctx = document.getElementById('chartItem');
-                if (!ctx) return;
-
-                // Label sumbu X
-                const labels = data.map(item => `MT ${item.masa_tanam}`);
-
-                // Data per kategori
-                const padi = data.map(item => item.padi);
-                const palawija = data.map(item => item.palawija);
-                const lainnya = data.map(item => item.lainnya);
-
-                this.chartItem = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                                label: 'Padi',
-                                data: padi,
-                                backgroundColor: 'rgba(75, 192, 192, 0.7)'
-                            },
-                            {
-                                label: 'Palawija',
-                                data: palawija,
-                                backgroundColor: 'rgba(255, 205, 86, 0.7)'
-                            },
-                            {
-                                label: 'Lainnya',
-                                data: lainnya,
-                                backgroundColor: 'rgba(201, 90, 90, 0.7)'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Luas Tanam per Masa Tanam'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label(context) {
-                                        const value = context.parsed.y.toLocaleString('id-ID', {
-                                            minimumFractionDigits: 2
-                                        });
-                                        return `${context.dataset.label}: ${value} ha`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Luas (ha)'
-                                }
-                            }
-                        }
-                    }
-                });
-            },
-
-
-
-            async loadDI() {
-                // let res = await axios.get('/api/master/daerah-irigasi?page=all&kabupaten_id=9');
-                let res = await axios.get('/api/master/daerah-irigasi?page=all&&kabupaten_id=9&is_induk=1');
-
-                console.log(res.data.data);
-                this.daerahIrigasis = res.data.data;
-            },
-            async loadRekapPermasalahan(diId) {
-                let url = `/api/rekap-permasalahan?pengamat_valid=1`;
-                if (this.filterDI) url += `&di_id=${diId}`;
-                if (this.filterTanggalAwal) url += `&tanggal_awal=${this.filterTanggalAwal}`;
-                if (this.filterTanggalAkhir) url += `&tanggal_akhir=${this.filterTanggalAkhir}`;
-
-                let res = await axios.get(url);
-
-                this.rekapPermasalahan = res.data.data;
-                this.totalKeseluruhan = res.data.total_keseluruhan;
-            },
-            formatAngka(val) {
-                return Number(val).toLocaleString('id-ID', {
-                    minimumFractionDigits: 2
-                });
-            },
-            async openDetail(diId, tanggal) {
-                this.selectedTanggal = tanggal;
-
-                let url = `/api/rekap-mingguan-detail?di_id=${diId}&tanggal=${tanggal}`;
-                const res = await axios.get(url);
-
-                this.detailItems = res.data;
-
-                // reset total
-                let padi = 0;
-                let palawija = 0;
-                let lainnya = 0;
-
-                // hitung total
-                this.detailItems.forEach(row => {
-                    padi += Number(row.luas_padi);
-                    palawija += Number(row.luas_palawija);
-                    lainnya += Number(row.luas_lainnya);
-                });
-
-                let total = padi + palawija + lainnya;
-
-                this.totalDetail = {
-                    padi: padi,
-                    palawija: palawija,
-                    lainnya: lainnya,
-                    total: total
-                };
-
-                // buka modal
-                const modalEl = document.getElementById('detailModal');
-                this.detailModal = new bootstrap.Modal(modalEl);
-                this.detailModal.show();
-            },
-
-        },
-        mounted() {
-            // this.loadDashboard();
-            this.loadDI()
-
-        }
-    }).mount("#app");
+            }
+        }).mount("#app");
     </script>
 </body>
 
